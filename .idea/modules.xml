@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/SonicShelf.iml" filepath="$PROJECT_DIR$/.idea/SonicShelf.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sonic-shelf-server/sonic-shelf-server.iml" filepath="$PROJECT_DIR$/sonic-shelf-server/sonic-shelf-server.iml" />
     </modules>
   </component>
 </project>
