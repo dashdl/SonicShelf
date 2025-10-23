@@ -15,5 +15,5 @@ public interface UserMapper {
     public User findByEmail(String email);
 
     @Insert("insert into users(username,email,nickname,password) values(#{username},#{email},#{nickname},#{password})")
-    public void insertUser(User user);
+    public void insert(User user);
 }

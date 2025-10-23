@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (user != null) {
             throw new AuthException("1003","邮箱已存在");
         }
-        userMapper.insertUser(userRegisterRequest.dtoToUser());
+        userMapper.insert(userRegisterRequest.dtoToUser());
     }
 
     @Override
