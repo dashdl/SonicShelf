@@ -4,21 +4,21 @@ package com.zhongxin.sonicshelf.exception;
  * 自定义异常
  * 运行时异常
  */
-public class CustomeException extends RuntimeException {
+public class CustomException extends RuntimeException {
     private String code;
     private String message;
 
-    public CustomeException(String code, String msg) {
+    public CustomException(String code, String msg) {
         this.code = code;
         this.message = msg;
     }
 
-    public CustomeException(String msg) {
+    public CustomException(String msg) {
         this.code = "500";
         this.message = msg;
     }
 
-    public CustomeException() {}
+    public CustomException() {}
 
     public String getCode() {
         return code;

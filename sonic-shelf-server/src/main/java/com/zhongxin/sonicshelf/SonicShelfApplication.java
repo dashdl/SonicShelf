@@ -8,10 +8,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @MapperScan("com.zhongxin.sonicshelf.mapper")
 @EnableTransactionManagement
-public class SonicShelfServerApplication {
+public class SonicShelfApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SonicShelfServerApplication.class, args);
+        SpringApplication.run(SonicShelfApplication.class, args);
     }
 
 }
