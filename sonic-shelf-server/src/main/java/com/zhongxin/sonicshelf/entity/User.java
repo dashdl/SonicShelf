@@ -24,7 +24,7 @@ public class User implements UserDetails {
     private String nickname;
     private String avatar;
     private String bio;
-    private Integer gender = 0;
+    private byte gender;
     private LocalDate birthday;
     private String location;
     private String phone;
@@ -41,6 +41,26 @@ public class User implements UserDetails {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime lastLoginAt;
+
+    public String getGenderText() {
+        if (gender == 0) {
+            return "未知";
+        }
+
+        return switch (gender) {
+            case 1 -> "男";
+            case 2 -> "女";
+            default -> "未知";
+        };
+    }
+
+    public void setGenderText(String genderText) {
+        switch (genderText) {
+            case "男" -> this.gender = 1;
+            case "女" -> this.gender = 2;
+            default -> this.gender = 0;
+        }
+    }
 
     // ========== Spring Security 方法 ==========
     @Override

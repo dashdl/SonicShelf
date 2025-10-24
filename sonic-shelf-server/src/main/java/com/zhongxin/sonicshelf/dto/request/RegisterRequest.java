@@ -4,13 +4,13 @@ import com.zhongxin.sonicshelf.entity.User;
 import lombok.Data;
 
 @Data
-public class UserRegisterRequest {
+public class RegisterRequest {
     private String username;
     private String password;
     private String email;
     private String nickname;
 
-    public User dtoToUser(){
+    public User toUser(){
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
@@ -19,12 +19,13 @@ public class UserRegisterRequest {
         return user;
     }
 
-    public UserRegisterRequest(){}
+    public RegisterRequest(){}
 
-    public UserRegisterRequest(User user){
+    public RegisterRequest(User user){
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.email = user.getEmail();
         this.nickname = user.getNickname();
+
     }
 }

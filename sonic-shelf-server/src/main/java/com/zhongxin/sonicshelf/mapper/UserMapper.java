@@ -3,6 +3,7 @@ package com.zhongxin.sonicshelf.mapper;
 import com.zhongxin.sonicshelf.entity.User;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
 @Mapper
@@ -15,5 +16,6 @@ public interface UserMapper {
     public User findByEmail(String email);
 
     @Insert("insert into users(username,email,nickname,password) values(#{username},#{email},#{nickname},#{password})")
-    public void insert(User user);
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    public Long insert(User user);
 }
