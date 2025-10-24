@@ -23,10 +23,10 @@ public class JwtUtil {
 
     // 将字符串密钥转换为安全的SecretKey
     private SecretKey getSigningKey() {
-        // 方法1：使用Keys工具类（推荐）
+        // 方法1：使用Keys工具类
         return Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
 
-        // 方法2：或者生成一个安全的随机密钥（取消注释使用）
+        // 方法2：生成一个安全的随机密钥
         // return Keys.secretKeyFor(SignatureAlgorithm.HS512);
     }
 

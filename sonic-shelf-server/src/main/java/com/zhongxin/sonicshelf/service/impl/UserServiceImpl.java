@@ -3,6 +3,7 @@ package com.zhongxin.sonicshelf.service.impl;
 import com.zhongxin.sonicshelf.dto.request.RegisterRequest;
 import com.zhongxin.sonicshelf.dto.response.LoginResponse;
 import com.zhongxin.sonicshelf.dto.response.RegisterResponse;
+import com.zhongxin.sonicshelf.dto.response.UserProfileResponse;
 import com.zhongxin.sonicshelf.entity.User;
 import com.zhongxin.sonicshelf.exception.AuthException;
 import com.zhongxin.sonicshelf.exception.CustomException;
@@ -26,7 +27,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Resource
     UserMapper userMapper;
-    
+
     @Autowired
     JwtUtil jwtUtil;
 
@@ -34,11 +35,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public RegisterResponse register(RegisterRequest registerRequest) {
         User user = userMapper.findByUsername(registerRequest.getUsername());
         if (user != null) {
-            throw new AuthException("1004","用户名已存在");
+            throw new AuthException("1004", "用户名已存在");
         }
-        user =userMapper.findByEmail(registerRequest.getEmail());
+        user = userMapper.findByEmail(registerRequest.getEmail());
         if (user != null) {
-            throw new AuthException("1003","邮箱已存在");
+            throw new AuthException("1003", "邮箱已存在");
         }
 
         RegisterResponse registerResponse = new RegisterResponse(registerRequest.toUser());
@@ -50,11 +51,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public LoginResponse login(User user) {
         User tempUser = userMapper.findByUsername(user.getUsername());
-        if (tempUser==null){
-            throw new CustomException("1001","用户不存在");
+        if (tempUser == null) {
+            throw new CustomException("1001", "用户不存在");
         }
-        if(!tempUser.getPassword().equals(user.getPassword())){
-            throw new CustomException("1002","账号或密码错误");
+        if (!tempUser.getPassword().equals(user.getPassword())) {
+            throw new CustomException("1002", "账号或密码错误");
         }
 
         LoginResponse loginResponse = new LoginResponse(tempUser);
@@ -66,26 +67,39 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public Map<String, Object> refresh(HttpServletRequest request) {
         final String authorizationHeader = request.getHeader("Authorization");
-
-        String jwt = null;
-        User user = null;
-
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
-            String username = jwtUtil.getUsernameFromToken(jwt);
-            if (username != null) {
-                user = userMapper.findByUsername(username);
-            }
+        String token = null;
+        if (authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7);
         }
-        
-        if(user==null){
-            throw new CustomException("401","未授权(Token无效或过期)");
-        }
-
 
         Map<String, Object> responseMap = new LinkedHashMap<>();
-        responseMap.put("access_token",jwtUtil.generateToken(user));
-        responseMap.put("expires_in",3600);
+        responseMap.put("access_token", jwtUtil.generateToken(userMapper.findByUsername(jwtUtil.getUsernameFromToken(token))));
+        responseMap.put("expires_in", 3600);
+        return responseMap;
+    }
+
+    @Override
+    public UserProfileResponse getUserProfile(String token) {
+        UserProfileResponse userProfileResponse;
+
+        userProfileResponse = new UserProfileResponse(userMapper.findByUsername(jwtUtil.getUsernameFromToken(token)));
+
+        return userProfileResponse;
+    }
+
+    @Override
+    public Map<String, Object> updateUserProfile(String token, User user) {
+        String username = jwtUtil.getUsernameFromToken(token);
+        userMapper.updateUserProfile(username, user);
+
+        user = userMapper.findByUsername(username);
+
+        Map<String, Object> responseMap = new LinkedHashMap<>();
+        responseMap.put("id", user.getId());
+        responseMap.put("nickname", user.getNickname());
+        responseMap.put("bio", user.getBio());
+        responseMap.put("gender", user.getGender());
+        responseMap.put("location", user.getLocation());
         return responseMap;
     }
 

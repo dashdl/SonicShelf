@@ -1,5 +1,6 @@
 package com.zhongxin.sonicshelf.dto.response;
 
+import com.zhongxin.sonicshelf.entity.User;
 import lombok.Data;
 
 @Data
@@ -17,6 +18,19 @@ public class UserProfileResponse {
 
 
     public UserProfileResponse() {
+    }
+
+    public UserProfileResponse(User user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.email = user.getEmail();
+        this.nickname = user.getNickname();
+        this.avatar = user.getAvatar();
+        this.bio = user.getBio();
+        this.gender = user.getGender();
+        this.location = user.getLocation();
+        this.followers_count=user.getFollowerCount();
+        this.following_count=user.getFollowingCount();
     }
 
     public String getGenderText() {
