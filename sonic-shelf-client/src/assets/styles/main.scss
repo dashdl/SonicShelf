@@ -1,0 +1,16 @@
+// 引入所有样式文件
+@import 'reset';
+@import 'variables';
+@import 'components';
+
+/* 全局基础样式 */
+body {
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+#app {
+  min-height: 100vh;
+}
