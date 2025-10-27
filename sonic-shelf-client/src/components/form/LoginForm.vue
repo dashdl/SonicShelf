@@ -117,9 +117,6 @@ const signup = () => {
 </template>
 
 <style scoped>
-body {
-  user-select: none;
-}
 
 .form-container {
   user-select: none;
