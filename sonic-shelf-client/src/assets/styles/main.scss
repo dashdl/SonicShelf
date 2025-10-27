@@ -1,7 +1,5 @@
 // 引入所有样式文件
-@import 'reset';
-@import 'variables';
-@import 'components';
+@use 'reset';
 
 /* 全局基础样式 */
 body {

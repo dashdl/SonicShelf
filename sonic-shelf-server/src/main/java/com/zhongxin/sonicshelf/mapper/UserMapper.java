@@ -12,7 +12,7 @@ public interface UserMapper {
     @Select("select * from users where email=#{email}")
     public User findByEmail(String email);
 
-    @Insert("insert into users(username,email,nickname,password) values(#{username},#{email},#{nickname},#{password})")
+    @Insert("insert into users(username,nickname,password) values(#{username},#{nickname},#{password})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     public Long insert(User user);
 

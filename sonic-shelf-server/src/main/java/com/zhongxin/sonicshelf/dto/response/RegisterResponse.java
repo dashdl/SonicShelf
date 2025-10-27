@@ -7,14 +7,12 @@ import lombok.Data;
 public class RegisterResponse {
     private Long user_id;
     private String username;
-    private String email;
     private String nickname;
     private Boolean email_verified;
 
     public RegisterResponse(User user) {
         this.user_id=user.getId();
         this.username=user.getUsername();
-        this.email=user.getEmail();
         this.nickname=user.getNickname();
         this.email_verified=user.getEmailVerified();
     }

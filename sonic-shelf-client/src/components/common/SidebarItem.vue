@@ -20,21 +20,22 @@ const handleClick = () => {
 <template>
   <div class="sidebar-card" @click="handleClick">
     <img :src="icon" style="width: 25px">
-    <span style="margin-top: 5px;margin-left: 5px;">{{ label }}</span>
+    <span style="margin-top: 3px;margin-left: 5px;">{{ label }}</span>
   </div>
 </template>
 
 <style scoped lang="scss">
+@use "@/assets/styles/variables.scss" as vars;
 .sidebar-card{
   display: flex;
   height: 35px;
-  border-radius: $radius;
+  border-radius: vars.$radius;
   padding-left: 10px;
   margin-bottom: 5px;
   align-items: center;
   cursor: pointer;
 }
 .sidebar-card:hover{
-  background-color: $item-hover;
+  background-color: vars.$item-hover;
 }
 </style>

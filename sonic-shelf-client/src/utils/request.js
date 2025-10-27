@@ -2,8 +2,9 @@ import axios from "axios";
 import {ElMessage} from "element-plus";
 
 const request = axios.create({
-    baseURL: 'http://localhost:8080',
-    timeout: 30000  // 后台接口超时时间
+    baseURL: '/api/v1/', // 使用相对路径，配合Vite代理
+    timeout: 30000,  // 后台接口超时时间
+    withCredentials: false  // 允许跨域请求携带凭证信息
 })
 
 // request 拦截器
@@ -11,7 +12,9 @@ const request = axios.create({
 request.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/json;charset=utf-8';
     let user = JSON.parse(localStorage.getItem("user")||'{}');
-    config.headers['token'] = user.token
+    if (user.token) {
+        config.headers['Authorization'] = `Bearer ${user.token}`;
+    }
     return config
 }, error => {
     return Promise.reject(error)
