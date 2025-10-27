@@ -13,12 +13,42 @@ const formData = reactive({
   email: null,
   nickname: null,
   passwordConfirm: null,
-
 })
+
+const validateForm = () => {
+  if (!formData.username || formData.username.trim() === '') {
+    ElMessage.warning('用户名不能为空');
+    return false;
+  }
+
+  if (!formData.password) {
+    ElMessage.warning('密码不能为空');
+    return false;
+  }
+  if (formData.password.length < 6 || formData.password.length > 12) {
+    ElMessage.warning('密码长度必须在6-12位之间');
+    return false;
+  }
+
+  if (!data.registered) {
+
+    if (!formData.passwordConfirm) {
+      ElMessage.warning('请确认密码');
+      return false;
+    }
+    if (formData.password !== formData.passwordConfirm) {
+      ElMessage.warning('两次输入的密码不一致');
+      return false;
+    }
+  }
+
+  return true;
+}
 
 const switchForm = () => {
   data.registered = !data.registered;
 }
+
 // 定义关闭事件
 const emit = defineEmits(['close']);
 
@@ -28,26 +58,31 @@ const closeForm = () => {
 };
 
 const login = () => {
-  request.post("/auth/login", formData).then((res) => {
-    if (res.code === "200") {
-      localStorage.setItem("token", res.data.access_token);
-      localStorage.setItem("user", JSON.stringify(res.data.userResponse));
-      ElMessage.success("注册成功");
-    } else {
-      ElMessage.error(res.message);
-    }
-  })
+  if (validateForm()) {
+    request.post("/auth/login", formData).then((res) => {
+      if (res.code === "200") {
+        localStorage.setItem("token", res.data.access_token);
+        localStorage.setItem("user", JSON.stringify(res.data.userResponse));
+        ElMessage.success("登录成功");
+        closeForm();
+      } else {
+        ElMessage.error(res.message);
+      }
+    })
+  }
 }
 
 const signup = () => {
-  request.post("/auth/register", formData).then((res) => {
-    if (res.code === "200") {
-      switchForm();
-      ElMessage.success("注册成功");
-    } else {
-      ElMessage.error(res.message);
-    }
-  })
+  if (validateForm()) {
+    request.post("/auth/register", formData).then((res) => {
+      if (res.code === "200") {
+        switchForm();
+        ElMessage.success("注册成功");
+      } else {
+        ElMessage.error(res.message);
+      }
+    })
+  }
 }
 </script>
 
