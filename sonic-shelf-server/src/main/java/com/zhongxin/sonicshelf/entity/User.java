@@ -25,7 +25,7 @@ public class User implements UserDetails {
     private String avatar;
     private String bio;
     private byte gender;
-    private LocalDate birthday;
+    private String birthday;
     private String location;
     private String phone;
 

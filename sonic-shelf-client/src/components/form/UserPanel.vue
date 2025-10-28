@@ -1,7 +1,16 @@
 <script setup>
-  const login =()=>{
-    console.log("Login")
-  }
+import {useUserStore} from "@/store/userStore.js";
+import router from "@/router/index.js";
+
+const userStore = useUserStore();
+
+const emit = defineEmits(['closePanel'])
+
+const handleClick=(path)=>{
+  emit('closePanel');
+  router.push(path);
+}
+
 </script>
 
 <template>
@@ -18,7 +27,7 @@
       <hr style="height: 30px;width:1px;border:none;background-color: #e4e8ec;"/>
       <div class="numb-container">
         <span class="numb">
-          6
+          {{ userStore.getFollowing_count }}
         </span>
         <span class="title">
           关注
@@ -27,7 +36,7 @@
       <hr style="height: 30px;width:1px;border:none;background-color: #e4e8ec;"/>
       <div class="numb-container">
         <span class="numb">
-          6
+          {{ userStore.getFollowers_count }}
         </span>
         <span class="title">
           粉丝
@@ -35,7 +44,7 @@
       </div>
     </div>
     <div class="panel-item">
-      <div class="panel-card" @click="">
+      <div class="panel-card" @click="handleClick('/profile-settings')">
         <img src="/icons/sidebar/home.png" style="width: 25px;margin-right: 10px" alt="">
         <span style="margin-top: 3px;">
           个人信息设置
@@ -65,6 +74,7 @@
 
 <style scoped lang="scss">
 @use "@/assets/styles/variables.scss" as vars;
+
 .panel-container {
   display: flex;
   flex-direction: column;
@@ -116,7 +126,7 @@
   align-items: center;
 }
 
-.panel-card:hover{
+.panel-card:hover {
   border-radius: 10px;
   background-color: #dee2e6;
 }

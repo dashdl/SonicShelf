@@ -95,12 +95,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user = userMapper.findByUsername(username);
 
         Map<String, Object> responseMap = new LinkedHashMap<>();
-        responseMap.put("id", user.getId());
         responseMap.put("nickname", user.getNickname());
         responseMap.put("bio", user.getBio());
         responseMap.put("gender", user.getGender());
+        responseMap.put("birthday", user.getBirthday());
         responseMap.put("location", user.getLocation());
         return responseMap;
+    }
+
+    @Override
+    public void updateUserAvatar(String url,String token) {
+        userMapper.updateUserAvatar(url,jwtUtil.getUsernameFromToken(token));
     }
 
     @Override

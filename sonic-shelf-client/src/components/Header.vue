@@ -10,8 +10,8 @@
       </div>
     </div>
     <div class="right-content">
-      <img src="/icons/头像.jpg" style="height: 30px;border-radius: 15px; margin-right: 5px" alt="">
-      <span>被剥夺名字的人</span>
+      <img id="avatar" @click="router.push('/profile')" :src="avatarUrl" style="height: 30px;border-radius: 15px; margin-right: 5px;cursor: pointer;" alt="">
+      <span>{{ userStore.getNickname }}</span>
       <img src="" alt="">
       <img @click="data.userPanelVisible=!data.userPanelVisible" src="/icons/down.svg"
            style="width: 13px;cursor: pointer" alt="">
@@ -25,7 +25,7 @@
     <div v-if="data.userPanelVisible" class="panel-modal">
       <div class="modal-overlay" @click="data.userPanelVisible=!data.userPanelVisible"></div>
       <div class="modal-content">
-        <UserPanel/>
+        <UserPanel @closePanel="data.userPanelVisible=false"/>
       </div>
     </div>
   </div>
@@ -33,9 +33,22 @@
 </template>
 
 <script setup>
-import {reactive} from "vue";
+import {computed, reactive} from "vue";
 import LoginForm from "@/components/form/LoginForm.vue";
 import UserPanel from "@/components/form/UserPanel.vue";
+import {onMounted, onUnmounted} from 'vue';
+import {useUserStore} from "@/store/userStore.js";
+import router from "@/router/index.js";
+
+const userStore = useUserStore();
+const baseUrl = 'http://localhost:8080';
+
+const avatarUrl = computed(() => {
+  if (userStore.getAvatar && userStore.getAvatar.startsWith('/icons/')) {
+    return userStore.getAvatar;
+  }
+  return baseUrl + userStore.getAvatar;
+});
 
 const data = reactive({
   formVisible: false,
@@ -47,14 +60,12 @@ const formSwitch = () => {
   document.body.style.overflow = data.formVisible ? 'hidden' : 'auto';
 }
 
-import {onMounted, onUnmounted} from 'vue';
-
 const handleClickOutside = (event) => {
   if (data.userPanelVisible) {
     const panelModal = document.querySelector('.panel-modal');
     const headerRightContent = document.querySelector('.right-content');
 
-    if (panelModal && !panelModal.contains(event.target) && 
+    if (panelModal && !panelModal.contains(event.target) &&
         headerRightContent && !headerRightContent.contains(event.target)) {
       data.userPanelVisible = false;
     }
@@ -68,6 +79,7 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
+
 
 </script>
 
@@ -162,6 +174,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
 }
+
 //410+30
 .modal-content {
   position: fixed;

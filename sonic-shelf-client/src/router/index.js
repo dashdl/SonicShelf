@@ -4,6 +4,10 @@ import Home from "@/pages/Home.vue";
 import UserPanel from "@/components/form/UserPanel.vue";
 import LoginForm from "@/components/form/LoginForm.vue";
 import Profile from "@/pages/Profile.vue";
+import upload from "@/pages/upload.vue";
+import {useUserStore} from "@/store/userStore.js";
+import ProfileSettings from "@/pages/ProfileSettings.vue";
+import GridList from "@/components/GridList.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,7 +15,9 @@ const router = createRouter({
         {
             path: '/', component:Layout,
             children: [
-                {path: '', component:Profile},
+                {path: '', component:GridList},
+                {path: '/profile', component:Profile},
+                {path: '/profile-settings', component:ProfileSettings},
             ]
         },
         {path: '/:pathMatch(.*)', redirect: '/notFound'},
@@ -21,4 +27,17 @@ const router = createRouter({
     ],
 })
 
+router.beforeEach(async (to, from, next) => {
+    const userStore = useUserStore();
+
+    if (!userStore.userInfo && localStorage.getItem('token')) {
+        try {
+            await userStore.restoreUserState();
+        } catch (error) {
+            console.error('恢复用户状态失败:', error);
+        }
+    }
+
+    next();
+});
 export default router

@@ -10,10 +10,13 @@ const request = axios.create({
 // request 拦截器
 // 可以自请求发送前对请求做一些处理
 request.interceptors.request.use(config => {
-    config.headers['Content-Type'] = 'application/json;charset=utf-8';
-    let user = JSON.parse(localStorage.getItem("user")||'{}');
-    if (user.token) {
-        config.headers['Authorization'] = `Bearer ${user.token}`;
+    // 对于FormData类型的数据，不要设置Content-Type，让浏览器自动处理
+    if (!(config.data instanceof FormData)) {
+        config.headers['Content-Type'] = 'application/json;charset=utf-8';
+    }
+    let token = localStorage.getItem("token");
+    if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config
 }, error => {

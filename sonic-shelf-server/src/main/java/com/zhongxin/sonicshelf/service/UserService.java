@@ -20,4 +20,6 @@ public interface UserService {
     UserProfileResponse getUserProfile(String token);
 
     Map<String,Object> updateUserProfile(String token, User user);
+
+    void updateUserAvatar(String url,String token);
 }

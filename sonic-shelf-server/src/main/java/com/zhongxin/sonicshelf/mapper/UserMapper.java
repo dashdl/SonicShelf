@@ -16,6 +16,9 @@ public interface UserMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     public Long insert(User user);
 
-    @Update("update users set nickname=#{user.nickname},bio=#{user.bio},gender=#{user.gender},location=#{user.location} where username=#{username}")
+    @Update("update users set nickname=#{user.nickname},bio=#{user.bio},gender=#{user.gender},birthday=#{user.birthday},location=#{user.location} where username=#{username}")
     public void updateUserProfile(@Param("username") String username, @Param("user") User user);
+
+    @Update("update users set avatar=#{avatar} where username=#{username}")
+    void updateUserAvatar(@Param("avatar") String url, @Param("username") String username);
 }

@@ -62,7 +62,6 @@ const login = () => {
     request.post("/auth/login", formData).then((res) => {
       if (res.code === "200") {
         localStorage.setItem("token", res.data.access_token);
-        localStorage.setItem("user", JSON.stringify(res.data.userResponse));
         ElMessage.success("登录成功");
         closeForm();
       } else {

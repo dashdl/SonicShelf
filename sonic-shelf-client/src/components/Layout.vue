@@ -3,6 +3,20 @@
 import Header from "@/components/Header.vue";
 import Sidebar from "@/components/Sidebar.vue";
 import Player from "@/components/Player.vue";
+import {useUserStore} from "@/store/userStore.js";
+import {onMounted} from "vue";
+import {ElMessage} from "element-plus";
+
+const userStore = useUserStore();
+
+onMounted(async ()=>{
+  try{
+    await userStore.restoreUserState();
+  }catch(error){
+    ElMessage.error("用户状态加载失败");
+  }
+})
+
 </script>
 
 <template>
