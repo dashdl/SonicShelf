@@ -78,5 +78,6 @@ onMounted(async ()=>{
 
 .main-content{
   flex: 1;
+  padding-right: 40px;
 }
 </style>

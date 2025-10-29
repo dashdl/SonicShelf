@@ -7,7 +7,8 @@ import Profile from "@/pages/Profile.vue";
 import upload from "@/pages/upload.vue";
 import {useUserStore} from "@/store/userStore.js";
 import ProfileSettings from "@/pages/ProfileSettings.vue";
-import GridList from "@/components/GridList.vue";
+import GridList from "@/components/list/GridList.vue";
+import TableList from "@/components/list/TableList.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,7 +16,7 @@ const router = createRouter({
         {
             path: '/', component:Layout,
             children: [
-                {path: '', component:GridList},
+                {path: '', component:TableList},
                 {path: '/profile', component:Profile},
                 {path: '/profile-settings', component:ProfileSettings},
             ]
