@@ -6,8 +6,31 @@ defineProps({
     total: {type: String, required: false},
     cover: {type: String, required: false},
     link: {type: String, required: false},
+    creator: {type: String, required: false},
   }],
 })
+
+// const infoTest = [
+//   {
+//     title: '/icons/头像.jpg',
+//     playback: "test",
+//     total: 'test',
+//     cover: '/icons/头像.jpg',
+//     creator: '/icons/头像.jpg',
+//   },
+//   {
+//     title: '/icons/头像.jpg',
+//     playback: "test",
+//     total: 'test',
+//     cover: '',
+//   },
+//   {
+//     title: '/icons/头像.jpg',
+//     playback: "test",
+//     total: 'test',
+//     cover: '/icons/test.png',
+//   }
+// ]
 </script>
 
 <template>
@@ -31,27 +54,26 @@ defineProps({
       </div>
     </div>
 
-    <div class="table-row">
+    <div class="table-row" v-for="(item, index) in info" :key="index">
       <div class="left-cell">
         <div class="rank-cell">
-          <span id="title" style="font-size: 12px">01</span>
+          <span id="title" style="font-size: 12px">{{index+1}}</span>
           <div class="play-button">
             <img src="/icons/play.svg" style="width: 20px;filter: brightness(0.4);" alt="">
           </div>
         </div>
         <div class="title-cell">
           <div class="cover">
-            <img src="/icons/头像.jpg" style="width: 50px;border-radius: 8px;margin-right: 10px" alt="">
+            <img :src="item.cover||'/icons/头像.jpg'" style="width: 50px;height: 50px;border-radius: 8px;margin-right: 10px;object-fit: cover;" alt="">
           </div>
           <div class="title">
-            <span
-                style="font-size: 20px;color: #333333;">title</span>
+            <span style="font-size: 20px;color: #333333;">{{ item.title }}</span>
           </div>
         </div>
       </div>
       <div class="right-cell">
-        <div class="total-cell"><span>14首</span></div>
-        <div class="creator-cell"><span>zhongxin</span></div>
+        <div class="total-cell"><span>{{ item.total }}首</span></div>
+        <div class="creator-cell"><span>{{item.creator}}</span></div>
       </div>
     </div>
 
@@ -91,11 +113,14 @@ span {
 }
 
 .left-cell {
+  max-width: 950px;
+  min-width: 550px;
   display: flex;
   flex-direction: row;
 }
 
 .right-cell {
+  width: 100%;
   min-width: 320px;
   max-width: 560px;
   display: flex;
@@ -129,10 +154,14 @@ span {
 }
 
 .total-cell {
+  width: 40%;
+  max-width: 270px;
   min-width: 150px;
 }
 
 .creator-cell {
+  width: 60%;
+  max-width: 295px;
   min-width: 170px;
 }
 

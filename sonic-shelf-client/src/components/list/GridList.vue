@@ -42,14 +42,12 @@ defineProps({
           <img src="/icons/play.svg" style="width: 26px" alt="">
         </div>
         <div class="info">
-          <div class="title" style="color: #666d7e;font-size: 14px">{{ item.title }}</div>
-          <div class="numb" style="color: #666d7e;font-size: 12px">{{ item.total }}</div>
+          <span style="color: #333333;font-size: 14px;margin-bottom: -2px">{{ item.title }}</span>
+          <span style="color: #888888;font-size: 12px">{{ item.total }}</span>
         </div>
         <div class="headphone">
           <img v-if="item.playback>=1" src="/icons/headphone.svg" style="width: 15px" alt="">
-          <span v-if="item.playback>=1" style="font-size: 12px;color: #ffffff;font-weight: bold;">{{
-              item.playback
-            }}</span>
+          <span v-if="item.playback>=1" style="font-size: 12px;color: #ffffff;font-weight: bold;">{{item.playback }}</span>
         </div>
       </div>
     </div>
@@ -59,7 +57,7 @@ defineProps({
 <style scoped>
 
 .grid-container {
-  padding-right: 40px;
+
   min-width: 757px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -118,8 +116,10 @@ defineProps({
 }
 
 .info {
+  display: flex;
+  flex-direction: column;
   position: absolute;
-  bottom: 8px;
+  bottom: 3px;
   left: 10px;
 }
 
@@ -129,18 +129,6 @@ defineProps({
   right: 8px;
   top: 10px;
   z-index: 1;
-}
-
-@media (min-width: 1510px) {
-  .grid-list {
-    display: flex;
-    justify-content: center;
-  }
-
-  .grid-container {
-    max-width: 1510px;
-    grid-template-columns: repeat(6, 1fr);
-  }
 }
 
 </style>

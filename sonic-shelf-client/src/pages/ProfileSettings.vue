@@ -272,11 +272,41 @@ onMounted(async () => {
       formData.birthDay = day;
     }
 
-    // 解析地区
+    // 地区解析逻辑优化
     if (userData.location) {
-      const [province, city] = userData.location.split('-');
-      formData.province = province;
-      formData.city = city;
+      try {
+        const locationParts = userData.location.split('-');
+        const provinceName = locationParts[0];
+        const cityName = locationParts[1];
+        
+        // 查找对应的省份编码
+        const province = regionOptions.provinces.find(p => p.label === provinceName);
+        if (province) {
+          formData.province = province.value;
+          
+          // 确保城市列表已加载
+          await updateCities();
+          
+          // 尝试精确匹配城市
+          let city = regionOptions.cities.find(c => c.label === cityName);
+          
+          // 如果精确匹配失败，尝试模糊匹配
+          if (!city && cityName) {
+            city = regionOptions.cities.find(c => c.label.includes(cityName) || cityName.includes(c.label));
+          }
+          
+          // 使用setTimeout确保DOM更新后再设置城市值，解决响应式绑定问题
+          setTimeout(() => {
+            if (city) {
+              formData.city = city.value;
+            } else if (regionOptions.cities.length > 0) {
+              formData.city = regionOptions.cities[0].value;
+            }
+          }, 0);
+        }
+      } catch (error) {
+        console.error('解析地区信息时出错:', error);
+      }
     }
 
     formData.avatar = userData.avatar || '';
@@ -325,14 +355,14 @@ const saveProfile = async () => {
     }
   }
 
-  // 原有保存个人信息的逻辑
+  // 修改后的保存个人信息逻辑
   const submitData = {
     ...formData,
     birthday: formData.birthYear && formData.birthMonth && formData.birthDay
         ? `${formData.birthYear}-${formData.birthMonth}-${formData.birthDay}`
         : null,
     location: formData.province && formData.city
-        ? `${formData.province}-${formData.city}`
+        ? `${regionOptions.provinces.find(p => p.value === formData.province)?.label || formData.province}-${regionOptions.cities.find(c => c.value === formData.city)?.label || formData.city}`
         : null
   };
 
@@ -402,11 +432,13 @@ onUnmounted(() => {
       <div class="profile-item">
         <label style="margin-right: 30px">地区：</label>
         <select v-model="formData.province" style="width: 133px;">
+          <option value="">请选择省份</option>
           <option v-for="province in regionOptions.provinces" :key="province.value" :value="province.value">
             {{ province.label }}
           </option>
         </select>
         <select v-model="formData.city" style="width: 133px;">
+          <option value="">请选择城市</option>
           <option v-for="city in regionOptions.cities" :key="city.value" :value="city.value">{{ city.label }}</option>
         </select>
       </div>

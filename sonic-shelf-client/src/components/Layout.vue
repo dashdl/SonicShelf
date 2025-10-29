@@ -9,10 +9,10 @@ import {ElMessage} from "element-plus";
 
 const userStore = useUserStore();
 
-onMounted(async ()=>{
-  try{
+onMounted(async () => {
+  try {
     await userStore.restoreUserState();
-  }catch(error){
+  } catch (error) {
     ElMessage.error("用户状态加载失败");
   }
 })
@@ -59,25 +59,35 @@ onMounted(async ()=>{
   height: 80px;
 }
 
-.left-container{
+.left-container {
   display: flex;
   width: 200px;
 }
 
-.right-container{
+.right-container {
   display: flex;
-  flex:1;
+  flex: 1;
   flex-direction: column;
   padding-left: 40px;
   background-color: #f7f9fc;
 }
 
-.header-container{
+.header-container {
   height: 70px;
 }
 
-.main-content{
+.main-content {
   flex: 1;
   padding-right: 40px;
+}
+
+@media (min-width: 1790px) {
+  .header-container{
+    margin-left: -40px;
+  }
+
+  .right-container {
+    padding-left: 115px;
+  }
 }
 </style>

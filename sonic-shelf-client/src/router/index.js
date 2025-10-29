@@ -16,7 +16,7 @@ const router = createRouter({
         {
             path: '/', component:Layout,
             children: [
-                {path: '', component:TableList},
+                {path: '', component:Profile},
                 {path: '/profile', component:Profile},
                 {path: '/profile-settings', component:ProfileSettings},
             ]
