@@ -11,7 +11,8 @@ const menuItems = [
 <template>
   <div class="main-content">
     <div class="title">
-      <img src="/icons/logo.png" alt="logo" style="width: 30px">
+      <img src="/logo.svg" style="width: 30px;margin-right: 14px" alt="logo">
+      <img src="/sloganCN.svg" style="height:30px" alt="">
     </div>
     <div class="menu-content">
       <SidebarItem

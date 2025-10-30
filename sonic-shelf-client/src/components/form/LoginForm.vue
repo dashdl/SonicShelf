@@ -88,10 +88,10 @@ const signup = () => {
 <template>
   <div class="form-container">
     <div class="close-button" @click="closeForm" style="cursor: pointer;">
-      <img src="/icons/close.svg" style="width: 30px" alt="">
+      <img src="/icons/status/close.svg" style="width: 30px" alt="">
     </div>
     <div class="title">
-      <img src="/icons/logo.png" style="width: 40px;margin-right: 5px" alt="">
+      <img src="/logo.svg" style="width: 40px;margin-right: 5px" alt="">
       <span style="font-size: 25px;font-weight: bold">声栖音乐</span>
     </div>
     <div class="form">

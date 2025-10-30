@@ -10,90 +10,124 @@ const userInfo = useUserStore();
 
 const infoTest = [
   {
-    title: '/icons/头像.jpg',
+    title: '这是歌单',
     playback: "test",
     total: 'test',
-    cover: '/icons/头像.jpg',
+    cover: '/images/default/cover.png',
   },
   {
-    title: '/icons/头像.jpg',
+    title: '这是歌单',
     playback: "test",
     total: 'test',
-    cover: '',
+    cover: '/images/default/cover.png',
   },
   {
-    title: '/icons/头像.jpg',
+    title: '这是歌单',
     playback: "test",
     total: 'test',
-    cover: '/icons/test.png',
-  }, {
-    title: '/icons/头像.jpg',
-    playback: "test",
-    total: 'test',
-    cover: '/icons/头像.jpg',
+    cover: '/images/default/cover.png',
   },
   {
-    title: '/icons/头像.jpg',
+    title: '这是歌单',
     playback: "test",
     total: 'test',
-    cover: '',
+    cover: '/images/default/cover.png',
   },
   {
-    title: '/icons/头像.jpg',
+    title: '这是歌单',
     playback: "test",
     total: 'test',
-    cover: '/icons/test.png',
-  }, {
-    title: '/icons/头像.jpg',
-    playback: "test",
-    total: 'test',
-    cover: '/icons/头像.jpg',
+    cover: '/images/default/cover.png',
   },
   {
-    title: '/icons/头像.jpg',
+    title: '这是歌单',
     playback: "test",
     total: 'test',
-    cover: '',
+    cover: '/images/default/cover.png',
   },
   {
-    title: '/icons/头像.jpg',
+    title: '这是歌单',
     playback: "test",
     total: 'test',
-    cover: '/icons/test.png',
-  }, {
-    title: '/icons/头像.jpg',
-    playback: "test",
-    total: 'test',
-    cover: '/icons/头像.jpg',
+    cover: '/images/default/cover.png',
   },
   {
-    title: '/icons/头像.jpg',
+    title: '这是歌单',
     playback: "test",
     total: 'test',
-    cover: '',
+    cover: '/images/default/cover.png',
   },
   {
-    title: '/icons/头像.jpg',
+    title: '这是歌单',
     playback: "test",
     total: 'test',
-    cover: '/icons/test.png',
-  }, {
-    title: '/icons/头像.jpg',
-    playback: "test",
-    total: 'test',
-    cover: '/icons/头像.jpg',
+    cover: '/images/default/cover.png',
   },
   {
-    title: '/icons/头像.jpg',
+    title: '这是歌单',
     playback: "test",
     total: 'test',
-    cover: '',
+    cover: '/images/default/cover.png',
   },
   {
-    title: '/icons/头像.jpg',
+    title: '这是歌单',
     playback: "test",
     total: 'test',
-    cover: '/icons/test.png',
+    cover: '/images/default/cover.png',
+  },
+  {
+    title: '这是歌单',
+    playback: "test",
+    total: 'test',
+    cover: '/images/default/cover.png',
+  },
+  {
+    title: '这是歌单',
+    playback: "test",
+    total: 'test',
+    cover: '/images/default/cover.png',
+  },
+  {
+    title: '这是歌单',
+    playback: "test",
+    total: 'test',
+    cover: '/images/default/cover.png',
+  },
+  {
+    title: '这是歌单',
+    playback: "test",
+    total: 'test',
+    cover: '/images/default/cover.png',
+  },
+  {
+    title: '这是歌单',
+    playback: "test",
+    total: 'test',
+    cover: '/images/default/cover.png',
+  },
+  {
+    title: '这是歌单',
+    playback: "test",
+    total: 'test',
+    cover: '/images/default/cover.png',
+  },
+  {
+    title: '这是歌单',
+    playback: "test",
+    total: 'test',
+    cover: '/images/default/cover.png',
+  },
+  {
+    title: '这是歌单',
+    playback: "test",
+    total: 'test',
+    cover: '/images/default/cover.png',
+  },
+  {
+    title: '这是歌单',
+    playback: "test",
+    total: 'test',
+    cover: '/images/default/cover.png',
   },
 ]
 
@@ -104,21 +138,21 @@ const listSwitch = reactive({
   favoritesGrid: true,
 })
 
-const createGrid=()=>{
-  listSwitch.createGrid=true;
-  listSwitch.createTable=false;
+const createGrid = () => {
+  listSwitch.createGrid = true;
+  listSwitch.createTable = false;
 }
-const createTable=()=>{
-  listSwitch.createGrid=false;
-  listSwitch.createTable=true;
+const createTable = () => {
+  listSwitch.createGrid = false;
+  listSwitch.createTable = true;
 }
-const favoritesGrid=()=>{
-  listSwitch.favoritesGrid=true;
-  listSwitch.favoritesTable=false;
+const favoritesGrid = () => {
+  listSwitch.favoritesGrid = true;
+  listSwitch.favoritesTable = false;
 }
-const favoritesTable=()=>{
-  listSwitch.favoritesGrid=false;
-  listSwitch.favoritesTable=true;
+const favoritesTable = () => {
+  listSwitch.favoritesGrid = false;
+  listSwitch.favoritesTable = true;
 }
 
 </script>
@@ -127,11 +161,12 @@ const favoritesTable=()=>{
   <div class="main-container">
     <div class="profile-container">
       <div class="profile-container">
-        <img src="/icons/头像.jpg" style="width: 200px;height: 200px;border-radius: 100px;margin-right: 40px" alt="">
+        <img src="/images/default/avatar.jpg" style="width: 200px;height: 200px;border-radius: 100px;margin-right: 40px"
+             alt="">
         <div class="profile-content">
           <div class="nickname">
             <span style="margin-right: 8px;font-size: 24px;font-weight: bold;">{{ userInfo.getNickname }}</span>
-            <img @click="router.push('/profile-settings')" src="/icons/edit.svg" style="width: 20px" alt="">
+            <img @click="router.push('/profile-settings')" src="/icons/actions/edit.svg" style="width: 20px" alt="">
           </div>
           <div class="follow">
           <span style="margin-right: 12px">
@@ -160,23 +195,23 @@ const favoritesTable=()=>{
           <span style="font-size: 20px;font-weight: bold;color: #555555;">我创建的歌单</span>
         </div>
         <div class="right-content">
-          <img @click="createGrid" src="/icons/grid.svg" style="width: 17px; margin-right: 8px" alt="">
-          <img @click="createTable" src="/icons/table.svg" style="width: 20px" alt="">
+          <img @click="createGrid" src="/icons/view/grid.svg" style="width: 17px; margin-right: 8px" alt="">
+          <img @click="createTable" src="/icons/view/table.svg" style="width: 20px" alt="">
         </div>
       </div>
       <GridList v-if="listSwitch.createGrid" style="  max-width: 1510px;margin-bottom: 50px"
                 :info="infoTest"
       />
       <TableList v-if="listSwitch.createTable" style="max-width: 1510px;margin-bottom: 50px;"
-        :info="infoTest"
+                 :info="infoTest"
       />
       <div class="separate-content">
         <div class="left-content">
           <span style="font-size: 20px;font-weight: bold;color: #555555;">我创建的歌单</span>
         </div>
         <div class="right-content">
-          <img @click="favoritesGrid" src="/icons/grid.svg" style="width: 17px; margin-right: 8px" alt="">
-          <img @click="favoritesTable" src="/icons/table.svg" style="width: 20px" alt="">
+          <img @click="favoritesGrid" src="/icons/view/grid.svg" style="width: 17px; margin-right: 8px" alt="">
+          <img @click="favoritesTable" src="/icons/view/table.svg" style="width: 20px" alt="">
         </div>
       </div>
       <GridList v-if="listSwitch.favoritesGrid" style="  max-width: 1510px;margin-bottom: 50px;"
@@ -190,14 +225,14 @@ const favoritesTable=()=>{
 </template>
 
 <style scoped>
-.main-container{
+.main-container {
   display: flex;
   flex-direction: column;
 }
 
 .profile-container {
   margin-bottom: 10px;
-  margin-top: 25px;
+  margin-top: 12px;
   display: flex;
   flex-direction: row;
 }

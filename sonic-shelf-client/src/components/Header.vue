@@ -2,10 +2,10 @@
   <div class="header-container">
     <div class="left-content">
       <div class="left-button" @click="formSwitch">
-
+        <img src="/icons/navigation/back.svg" style="height: 15px;" alt="">
       </div>
       <div class="search">
-        <img src="/icons/logo.png" style="height: 20px;margin-left: 10px;margin-right: 10px;" alt="">
+        <img src="/icons/navigation/search.svg" style="height: 18px;margin-left: 10px;margin-right: 10px;" alt="">
         <input>
       </div>
     </div>
@@ -13,7 +13,7 @@
       <img id="avatar" @click="router.push('/profile')" :src="avatarUrl" style="height: 30px;border-radius: 15px; margin-right: 5px;cursor: pointer;" alt="">
       <span>{{ userStore.getNickname }}</span>
       <img src="" alt="">
-      <img @click="data.userPanelVisible=!data.userPanelVisible" src="/icons/down.svg"
+      <img @click="data.userPanelVisible=!data.userPanelVisible" src="/icons/status/down.svg"
            style="width: 13px;cursor: pointer" alt="">
     </div>
     <div v-if="data.formVisible" class="login-modal">
@@ -106,13 +106,13 @@ onUnmounted(() => {
 }
 
 .left-button {
-  display: block;
+  display: flex;
   margin-right: 10px;
   height: 40px;
   width: 30px;
   border: 1px solid #e4e8ec;
   border-radius: $radius;
-  justify-items: center;
+  justify-content: center;
   align-items: center;
 }
 

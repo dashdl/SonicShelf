@@ -12,20 +12,20 @@ defineProps({
 
 // const infoTest = [
 //   {
-//     title: '/icons/头像.jpg',
+//     title: '/icons/avatar.jpg',
 //     playback: "test",
 //     total: 'test',
-//     cover: '/icons/头像.jpg',
-//     creator: '/icons/头像.jpg',
+//     cover: '/icons/avatar.jpg',
+//     creator: '/icons/avatar.jpg',
 //   },
 //   {
-//     title: '/icons/头像.jpg',
+//     title: '/icons/avatar.jpg',
 //     playback: "test",
 //     total: 'test',
 //     cover: '',
 //   },
 //   {
-//     title: '/icons/头像.jpg',
+//     title: '/icons/avatar.jpg',
 //     playback: "test",
 //     total: 'test',
 //     cover: '/icons/test.png',
@@ -35,7 +35,7 @@ defineProps({
 
 <template>
   <div class="table-container">
-    <div class="table-row" style="">
+    <div class="table-row" style="margin-bottom: -12px">
       <div class="left-cell">
         <div class="rank-cell">
           <span>#</span>
@@ -59,12 +59,12 @@ defineProps({
         <div class="rank-cell">
           <span id="title" style="font-size: 12px">{{index+1}}</span>
           <div class="play-button">
-            <img src="/icons/play.svg" style="width: 20px;filter: brightness(0.4);" alt="">
+            <img src="/icons/player/play.svg" style="width: 20px;filter: brightness(0.4);" alt="">
           </div>
         </div>
         <div class="title-cell">
           <div class="cover">
-            <img :src="item.cover||'/icons/头像.jpg'" style="width: 50px;height: 50px;border-radius: 8px;margin-right: 10px;object-fit: cover;" alt="">
+            <img :src="item.cover||'/icons/avatar.jpg'" style="width: 50px;height: 50px;border-radius: 8px;margin-right: 10px;object-fit: cover;" alt="">
           </div>
           <div class="title">
             <span style="font-size: 20px;color: #333333;">{{ item.title }}</span>
@@ -93,6 +93,7 @@ span {
 }
 
 .table-row {
+  margin-bottom: 4px;
   height: 65px;
   display: flex;
   align-items: center;
@@ -114,7 +115,7 @@ span {
 
 .left-cell {
   max-width: 950px;
-  min-width: 550px;
+  min-width: 450px;
   display: flex;
   flex-direction: row;
 }

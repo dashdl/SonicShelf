@@ -11,19 +11,19 @@ defineProps({
 
 // const infoTest = [
 //   {
-//     title: '/icons/头像.jpg',
+//     title: '/icons/avatar.jpg',
 //     playback: "test",
 //     total: 'test',
-//     cover: '/icons/头像.jpg',
+//     cover: '/icons/avatar.jpg',
 //   },
 //   {
-//     title: '/icons/头像.jpg',
+//     title: '/icons/avatar.jpg',
 //     playback: "test",
 //     total: 'test',
 //     cover: '',
 //   },
 //   {
-//     title: '/icons/头像.jpg',
+//     title: '/icons/avatar.jpg',
 //     playback: "test",
 //     total: 'test',
 //     cover: '/icons/test.png',
@@ -36,17 +36,17 @@ defineProps({
   <div class="grid-list">
     <div class="grid-container">
       <div v-for="item in info" class="grid-item">
-        <img :src="item.cover||'/icons/头像.jpg'" style="height: 100%;object-fit: cover;" alt="">
+        <img :src="item.cover||'/images/default/cover.png'" style="height: 100%;object-fit: cover;" alt="">
         <div class="background"></div>
         <div class="play-button">
-          <img src="/icons/play.svg" style="width: 26px" alt="">
+          <img src="/icons/player/play.svg" style="width: 26px" alt="">
         </div>
         <div class="info">
           <span style="color: #333333;font-size: 14px;margin-bottom: -2px">{{ item.title }}</span>
           <span style="color: #888888;font-size: 12px">{{ item.total }}</span>
         </div>
         <div class="headphone">
-          <img v-if="item.playback>=1" src="/icons/headphone.svg" style="width: 15px" alt="">
+          <img v-if="item.playback>=1" src="/icons/content/headphone.svg" style="width: 15px" alt="">
           <span v-if="item.playback>=1" style="font-size: 12px;color: #ffffff;font-weight: bold;">{{item.playback }}</span>
         </div>
       </div>

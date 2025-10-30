@@ -315,7 +315,7 @@ onMounted(async () => {
     const baseUrl = 'http://localhost:8080';
     const imgElement = document.getElementById('userAvatar');
     if (imgElement) {
-      imgElement.src = avatarPath ? baseUrl + avatarPath : '/icons/logo.png';
+      imgElement.src = avatarPath ? baseUrl + avatarPath : '/images/default/avatar.jpg';
     }
 });
 
@@ -450,7 +450,7 @@ onUnmounted(() => {
     <div class="avatar">
       <img
           id="userAvatar"
-          :src="avatarPreview || (formData.avatar ? 'http://localhost:8080' + formData.avatar : '/icons/logo.png')"
+          :src="avatarPreview || (formData.avatar ? 'http://localhost:8080' + formData.avatar : '/images/default/avatar.jpg')"
           style="width: 140px;height: 140px;cursor: pointer;"
           alt="点击上传头像"
           @click="triggerFileUpload"
