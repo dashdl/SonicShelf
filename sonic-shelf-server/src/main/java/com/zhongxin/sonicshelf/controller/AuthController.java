@@ -2,8 +2,9 @@ package com.zhongxin.sonicshelf.controller;
 
 import com.zhongxin.sonicshelf.dto.request.LoginRequest;
 import com.zhongxin.sonicshelf.dto.request.RegisterRequest;
-import com.zhongxin.sonicshelf.dto.response.Result;
+
 import com.zhongxin.sonicshelf.service.UserService;
+import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;

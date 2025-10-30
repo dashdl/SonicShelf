@@ -9,16 +9,29 @@ import {useUserStore} from "@/store/userStore.js";
 import ProfileSettings from "@/pages/ProfileSettings.vue";
 import GridList from "@/components/list/GridList.vue";
 import TableList from "@/components/list/TableList.vue";
+import Playlist from "@/pages/Playlist.vue";
+import InfiniteTable from "@/components/list/InfiniteTable.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: '/', component:Layout,
+            path: '/', component: Layout,
             children: [
-                {path: '', component:Profile},
-                {path: '/profile', component:Profile},
-                {path: '/profile-settings', component:ProfileSettings},
+                {path: '', component: InfiniteTable},
+                {path: '/profile', component: Profile},
+                {path: '/profile-settings', component: ProfileSettings},
+                {
+                    path: '/playlist/:id',
+                    component: () => import("@/pages/Playlist.vue"),
+                    props: true // 启用props接收参数
+                },
+                {
+                    path: '/infinite-scroll-demo',
+                    name: 'InfiniteScrollDemo',
+                    component: () => import('@/pages/InfiniteScrollDemo.vue'),
+                    meta: { title: '滚动加载示例' }
+                }
             ]
         },
         {path: '/:pathMatch(.*)', redirect: '/notFound'},
@@ -36,6 +49,7 @@ router.beforeEach(async (to, from, next) => {
             await userStore.restoreUserState();
         } catch (error) {
             console.error('恢复用户状态失败:', error);
+            localStorage.removeItem('token')
         }
     }
 

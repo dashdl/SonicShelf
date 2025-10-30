@@ -1,8 +1,9 @@
 package com.zhongxin.sonicshelf.controller;
 
 import cn.hutool.core.io.FileUtil;
-import com.zhongxin.sonicshelf.dto.response.Result;
+
 import com.zhongxin.sonicshelf.service.UserService;
+import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;

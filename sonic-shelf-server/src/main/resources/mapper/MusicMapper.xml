@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongxin.sonicshelf.mapper.MusicMapper">
+
+    <resultMap id="MusicResponse" type="com.zhongxin.sonicshelf.dto.response.MusicResponse">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="cover_image" property="coverImage"/>
+        <result column="artist_name" property="artistName"/>
+        <result column="album_title" property="albumTitle"/>
+    </resultMap>
+
+    <select id="findAsPageByListId" resultMap="MusicResponse">
+        SELECT m.id,
+               m.title,
+               m.cover_image,
+               a.name   as artist_name,
+               am.title as album_title
+        FROM playlists p
+                 INNER JOIN playlist_musics pm ON p.id = pm.playlist_id
+                 INNER JOIN musics m ON pm.music_id = m.id
+                 LEFT JOIN artists a ON m.artist_id = a.id
+                 LEFT JOIN albums am ON m.album_id = am.id
+        WHERE p.id = #{id}
+        ORDER BY pm.sort_order
+    </select>
+
+</mapper>

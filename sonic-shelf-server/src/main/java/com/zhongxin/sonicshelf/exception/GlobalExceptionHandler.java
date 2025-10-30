@@ -1,7 +1,8 @@
 package com.zhongxin.sonicshelf.exception;
 
 
-import com.zhongxin.sonicshelf.dto.response.Result;
+
+import com.zhongxin.sonicshelf.util.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;

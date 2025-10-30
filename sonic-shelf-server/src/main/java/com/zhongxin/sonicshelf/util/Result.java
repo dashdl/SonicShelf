@@ -1,4 +1,4 @@
-package com.zhongxin.sonicshelf.dto.response;
+package com.zhongxin.sonicshelf.util;
 
 import lombok.Data;
 

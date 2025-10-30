@@ -1,36 +1,24 @@
 <script setup>
+
+import router from "@/router/index.js";
+
 defineProps({
   info: [{
     title: {type: String, required: false},
-    playback: {type: String, required: false},
-    total: {type: String, required: false},
-    cover: {type: String, required: false},
-    link: {type: String, required: false},
-    creator: {type: String, required: false},
+    playCount: {type: String, required: false},
+    musicCount: {type: String, required: false},
+    coverImage: {type: String, required: false},
+    id: {type: String, required: false},
+    userName: {type: String, required: false},
   }],
 })
 
-// const infoTest = [
-//   {
-//     title: '/icons/avatar.jpg',
-//     playback: "test",
-//     total: 'test',
-//     cover: '/icons/avatar.jpg',
-//     creator: '/icons/avatar.jpg',
-//   },
-//   {
-//     title: '/icons/avatar.jpg',
-//     playback: "test",
-//     total: 'test',
-//     cover: '',
-//   },
-//   {
-//     title: '/icons/avatar.jpg',
-//     playback: "test",
-//     total: 'test',
-//     cover: '/icons/test.png',
-//   }
-// ]
+const goToPlaylist = (playlistId) => {
+  console.log(playlistId);
+  router.push(`/playlist/${playlistId}`);
+};
+
+const baseUrl = 'http://localhost:8080';
 </script>
 
 <template>
@@ -48,13 +36,13 @@ defineProps({
         <div class="total-cell">
           <span>歌曲数</span>
         </div>
-        <div class="creator-cell">
+        <div class="like-cell">
           <span>创建者</span>
         </div>
       </div>
     </div>
 
-    <div class="table-row" v-for="(item, index) in info" :key="index">
+    <div class="table-row" v-for="(item, index) in info" @click="goToPlaylist(item.id)" :key="index">
       <div class="left-cell">
         <div class="rank-cell">
           <span id="title" style="font-size: 12px">{{index+1}}</span>
@@ -64,7 +52,7 @@ defineProps({
         </div>
         <div class="title-cell">
           <div class="cover">
-            <img :src="item.cover||'/icons/avatar.jpg'" style="width: 50px;height: 50px;border-radius: 8px;margin-right: 10px;object-fit: cover;" alt="">
+            <img :src="baseUrl+item.coverImage||'/images/default/cover.png'" style="width: 50px;height: 50px;border-radius: 8px;margin-right: 10px;object-fit: cover;" alt="">
           </div>
           <div class="title">
             <span style="font-size: 20px;color: #333333;">{{ item.title }}</span>
@@ -72,8 +60,8 @@ defineProps({
         </div>
       </div>
       <div class="right-cell">
-        <div class="total-cell"><span>{{ item.total }}首</span></div>
-        <div class="creator-cell"><span>{{item.creator}}</span></div>
+        <div class="total-cell"><span>{{ item.musicCount }}首</span></div>
+        <div class="like-cell"><span>{{item.userName}}</span></div>
       </div>
     </div>
 
@@ -160,7 +148,7 @@ span {
   min-width: 150px;
 }
 
-.creator-cell {
+.like-cell {
   width: 60%;
   max-width: 295px;
   min-width: 170px;

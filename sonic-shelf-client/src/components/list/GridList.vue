@@ -1,53 +1,41 @@
 <script setup>
+import router from "@/router/index.js";
+
 defineProps({
-  info:[{
+  info: [{
     title: {type: String, required: false},
-    playback: {type: String, required: false},
-    total: {type: String, required: false},
-    cover: {type: String, required: false},
-    link: {type: String, required: false},
+    playCount: {type: String, required: false},
+    musicCount: {type: String, required: false},
+    coverImage: {type: String, required: false},
+    id: {type: String, required: false},
+    userName: {type: String, required: false},
   }],
 })
 
-// const infoTest = [
-//   {
-//     title: '/icons/avatar.jpg',
-//     playback: "test",
-//     total: 'test',
-//     cover: '/icons/avatar.jpg',
-//   },
-//   {
-//     title: '/icons/avatar.jpg',
-//     playback: "test",
-//     total: 'test',
-//     cover: '',
-//   },
-//   {
-//     title: '/icons/avatar.jpg',
-//     playback: "test",
-//     total: 'test',
-//     cover: '/icons/test.png',
-//   }
-// ]
+const goToPlaylist = (playlistId) => {
+  console.log(playlistId);
+  router.push(`/playlist/${playlistId}`);
+};
 
+const baseUrl = 'http://localhost:8080';
 </script>
 
 <template>
   <div class="grid-list">
     <div class="grid-container">
-      <div v-for="item in info" class="grid-item">
-        <img :src="item.cover||'/images/default/cover.png'" style="height: 100%;object-fit: cover;" alt="">
+      <div v-for="item in info" @click="goToPlaylist(item.id)" class="grid-item">
+        <img :src="baseUrl + item.coverImage||'/images/default/cover.png'" style="height: 100%;object-fit: cover;" alt="">
         <div class="background"></div>
         <div class="play-button">
           <img src="/icons/player/play.svg" style="width: 26px" alt="">
         </div>
         <div class="info">
           <span style="color: #333333;font-size: 14px;margin-bottom: -2px">{{ item.title }}</span>
-          <span style="color: #888888;font-size: 12px">{{ item.total }}</span>
+          <span style="color: #888888;font-size: 12px">{{ item.musicCount }}</span>
         </div>
         <div class="headphone">
-          <img v-if="item.playback>=1" src="/icons/content/headphone.svg" style="width: 15px" alt="">
-          <span v-if="item.playback>=1" style="font-size: 12px;color: #ffffff;font-weight: bold;">{{item.playback }}</span>
+          <img v-if="item.playCount>=1" src="/icons/content/headphone.svg" style="width: 15px" alt="">
+          <span v-if="item.playCount>=1" style="font-size: 12px;color: #ffffff;font-weight: bold;">{{item.playCount }}</span>
         </div>
       </div>
     </div>
