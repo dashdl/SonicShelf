@@ -115,6 +115,19 @@ const baseUrl = 'http://localhost:8080';
       <TableList v-if="listSwitch.createTable" style="max-width: 1660px; margin-bottom: 50px;"
                  :info="playlistInfo"
       />
+      <div class="page-container">
+        <div class="button-group">
+          <div class="button">
+            1
+          </div>
+          <div class="button">
+            1
+          </div>
+          <div class="button">
+            1
+          </div>
+        </div>
+      </div>
       <div class="separate-content">
         <div class="left-content">
           <span style="font-size: 20px;font-weight: bold;color: #555555;">我创建的歌单</span>
@@ -209,5 +222,37 @@ hr {
 
 .right-content img:hover {
   cursor: pointer;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: row;
+  height: 50px;
+  width: 100%;
+  max-width: 1660px;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-group .button{
+  display: flex;
+  width: 30px;
+  height: 40px;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  color: #7b818f;
+  margin: 0 5px;
+  background-color: #eaedf1;
+}
+.button:hover{
+  background-color: #eaedf1;
 }
 </style>
