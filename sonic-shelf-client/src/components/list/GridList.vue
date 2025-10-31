@@ -13,7 +13,6 @@ defineProps({
 })
 
 const goToPlaylist = (playlistId) => {
-  console.log(playlistId);
   router.push(`/playlist/${playlistId}`);
 };
 
@@ -48,7 +47,7 @@ const baseUrl = 'http://localhost:8080';
 
   min-width: 757px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   grid-row-gap: 20px;
   grid-column-gap: 20px;
   user-select: none;
@@ -117,6 +116,12 @@ const baseUrl = 'http://localhost:8080';
   right: 8px;
   top: 10px;
   z-index: 1;
+}
+
+@media (min-width: 1680px) {
+  .grid-container {
+    grid-template-columns: repeat(6, 1fr);
+  }
 }
 
 </style>

@@ -26,12 +26,6 @@ const router = createRouter({
                     component: () => import("@/pages/Playlist.vue"),
                     props: true // 启用props接收参数
                 },
-                {
-                    path: '/infinite-scroll-demo',
-                    name: 'InfiniteScrollDemo',
-                    component: () => import('@/pages/InfiniteScrollDemo.vue'),
-                    meta: { title: '滚动加载示例' }
-                }
             ]
         },
         {path: '/:pathMatch(.*)', redirect: '/notFound'},

@@ -22,11 +22,6 @@ const props = defineProps({
     type: Number,
     default: 100
   },
-  // 是否禁用
-  disabled: {
-    type: Boolean,
-    default: false
-  }
 })
 
 const emit = defineEmits(['load', 'loading-change'])
@@ -36,7 +31,7 @@ const containerRef = ref(null)
 
 // 计算属性：是否可以触发加载
 const canLoad = computed(() => {
-  return !props.disabled && !props.loading && !loading.value && props.hasMore
+  return  !props.loading && !loading.value && props.hasMore
 })
 
 // 处理滚动事件
@@ -106,7 +101,6 @@ onUnmounted(() => {
   <div
       ref="containerRef"
       class="infinite-scroll-container"
-      :class="{ 'is-disabled': disabled }"
   >
     <!-- 插槽：放置需要滚动的内容 -->
     <slot></slot>
@@ -130,7 +124,7 @@ onUnmounted(() => {
 <style scoped>
 .infinite-scroll-container {
   overflow-y: auto;
-  height: 100%;
+  height: 400px;
   position: relative;
 }
 

@@ -1,48 +1,115 @@
 <script setup>
 
 import router from "@/router/index.js";
-import InfiniteScroll from "@/components/list/InfiniteScrollBak.vue";
-import {reactive} from "vue";
+import {onMounted, onUnmounted, ref, nextTick} from "vue";
 
-defineProps({
-  info: [{
-    title: {type: String, required: false},
-    coverImage: {type: String, required: false},
-    id: {type: String, required: false},
-    artistName: {type: String, required: false},
-    albumTitle: {type: String, required: false},
-  }],
-  id: {type: String, required: false},
+const props = defineProps({
+  items: {
+    type: Array,
+    default: () => []
+  },
+  loading: {
+    type: Boolean,
+    default: false
+  },
+  hasMore: {
+    type: Boolean,
+    default: true
+  },
+  loadMore: {
+    type: Function,
+    required: true
+  },
+  threshold: {
+    type: Number,
+    default: 300 // 增加默认阈值，减少触发频率
+  }
 })
 
-// const infoTest = reactive([
-//   {
-//     title: "歌名",
-//     albumTitle: "专辑",
-//     coverImage: '/uploads/avatars/1761811990252_9856fc6d73662a59de16aa1817899a40.jpg',
-//     id: 12,
-//     artistName: "歌手",
-//   }
-// ])
+let currentContainer = null;
+const tableRef = ref(null);
+
+// 防抖函数
+const debounce = (func, wait) => {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
+
+const debouncedLoadMore = debounce(() => {
+  props.loadMore();
+}, 30); // 300ms延迟，避免频繁触发
+
+const handleScroll = (event) => {
+  if (props.loading || !props.hasMore) return;
+
+  const container = event.target || currentContainer;
+  if (!container) return;
+
+  const { scrollTop, scrollHeight, clientHeight } = container;
+
+  if (scrollHeight - scrollTop - clientHeight < props.threshold) {
+    debouncedLoadMore();
+  }
+};
 
 const goToPlaylist = (playlistId) => {
-  console.log(playlistId);
   router.push(`/playlist/${playlistId}`);
 };
 
+const findScrollableParent = (element) => {
+  let parent = element.parentElement;
+  while (parent && parent !== document.body) {
+    if (parent.classList.contains('main-content')) {
+      return parent;
+    }
+    const style = window.getComputedStyle(parent);
+    if ((style.overflow === 'auto' || style.overflow === 'scroll') && 
+        parent.scrollHeight > parent.clientHeight) {
+      return parent;
+    }
+    parent = parent.parentElement;
+  }
+  return window;
+};
+
+const setupScrollContainer = () => {
+  if (tableRef.value) {
+    const foundContainer = findScrollableParent(tableRef.value);
+    if (foundContainer) {
+      currentContainer = foundContainer;
+      currentContainer.addEventListener('scroll', handleScroll);
+    }
+  }
+};
+
+const cleanupScrollListener = () => {
+  if (currentContainer) {
+    currentContainer.removeEventListener('scroll', handleScroll);
+    currentContainer = null;
+  }
+};
+
+onMounted(async () => {
+  await nextTick();
+  setupScrollContainer();
+});
+
+onUnmounted(() => {
+  cleanupScrollListener();
+});
+
 const baseUrl = 'http://localhost:8080';
-
-const data = reactive({
-  pageNum: 1,
-  pageSize: 10,
-})
-
-
-
 </script>
 
 <template>
-  <div class="table-container">
+  <div class="table-container" ref="tableRef">
     <div class="table-row" style="margin-bottom: -12px">
       <div class="left-cell">
         <div class="rank-cell">
@@ -64,43 +131,34 @@ const data = reactive({
         </div>
       </div>
     </div>
-
-    <InfiniteScroll
-        ref="infiniteScrollRef"
-        :loading="pagination.loading"
-        :has-more="hasMore"
-        :load-more="loadMoreData"
-        :threshold="100"
-        class="scroll-container"
-    >
-      <div class="table-row" v-for="(item, index) in info" @click="goToPlaylist(item.id)" :key="index">
-        <div class="left-cell">
-          <div class="rank-cell">
-            <span id="title" style="font-size: 12px">{{ index + 1 }}</span>
-            <div class="play-button">
-              <img src="/icons/player/play.svg" style="width: 20px;filter: brightness(0.4);" alt="">
-            </div>
-          </div>
-          <div class="title-cell">
-            <div class="cover">
-              <img :src="baseUrl+item.coverImage||'/images/default/cover.png'"
-                   style="width: 50px;height: 50px;border-radius: 8px;margin-right: 10px;object-fit: cover;" alt="">
-            </div>
-            <div class="title">
-              <span style="font-size: 20px;color: #333333;">{{ item.title }}</span>
-              <span style="">{{ item.artistName }}</span>
-            </div>
+    <div class="table-row" v-for="(item, index) in props.items" @click="goToPlaylist(item.id)" :key="index">
+      <div class="left-cell">
+        <div class="rank-cell">
+          <span id="title" style="font-size: 12px">{{ index + 1 }}</span>
+          <div class="play-button">
+            <img src="/icons/player/play.svg" style="width: 20px;filter: brightness(0.4);" alt="">
           </div>
         </div>
-        <div class="right-cell">
-          <div class="total-cell"><span>{{ item.albumTitle }}</span></div>
-          <div class="like-cell"><img src="/icons/status/like.svg" style="width: 18px;" alt=""></div>
-          <div class="time-cell"><span style="color: #7b818f">04:55</span></div>
+        <div class="title-cell">
+          <div class="cover">
+            <img :src="baseUrl+item.coverImage||'/images/default/cover.png'"
+                 style="width: 50px;height: 50px;border-radius: 8px;margin-right: 10px;object-fit: cover;" alt="">
+          </div>
+          <div class="title">
+            <span style="font-size: 20px;color: #333333;">{{ item.title }}</span>
+            <span style="">{{ item.artistName }}</span>
+          </div>
         </div>
       </div>
-    </InfiniteScroll>
+      <div class="right-cell">
+        <div class="total-cell"><span>{{ item.albumTitle }}</span></div>
+        <div class="like-cell"><img src="/icons/status/like.svg" style="width: 18px;" alt=""></div>
+        <div class="time-cell"><span style="color: #7b818f">04:55</span></div>
+      </div>
+    </div>
   </div>
 </template>
+
 
 <style scoped>
 span {
@@ -109,6 +167,7 @@ span {
 }
 
 .table-container {
+  width: 100%;
   display: flex;
   flex-direction: column;
   user-select: none;

@@ -18,7 +18,7 @@ const page = reactive({
   total: 0,
 })
 
-const loadPlaylist= async () => {
+const loadPlaylist = async () => {
   await request.get("playlists", {
     params: {
       pageNum: page.pageNum,
@@ -34,7 +34,7 @@ const loadPlaylist= async () => {
       page.total = res.data.total;
       page.pageNum = res.data.pageNum;
       page.pageSize = res.data.pageSize;
-      console.log(playlistInfo);
+
     } else {
       ElMessage.error("歌单列表获取失败")
     }
@@ -65,12 +65,14 @@ const favoritesTable = () => {
   listSwitch.favoritesTable = true;
 }
 
+const baseUrl = 'http://localhost:8080';
 </script>
 
 <template>
   <div class="main-container">
     <div class="profile-container">
-      <img src="/images/default/avatar.jpg" style="width: 200px;height: 200px;border-radius: 100px;margin-right: 40px"
+      <img :src="baseUrl + userInfo.getAvatar||'/images/default/avatar.jpg'"
+           style="width: 200px;height: 200px;border-radius: 100px;margin-right: 40px"
            alt="">
       <div class="profile-content">
         <div class="nickname">
@@ -107,10 +109,10 @@ const favoritesTable = () => {
           <img @click="createTable" src="/icons/view/table.svg" style="width: 20px" alt="">
         </div>
       </div>
-      <GridList v-if="listSwitch.createGrid" style="  max-width: 1510px;margin-bottom: 50px"
+      <GridList v-if="listSwitch.createGrid" style="max-width: 1660px; margin-bottom: 50px"
                 :info="playlistInfo"
       />
-      <TableList v-if="listSwitch.createTable" style="max-width: 1510px;margin-bottom: 50px;"
+      <TableList v-if="listSwitch.createTable" style="max-width: 1660px; margin-bottom: 50px;"
                  :info="playlistInfo"
       />
       <div class="separate-content">
@@ -122,10 +124,10 @@ const favoritesTable = () => {
           <img @click="favoritesTable" src="/icons/view/table.svg" style="width: 20px" alt="">
         </div>
       </div>
-      <GridList v-if="listSwitch.favoritesGrid" style="  max-width: 1510px;margin-bottom: 50px;"
+      <GridList v-if="listSwitch.favoritesGrid" style="max-width: 1660px; margin-bottom: 50px;"
                 :info="playlistInfo"
       />
-      <TableList v-if="listSwitch.favoritesTable" style="max-width: 1510px;margin-bottom: 50px;"
+      <TableList v-if="listSwitch.favoritesTable" style="max-width: 1660px;margin-bottom: 50px;"
                  :info="playlistInfo"
       />
     </div>
@@ -192,7 +194,8 @@ hr {
 }
 
 .separate-content {
-  max-width: 1510px;
+  width: 100%;
+  max-width: 1660px;
   margin-bottom: 10px;
   display: flex;
   flex-direction: row;

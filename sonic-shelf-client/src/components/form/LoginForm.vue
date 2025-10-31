@@ -2,6 +2,9 @@
 import {reactive} from "vue";
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
+import {useUserStore} from "@/store/userStore.js";
+
+const userInfo = useUserStore()
 
 const data = reactive({
   registered: true,
@@ -63,6 +66,7 @@ const login = () => {
       if (res.code === "200") {
         localStorage.setItem("token", res.data.access_token);
         ElMessage.success("登录成功");
+        userInfo.restoreUserState();
         closeForm();
       } else {
         ElMessage.error(res.message);

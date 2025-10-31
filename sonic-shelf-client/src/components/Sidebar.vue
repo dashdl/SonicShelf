@@ -39,7 +39,7 @@ const menuItems = [
 
 <style scoped lang="scss">
 .main-content {
-  width: 200px;
+  width: 220px;
   background-color: $sidebar-color;
   color: #50596b;
   display: flex;
