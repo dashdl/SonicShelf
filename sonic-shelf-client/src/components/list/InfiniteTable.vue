@@ -142,10 +142,10 @@ const baseUrl = 'http://localhost:8080';
         <div class="title-cell">
           <div class="cover">
             <img :src="baseUrl+item.coverImage||'/images/default/cover.png'"
-                 style="width: 50px;height: 50px;border-radius: 8px;margin-right: 10px;object-fit: cover;" alt="">
+                 style="width: 50px;height: 50px;border-radius: 8px;margin-right: 12px;object-fit: cover;" alt="">
           </div>
           <div class="title">
-            <span style="font-size: 20px;color: #333333;">{{ item.title }}</span>
+            <span style="font-size: 16px;color: #333333;">{{ item.title }}</span>
             <span style="">{{ item.artistName }}</span>
           </div>
         </div>

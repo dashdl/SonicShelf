@@ -23,6 +23,13 @@ public class Result {
         return result;
     }
 
+    public static Result success(String message) {
+        Result result = new Result();
+        result.setCode("200");
+        result.setMessage(message);
+        return result;
+    }
+
     public static Result success(String message,Object data) {
         Result result = new Result();
         result.setCode("200");

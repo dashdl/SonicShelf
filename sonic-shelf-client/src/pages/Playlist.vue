@@ -102,10 +102,10 @@ const baseUrl = 'http://localhost:8080';
     <div class="profile-container">
       <div class="cover" style="position: relative;">
         <div class="headphone">
-          <img :src="baseUrl + Info.coverImage ||'/images/default/cover.png'" style="width: 15px" alt="">
+          <img src="/icons/content/headphone.svg" style="width: 15px" alt="">
           <span style="font-size: 12px;color: #ffffff;font-weight: bold;">{{ Info.playCount }}</span>
         </div>
-        <img :src="baseUrl+Info.userAvatar||'/images/default/avatar.jpg'"
+        <img :src="baseUrl + Info.coverImage ||'/images/default/cover.png'"
              style="width: 195px;height: 195px;border-radius: 10px;margin-right: 40px"
              alt="">
       </div>

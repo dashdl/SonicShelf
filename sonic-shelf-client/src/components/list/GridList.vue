@@ -30,7 +30,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div class="info">
           <span style="color: #333333;font-size: 14px;margin-bottom: -2px">{{ item.title }}</span>
-          <span style="color: #888888;font-size: 12px">{{ item.musicCount }}</span>
+          <span style="color: #888888;font-size: 12px">{{ item.musicCount }} 首</span>
         </div>
         <div class="headphone">
           <img v-if="item.playCount>=1" src="/icons/content/headphone.svg" style="width: 15px" alt="">
@@ -44,7 +44,6 @@ const baseUrl = 'http://localhost:8080';
 <style scoped>
 
 .grid-container {
-
   min-width: 757px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

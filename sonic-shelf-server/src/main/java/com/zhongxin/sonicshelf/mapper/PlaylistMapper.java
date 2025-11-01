@@ -2,6 +2,7 @@ package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface PlaylistMapper {
 
 
     PlaylistsResponse findByPlaylistId(Long id);
+
+    List<PlaylistsResponse> selectFavoriteByUserId(Long currentUserId);
 }

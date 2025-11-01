@@ -259,64 +259,64 @@ onMounted(async () => {
   await initProvinces();
 
   // 加载用户信息
-    const userData = userStore.userInfo || {};
-    formData.nickname = userData.nickname || '';
-    formData.bio = userData.bio || '';
-    formData.gender = userData.gender || 1;
+  const userData = userStore.userInfo || {};
+  formData.nickname = userData.nickname || '';
+  formData.bio = userData.bio || '';
+  formData.gender = userData.gender || 1;
 
-    // 解析生日
-    if (userData.birthday) {
-      const [year, month, day] = userData.birthday.split('-');
-      formData.birthYear = year;
-      formData.birthMonth = month;
-      formData.birthDay = day;
-    }
+  // 解析生日
+  if (userData.birthday) {
+    const [year, month, day] = userData.birthday.split('-');
+    formData.birthYear = year;
+    formData.birthMonth = month;
+    formData.birthDay = day;
+  }
 
-    // 地区解析逻辑优化
-    if (userData.location) {
-      try {
-        const locationParts = userData.location.split('-');
-        const provinceName = locationParts[0];
-        const cityName = locationParts[1];
-        
-        // 查找对应的省份编码
-        const province = regionOptions.provinces.find(p => p.label === provinceName);
-        if (province) {
-          formData.province = province.value;
-          
-          // 确保城市列表已加载
-          await updateCities();
-          
-          // 尝试精确匹配城市
-          let city = regionOptions.cities.find(c => c.label === cityName);
-          
-          // 如果精确匹配失败，尝试模糊匹配
-          if (!city && cityName) {
-            city = regionOptions.cities.find(c => c.label.includes(cityName) || cityName.includes(c.label));
-          }
-          
-          // 使用setTimeout确保DOM更新后再设置城市值，解决响应式绑定问题
-          setTimeout(() => {
-            if (city) {
-              formData.city = city.value;
-            } else if (regionOptions.cities.length > 0) {
-              formData.city = regionOptions.cities[0].value;
-            }
-          }, 0);
+  // 地区解析逻辑优化
+  if (userData.location) {
+    try {
+      const locationParts = userData.location.split('-');
+      const provinceName = locationParts[0];
+      const cityName = locationParts[1];
+
+      // 查找对应的省份编码
+      const province = regionOptions.provinces.find(p => p.label === provinceName);
+      if (province) {
+        formData.province = province.value;
+
+        // 确保城市列表已加载
+        await updateCities();
+
+        // 尝试精确匹配城市
+        let city = regionOptions.cities.find(c => c.label === cityName);
+
+        // 如果精确匹配失败，尝试模糊匹配
+        if (!city && cityName) {
+          city = regionOptions.cities.find(c => c.label.includes(cityName) || cityName.includes(c.label));
         }
-      } catch (error) {
-        console.error('解析地区信息时出错:', error);
+
+        // 使用setTimeout确保DOM更新后再设置城市值，解决响应式绑定问题
+        setTimeout(() => {
+          if (city) {
+            formData.city = city.value;
+          } else if (regionOptions.cities.length > 0) {
+            formData.city = regionOptions.cities[0].value;
+          }
+        }, 0);
       }
+    } catch (error) {
+      console.error('解析地区信息时出错:', error);
     }
+  }
 
-    formData.avatar = userData.avatar || '';
+  formData.avatar = userData.avatar || '';
 
-    const avatarPath = formData.avatar;
-    const baseUrl = 'http://localhost:8080';
-    const imgElement = document.getElementById('userAvatar');
-    if (imgElement) {
-      imgElement.src = avatarPath ? baseUrl + avatarPath : '/images/default/avatar.jpg';
-    }
+  const avatarPath = formData.avatar;
+  const baseUrl = 'http://localhost:8080';
+  const imgElement = document.getElementById('userAvatar');
+  if (imgElement) {
+    imgElement.src = avatarPath ? baseUrl + avatarPath : '/images/default/avatar.jpg';
+  }
 });
 
 const saveProfile = async () => {
@@ -399,48 +399,23 @@ onUnmounted(() => {
   <div class="profile-container">
     <div class="profile" style=" margin-right: 45px;">
       <div class="title">
-        编辑个人信息
+        编辑歌单信息
       </div>
       <div class="profile-item">
-        <label style="margin-right: 30px">昵称：</label>
+        <label style="margin-right: 30px">名称：</label>
         <input v-model="formData.nickname" placeholder="请输入昵称">
       </div>
       <div class="profile-item">
         <label style="margin-right: 30px;">简介：</label>
-        <textarea v-model="formData.bio" style="height: 150px;outline: none;resize: none;"
+        <textarea v-model="formData.bio" style="height: 230px;outline: none;resize: none;"
                   placeholder="请输入个人简介"></textarea>
       </div>
       <div class="profile-item">
-        <label style="margin-right: 30px">性别：</label>
-        <input id="radio1" type="radio" name="gender" value="1" v-model="formData.gender" style="margin-right:15px;">
-        <label for="radio1" style="margin-right: 30px;">男</label>
-        <input id="radio0" type="radio" name="gender" value="2" v-model="formData.gender" style="margin-right:15px;">
-        <label for="radio0">女</label>
-      </div>
-      <div class="profile-item">
-        <label style="margin-right: 30px">生日：</label>
-        <select v-model="formData.birthYear" style="width: 133px;">
-          <option v-for="year in dateOptions.years" :key="year" :value="year">{{ year }}</option>
-        </select>
-        <select v-model="formData.birthMonth" style="width: 133px;">
-          <option v-for="month in dateOptions.months" :key="month" :value="month">{{ month }}</option>
-        </select>
-        <select v-model="formData.birthDay" style="width: 133px;">
-          <option v-for="day in dateOptions.days" :key="day" :value="day">{{ day }}</option>
-        </select>
-      </div>
-      <div class="profile-item">
-        <label style="margin-right: 30px">地区：</label>
-        <select v-model="formData.province" style="width: 133px;">
-          <option value="">请选择省份</option>
-          <option v-for="province in regionOptions.provinces" :key="province.value" :value="province.value">
-            {{ province.label }}
-          </option>
-        </select>
-        <select v-model="formData.city" style="width: 133px;">
-          <option value="">请选择城市</option>
-          <option v-for="city in regionOptions.cities" :key="city.value" :value="city.value">{{ city.label }}</option>
-        </select>
+        <label style="margin-right: 30px;">标签：</label>
+        <div class="select-button">
+          <span>选择...</span>
+          <img src="/icons/status/down.svg" style="width: 14px;" alt="">
+        </div>
       </div>
       <div class="profile-item" style="padding-left: 74px;margin-top: 36px">
         <div class="save-button" @click="saveProfile">保存</div>
@@ -451,7 +426,6 @@ onUnmounted(() => {
       <img
           id="userAvatar"
           :src="avatarPreview || (formData.avatar ? 'http://localhost:8080' + formData.avatar : '/images/default/avatar.jpg')"
-          style="width: 140px;height: 140px;cursor: pointer;"
           alt="点击上传头像"
           @click="triggerFileUpload"
       >
@@ -491,33 +465,6 @@ input, textarea {
   background-color: #f0f3f6;
 }
 
-#radio1, #radio0 {
-  height: 20px;
-  width: 20px;
-  border: 1px solid #e4e8ec;
-  background-color: #f7f9fc;
-}
-
-select {
-  appearance: none;
-  -webkit-appearance: none; /* Safari 和 Chrome */
-  -moz-appearance: none; /* Firefox */
-  padding: 0 10px;
-  width: 133px;
-  height: 30px;
-  border: 1px solid #e4e8ec;
-  border-radius: 30px;
-  margin-right: 20px;
-  background-color: #f0f3f6;
-  outline: none;
-}
-
-option {
-  padding: 8px 12px;
-  border: 1px solid #e4e8ec;
-  border-radius: 10px;
-}
-
 .save-button, .cancel-button {
   display: flex;
   justify-content: center;
@@ -543,10 +490,20 @@ option {
 
 .avatar img {
   margin-top: 75px;
-  width: 140px;
-  height: 140px;
-  border-radius: 70px;
+  width: 180px;
+  height: 180px;
+  border-radius: 15px;
   cursor: pointer;
 }
 
+.select-button{
+  width: 100px;
+  height: 30px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e4e8ec;
+  border-radius: 10px;
+}
 </style>

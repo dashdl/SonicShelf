@@ -9,7 +9,7 @@ const menuItems = [
 </script>
 
 <template>
-  <div class="main-content">
+  <div class="sidebar-content">
     <div class="title">
       <img src="/logo.svg" style="width: 30px;margin-right: 14px" alt="logo">
       <img src="/sloganCN.svg" style="height:30px" alt="">
@@ -38,13 +38,14 @@ const menuItems = [
 </template>
 
 <style scoped lang="scss">
-.main-content {
+.sidebar-content {
   width: 220px;
+  padding-left: 25px;
+  padding-right: 20px;
   background-color: $sidebar-color;
   color: #50596b;
   display: flex;
   flex-direction: column;
-  padding-left: 25px;
 }
 
 .title {

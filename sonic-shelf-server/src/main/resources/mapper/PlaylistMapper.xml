@@ -47,5 +47,20 @@
                  LEFT JOIN users u ON p.user_id = u.id
         WHERE p.id = #{id}
     </select>
+    <select id="selectFavoriteByUserId" resultMap="PlaylistsResponseMap">
+        SELECT DISTINCT p.id,
+                        p.title,
+                        p.description,
+                        p.cover_image,
+                        u.nickname as user_name,
+                        p.music_count,
+                        p.play_count,
+                        p.created_at,
+                        u.avatar   as user_avatar
+        FROM favorites f
+                 INNER JOIN playlists p ON f.target_id = p.id AND f.target_type = 'playlist'
+                 LEFT JOIN users u ON p.user_id = u.id
+        WHERE f.user_id = #{userId}
+    </select>
 
 </mapper>

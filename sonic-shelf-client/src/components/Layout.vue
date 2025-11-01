@@ -102,8 +102,6 @@ onMounted(async () => {
   overflow-x: visible;
 }
 
-
-
 @media (min-width: 1790px) {
   .header-container {
     margin-left: -40px;

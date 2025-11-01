@@ -11,6 +11,8 @@ import GridList from "@/components/list/GridList.vue";
 import TableList from "@/components/list/TableList.vue";
 import Playlist from "@/pages/Playlist.vue";
 import InfiniteTable from "@/components/list/InfiniteTable.vue";
+import PlaylistEdit from "@/pages/PlaylistEdit.vue";
+import PlaylistForm from "@/components/form/PlaylistForm.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,7 +20,7 @@ const router = createRouter({
         {
             path: '/', component: Layout,
             children: [
-                {path: '', component: InfiniteTable},
+                {path: '', component: PlaylistForm},
                 {path: '/profile', component: Profile},
                 {path: '/profile-settings', component: ProfileSettings},
                 {
