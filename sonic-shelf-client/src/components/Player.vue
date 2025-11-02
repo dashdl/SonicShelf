@@ -1,4 +1,59 @@
 <script setup>
+import {ref, onMounted, reactive} from "vue";
+
+const audio = ref(null);
+
+const player = reactive({
+  play: false,
+});
+
+let isClick = ref(false);
+const show = () => {
+  isClick.value = !isClick.value;
+}
+
+onMounted(() => {
+  audio.value = new Audio('/player1.mp3');
+});
+
+const play = () => {
+  if (!audio.value) {
+    console.error('音频未初始化');
+    return;
+  }
+  audio.value.play();
+  player.play = true;
+}
+
+// 暂停
+const pause = () => {
+  audio.value.pause()
+  player.play = false;
+}
+
+// 上一首
+const previous = () => {
+  // 切换到上一首歌曲的逻辑
+  audio.src = '上一首的URL'
+  audio.value.play()
+}
+
+// 下一首
+const next = () => {
+  // 切换到下一首歌曲的逻辑
+  audio.src = '下一首的URL'
+  audio.play()
+}
+
+// 设置音量（0-1）
+const setVolume = (volume) => {
+  audio.volume = volume
+}
+
+// 跳转到指定时间（秒）
+const seek = (time) => {
+  audio.currentTime = time
+}
 
 </script>
 
@@ -44,7 +99,10 @@
           <img src="/icons/player/last.svg" style="height: 30px;" alt="">
         </div>
         <div class="play-button">
-          <img src="/icons/player/play.svg" style="width: 30px;margin-left: 1px;" alt="">
+          <img v-if="!player.play" @click="play()" src="/icons/player/play.svg" style="width: 30px;margin-left: 1px;"
+               alt="">
+          <img v-if="player.play" @click="pause()" src="/icons/player/pause.svg" style="width: 30px;margin-left: 1px;"
+               alt="">
         </div>
         <div class="menu-button">
           <img src="/icons/player/next.svg" style="height: 30px;" alt="">
@@ -66,14 +124,29 @@
         <img src="/icons/player/volume.svg" style="height: 22px" alt="">
       </div>
       <div class="selection-button">
-        <img src="/icons/player/playlist.svg" style="height: 23px" alt="">
+        <img @click="show" src="/icons/player/playlist.svg" style="height: 23px" alt="">
+      </div>
+    </div>
+    <div :class="['list-form', {show:isClick}]">
+      <div class="form-head">
+        <div class="form-title">
+          <span style="font-size: 20px;font-weight: bold">播放列表</span>
+        </div>
+        <div class="form-action">
+          <img src="/icons/player/favorite.svg" style="height: 15px;align-self: center;margin-right: 3px" alt="">
+          <span style="margin-right: 25px">收藏全部</span>
+          <img src="/icons/player/favorite.svg" style="height: 15px;align-self: center;margin-right: 3px" alt="">
+          <span>清空</span>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+
 .player-component {
+  position: relative;
   width: 100%;
   min-width: 1056px;
   padding: 0 30px;
@@ -84,8 +157,9 @@
 }
 
 .cover-container {
+  height: 100%;
   display: flex;
-  justify-self: left;
+  align-items: center;
   flex: 1;
   overflow: hidden;
 }
@@ -100,8 +174,8 @@
 }
 
 .cover-content {
-  height: 65px;
-  width: 65px;
+  height: 63px;
+  width: 63px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -111,6 +185,7 @@
 }
 
 .info-container {
+  height: 100%;
   margin-left: 10px;
   position: relative;
   display: flex;
@@ -119,13 +194,17 @@
 }
 
 @keyframes scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .title-container {
   position: absolute;
-  top: 3px;
+  top: 10px;
   width: 265px;
   display: flex;
   white-space: nowrap;
@@ -146,7 +225,7 @@
 }
 
 .button-group {
-  margin-bottom: 8px;
+  margin-bottom: 13px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -161,15 +240,14 @@
 }
 
 .player-container {
+  height: 100%;
   display: flex;
   flex: 1;
   flex-direction: column;
-  align-items: center;
-  justify-self: center;
-  justify-content: space-between;
 }
 
 .player-menu {
+  margin-top: 12px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -191,6 +269,7 @@
 }
 
 .progress-container {
+  margin-top: 1px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -212,7 +291,7 @@
   justify-content: left;
 }
 
-.progress-bar{
+.progress-bar {
   height: 5px;
   width: 100px;
   background-color: #f26c79;
@@ -220,13 +299,48 @@
 }
 
 .selection-container {
+  height: 100%;
   display: flex;
   justify-content: end;
   align-items: center;
   flex: 1;
 }
 
-.selection-button{
+.selection-button {
   margin-left: 24px;
 }
+
+.list-form {
+  position: fixed;
+  padding-left: 20px;
+  padding-right: 30px;
+  height: calc(100% - 195px);
+  width: 438px;
+  right: 0;
+  top: 50%;
+  transform: translateX(450px) translateY(-50%);
+  background-color: #fafafa;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 2px #7b818f;
+  transition: transform 0.5s ease;
+}
+
+.show {
+  transform: translateX(10px) translateY(-50%);
+}
+
+.form-head{
+  height: 60px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+}
+
+.form-action{
+  display: flex;
+  flex-direction: row;
+}
+
 </style>

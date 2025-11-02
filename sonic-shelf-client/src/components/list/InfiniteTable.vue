@@ -29,7 +29,6 @@ const props = defineProps({
 let currentContainer = null;
 const tableRef = ref(null);
 
-// 防抖函数
 const debounce = (func, wait) => {
   let timeout;
   return function executedFunction(...args) {
@@ -59,8 +58,8 @@ const handleScroll = (event) => {
   }
 };
 
-const goToPlaylist = (playlistId) => {
-  router.push(`/playlist/${playlistId}`);
+const goToMusic = (musicId) => {
+  // router.push(`/playlist/${musicId}`);
 };
 
 const findScrollableParent = (element) => {
@@ -131,7 +130,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
       </div>
     </div>
-    <div class="table-row" v-for="(item, index) in props.items" @click="goToPlaylist(item.id)" :key="index">
+    <div class="table-row" v-for="(item, index) in props.items" @click="goToMusic(item.id)" :key="index">
       <div class="left-cell">
         <div class="rank-cell">
           <span id="title" style="font-size: 12px">{{ index + 1 }}</span>

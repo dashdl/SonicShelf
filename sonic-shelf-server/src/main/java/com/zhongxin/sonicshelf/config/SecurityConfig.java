@@ -28,7 +28,7 @@ public class SecurityConfig {
                 // 配置请求授权
                 .authorizeHttpRequests(auth -> auth
                         // 公开接口（登录、注册等）
-                        .requestMatchers( "/api/v1/auth/**", "/public/**","/uploads/**").permitAll()
+                        .requestMatchers( "/api/v1/auth/**", "/public/**","/uploads/**","/songs/**","/cover/**").permitAll()
                         // 静态资源
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
                         // Swagger文档（如果使用）

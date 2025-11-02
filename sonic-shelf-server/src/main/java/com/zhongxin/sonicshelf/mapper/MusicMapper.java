@@ -10,4 +10,6 @@ import java.util.List;
 public interface MusicMapper {
 
     List<MusicResponse> findAsPageByListId(Long id);
+
+    MusicResponse findById(Long id);
 }

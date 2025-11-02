@@ -4,7 +4,10 @@ import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
 import InfiniteTable from "@/components/list/InfiniteTable.vue";
-import {onMounted, reactive, ref} from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
+import {usePlaylistStore} from "@/store/playlist.js";
+
+const route = useRoute();
 
 let musicInfo = ref([])
 
@@ -13,6 +16,16 @@ const data = reactive({
   pageSize: 10,
   total: 1,
 })
+
+const replace=async () => {
+  let musics = ref([])
+  const currentId = route.params.id;
+  await request.get('playlists/' + currentId + '/musics').then(res => {
+    musics.value = [...musics.value, ...res.data];
+  })
+  console.log(musics.value)
+  localStorage.setItem("nowPlaying", musics.value)
+}
 
 const loading = ref(false)
 const hasMore = ref(true)
@@ -29,8 +42,6 @@ const Info = reactive({
   playCount: '',
 })
 
-let numb = 1;
-
 const loadMore = async () => {
   if(!hasMore.value || loading.value) return
   loading.value = true
@@ -46,27 +57,16 @@ const loadMore = async () => {
   }
 }
 
-const route = useRoute();
-const id = route.params.id;
+const loadPlaylistData = async (playlistId) => {
 
-const load = async () => {
-  await request.get('playlists/' + id + '/musics', {
-    params: {
-      pageNum: ++data.pageNum,
-      pageSize: data.pageSize,
-    }
-  }).then(res => {
-    musicInfo.value =[...musicInfo.value, ...res.data.list];
-  })
-}
-
-
-// 组件挂载时初始化数据
-onMounted(async () => {
+  data.pageNum = 1;
+  data.total = 1;
+  hasMore.value = true;
+  musicInfo.value = [];
+  
   await Promise.all([
-    // 获取歌单信息
-    request.get('playlists/' + id).then(res => {
-      if (res.code == '200') {
+    request.get('playlists/' + playlistId).then(res => {
+      if (res.code === '200') {
         Info.id = res.data.id;
         Info.title = res.data.title;
         Info.description = res.data.description;
@@ -80,19 +80,41 @@ onMounted(async () => {
         ElMessage.error("歌单信息获取失败")
       }
     }),
-    // 获取歌曲列表
-    request.get('playlists/' + id + '/musics', {
+    request.get('playlists/' + playlistId + '/musics', {
       params: {
         pageNum: data.pageNum,
         pageSize: data.pageSize,
       }
     }).then(res => {
-      data.total=res.data.total;
+      data.total = res.data.total;
       musicInfo.value = res.data.list;
-      console.log(data.total)
     })
   ]);
+}
+
+const load = async () => {
+  const currentId = route.params.id;
+  await request.get('playlists/' + currentId + '/musics', {
+    params: {
+      pageNum: ++data.pageNum,
+      pageSize: data.pageSize,
+    }
+  }).then(res => {
+    musicInfo.value = [...musicInfo.value, ...res.data.list];
+  })
+}
+
+watch(() => route.params.id, (newId, oldId) => {
+  if (newId !== oldId) {
+    loadPlaylistData(newId);
+  }
 });
+
+onMounted(async () => {
+  await loadPlaylistData(route.params.id);
+});
+
+
 
 const baseUrl = 'http://localhost:8080';
 </script>
@@ -125,8 +147,8 @@ const baseUrl = 'http://localhost:8080';
           <span style="font-size: 12px;color: #b7bac4">{{ Info.createTime }}创建</span>
         </div>
         <div class="button-group">
-          <div class="button" style="color: #ffffff;background: linear-gradient(to right, #fc3b5b, #fc3d49);">
-            <img src="/icons/player/play.svg" style="height: 15px;margin-right: 5px" alt="">
+          <div @click="replace" class="button" style="color: #ffffff;background: linear-gradient(to right, #fc3b5b, #fc3d49);">
+            <img  src="/icons/player/play.svg" style="height: 15px;margin-right: 5px" alt="">
             播放全部
           </div>
         </div>

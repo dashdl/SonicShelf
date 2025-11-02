@@ -40,15 +40,15 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
     const userStore = useUserStore();
 
-    if (!userStore.userInfo && localStorage.getItem('token')) {
+    if (localStorage.getItem('token')) {
         try {
             await userStore.restoreUserState();
+
         } catch (error) {
             console.error('恢复用户状态失败:', error);
             localStorage.removeItem('token')
         }
     }
-
     next();
 });
 export default router

@@ -1,4 +1,3 @@
-// src/store/userStore.js
 import {defineStore} from 'pinia'
 import request from "@/utils/request.js";
 

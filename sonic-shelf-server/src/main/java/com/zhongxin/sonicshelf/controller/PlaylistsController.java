@@ -18,10 +18,13 @@ public class PlaylistsController {
     @Resource
     private MusicService musicService;
     @GetMapping("")
-    public Result playlists(@RequestParam(defaultValue = "1") Integer pageNum,
-                            @RequestParam(defaultValue = "5") Integer pageSize,
+    public Result playlists(@RequestParam(required = false) Integer pageNum,
+                            @RequestParam(required = false) Integer pageSize,
                             Long id) {
 
+        if (pageNum == null || pageNum < 1) {
+            return  Result.success(playlistsService.findAll(id));
+        }
         PageInfo<PlaylistsResponse> pageInfo = playlistsService.findAsPage(pageNum, pageSize, id);
         return Result.success(pageInfo);
     }
@@ -33,8 +36,13 @@ public class PlaylistsController {
 
     @GetMapping("/{id}/musics")
     public Result playlists(@PathVariable Long id,
-                            @RequestParam(defaultValue = "1") Integer pageNum,
-                            @RequestParam(defaultValue = "5") Integer pageSize) {
+                            @RequestParam(required = false) Integer pageNum,
+                            @RequestParam(required = false) Integer pageSize) {
+
+        if (pageNum == null || pageNum < 1) {
+            return  Result.success(musicService.findByListId(id));
+        }
+
         PageInfo<MusicResponse> pageInfo = musicService.findAsPageByListId(pageNum, pageSize, id);
         return Result.success(pageInfo);
     }

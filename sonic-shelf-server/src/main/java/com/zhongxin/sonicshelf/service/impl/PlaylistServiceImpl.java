@@ -2,12 +2,13 @@ package com.zhongxin.sonicshelf.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zhongxin.sonicshelf.dto.response.FavoriteResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.mapper.PlaylistMapper;
 import com.zhongxin.sonicshelf.service.PlaylistService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PlaylistServiceImpl implements PlaylistService {
@@ -27,5 +28,11 @@ public class PlaylistServiceImpl implements PlaylistService {
     public PlaylistsResponse findByPlaylistId(Long id) {
 
         return playlistMapper.findByPlaylistId(id);
+    }
+
+    @Override
+    public List<PlaylistsResponse> findAll(Long id) {
+
+        return playlistMapper.selectByUserId(id);
     }
 }

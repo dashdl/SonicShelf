@@ -5,15 +5,9 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * Web MVC配置类，用于配置跨域等Web相关设置
- */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    /**
-     * 配置跨域支持
-     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")  // 对所有API路径启用跨域
@@ -27,9 +21,20 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+
+        String basePath = System.getProperty("user.dir");
+
         // 将/uploads/**路径映射到本地文件系统中的相应目录
-        String uploadPath = System.getProperty("user.dir") + "/files/uploads/";
+        String uploadPath = basePath + "/files/uploads/";
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + uploadPath);
+
+        String coverPath = basePath + "/files/cover/";
+        registry.addResourceHandler("/cover/**")
+                .addResourceLocations("file:" + coverPath);
+
+        String songsPath = basePath + "/files/cover/";
+        registry.addResourceHandler("/songs/**")
+                .addResourceLocations("file:" + songsPath);
     }
 }

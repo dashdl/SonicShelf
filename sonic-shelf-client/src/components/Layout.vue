@@ -6,12 +6,15 @@ import Player from "@/components/Player.vue";
 import {useUserStore} from "@/store/userStore.js";
 import {onMounted} from "vue";
 import {ElMessage} from "element-plus";
+import {usePlaylistStore} from "@/store/playlist.js";
 
 const userStore = useUserStore();
+const playlistStore = usePlaylistStore();
 
 onMounted(async () => {
   try {
     await userStore.restoreUserState();
+    await playlistStore.loadPlaylist(userStore.getUserId);
   } catch (error) {
     ElMessage.error("用户状态加载失败");
   }
@@ -23,16 +26,23 @@ onMounted(async () => {
   <div class="page-container">
     <div class="top-container">
       <div class="left-container">
-        <Sidebar/>
+        <Sidebar
+            :userPlaylist="playlistStore.userPlaylist"
+            :favoritePlaylist="playlistStore.favoritePlaylist"/>
       </div>
       <div class="right-container">
         <div class="header-container">
           <Header/>
         </div>
         <div class="main-content">
-          <div class="content-wrapper">
-            <RouterView/>
-          </div>
+          <router-view v-slot="{ Component }">
+            <component
+                :is="Component"
+                :userInfo="userStore.userInfo"
+                :userPlaylist="playlistStore.userPlaylist"
+                :favoritePlaylist="playlistStore.favoritePlaylist"
+            ></component>
+          </router-view>
         </div>
       </div>
     </div>
@@ -49,8 +59,8 @@ onMounted(async () => {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-x: auto;
   position: relative;
+  color: #50596b;
 }
 
 .top-container {
@@ -67,8 +77,9 @@ onMounted(async () => {
 }
 
 .left-container {
-  display: flex;
+  height: 100%;
   width: 220px;
+  display: flex;
   flex-shrink: 0;
   position: relative;
 }
@@ -88,18 +99,12 @@ onMounted(async () => {
   position: relative;
 }
 
-.main-content{
+.main-content {
   padding-right: 45px;
   flex: 1;
   overflow-x: auto;
   scroll-behavior: smooth;
   min-height: 0;
-}
-
-.content-wrapper {
-  width: 100%;
-  min-height: 0;
-  overflow-x: visible;
 }
 
 @media (min-width: 1790px) {

@@ -9,6 +9,7 @@
         <result column="cover_image" property="coverImage"/>
         <result column="artist_name" property="artistName"/>
         <result column="album_title" property="albumTitle"/>
+        <result column="file_url" property="fileUrl"/>
     </resultMap>
 
     <select id="findAsPageByListId" resultMap="MusicResponse">
@@ -16,13 +17,28 @@
                m.title,
                m.cover_image,
                a.name   as artist_name,
-               am.title as album_title
+               am.title as album_title,
+               m.file_url
         FROM musics m
                  LEFT JOIN playlist_musics pm ON pm.music_id = m.id
                  LEFT JOIN playlists p ON p.id = pm.playlist_id
                  LEFT JOIN artists a ON m.artist_id = a.id
                  LEFT JOIN albums am On am.id = m.album_id
         WHERE p.id = #{id}
+    </select>
+
+
+    <select id="findById" resultMap="MusicResponse">
+        SELECT m.id,
+               m.title,
+               m.cover_image,
+               a.name   as artist_name,
+               am.title as album_title,
+               m.file_url
+        FROM musics m
+                 LEFT JOIN artists a ON m.artist_id = a.id
+                 LEFT JOIN albums am On am.id = m.album_id
+        WHERE m.id = #{id};
     </select>
 
 </mapper>

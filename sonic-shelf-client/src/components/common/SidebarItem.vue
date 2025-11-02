@@ -2,11 +2,11 @@
 defineProps({
   icon: {
     type: String,
-    required: true  // 必须传递图标路径
+    required: true
   },
   label: {
     type: String,
-    required: true  // 必须传递标签文字
+    required: true
   }
 })
 

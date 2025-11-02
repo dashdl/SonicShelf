@@ -152,7 +152,7 @@ const updateCities = async () => {
   if (!isCityValid) {
     formData.city = '';
   }
-  // 注意：如果城市值有效，我们不会清空它，保留用户原有的选择
+  // 注意：如果城市值有效，不清空它，保留用户原有的选择
 };
 
 const fetchProvincesFromAlternativeAPI = async () => {
