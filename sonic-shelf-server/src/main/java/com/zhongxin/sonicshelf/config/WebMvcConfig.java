@@ -33,7 +33,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/cover/**")
                 .addResourceLocations("file:" + coverPath);
 
-        String songsPath = basePath + "/files/cover/";
+        String songsPath = basePath + "/files/songs/";
         registry.addResourceHandler("/songs/**")
                 .addResourceLocations("file:" + songsPath);
     }

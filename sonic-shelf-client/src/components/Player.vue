@@ -1,76 +1,198 @@
 <script setup>
-import {ref, onMounted, reactive} from "vue";
+import {onMounted, onUnmounted, ref} from "vue";
+import {usePlayerStore} from "@/store/player.js";
 
-const audio = ref(null);
+const playerStore = usePlayerStore();
 
-const player = reactive({
-  play: false,
+// 音量控制器状态管理
+const showVolumeControl = ref(false);
+let volumeHideTimeout = null;
+
+// 处理音量按钮鼠标进入事件
+const handleVolumeButtonEnter = () => {
+  // 清除可能存在的定时器
+  if (volumeHideTimeout) {
+    clearTimeout(volumeHideTimeout);
+    volumeHideTimeout = null;
+  }
+  // 显示音量控制器
+  showVolumeControl.value = true;
+};
+
+// 处理音量按钮鼠标离开事件
+const handleVolumeButtonLeave = () => {
+  // 设置延迟隐藏，给用户时间移动到控制器上
+  volumeHideTimeout = setTimeout(() => {
+    showVolumeControl.value = false;
+  }, 300);
+};
+
+// 处理音量控制器鼠标进入事件
+const handleVolumeContainerEnter = () => {
+  // 用户进入控制器区域，清除隐藏定时器
+  if (volumeHideTimeout) {
+    clearTimeout(volumeHideTimeout);
+    volumeHideTimeout = null;
+  }
+};
+
+// 处理音量控制器鼠标离开事件
+const handleVolumeContainerLeave = () => {
+  // 用户离开控制器区域，设置延迟隐藏
+  volumeHideTimeout = setTimeout(() => {
+    showVolumeControl.value = false;
+  }, 300);
+};
+
+// 组件卸载时清理定时器
+onUnmounted(() => {
+
 });
 
-let isClick = ref(false);
 const show = () => {
   isClick.value = !isClick.value;
 }
 
-onMounted(() => {
-  audio.value = new Audio('/player1.mp3');
+let isClick = ref(false);
+
+const titleRef = ref(null);
+
+const titleWidth = ref(0);
+const shouldScroll = ref(false);
+
+const progress = ref(0);
+const duration = ref(0);
+const currentTime = ref(0);
+const progressBar = ref(null);
+const isDragging = ref(false);
+
+const updateProgressFromStore = () => {
+  if (isDragging.value) return;
+  if (playerStore.duration > 0) {
+    progress.value = (playerStore.currentTime / playerStore.duration) * 100;
+    duration.value = playerStore.duration;
+    currentTime.value = playerStore.currentTime;
+  }
+};
+
+let progressInterval = null;
+
+const startProgressUpdate = () => {
+  if (progressInterval) clearInterval(progressInterval);
+  progressInterval = setInterval(updateProgressFromStore, 100); // 每100ms更新一次
+};
+
+const stopProgressUpdate = () => {
+  if (progressInterval) {
+    clearInterval(progressInterval);
+    progressInterval = null;
+  }
+};
+
+const formatTime = (seconds) => {
+  if (!seconds || isNaN(seconds)) return '00:00'
+  const minutes = Math.floor(seconds / 60)
+  const secs = Math.floor(seconds % 60)
+  return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+}
+
+// 点击跳转
+const handleClick = (e) => {
+  const rect = progressBar.value.getBoundingClientRect();
+  const percent = (e.clientX - rect.left) / rect.width * 100;
+  updateProgress(percent);
+};
+
+// 开始拖动
+const startDrag = (e) => {
+  e.preventDefault(); // 防止文本选择
+  isDragging.value = true;
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('mouseup', stopDrag);
+};
+
+// 拖动中
+const onDrag = (e) => {
+  if (!isDragging.value) return;
+  const rect = progressBar.value.getBoundingClientRect();
+  const percent = (e.clientX - rect.left) / rect.width * 100;
+  updateProgress(percent);
+};
+
+// 停止拖动
+const stopDrag = (e) => {
+  isDragging.value = false;
+  const rect = progressBar.value.getBoundingClientRect();
+  const percent = (e.clientX - rect.left) / rect.width;
+  const newTime = percent * playerStore.duration;
+  playerStore.setCurrentTime(newTime);
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('mouseup', stopDrag);
+};
+
+// 更新进度
+const updateProgress = (percent) => {
+  progress.value = Math.max(0, Math.min(100, percent));
+  // 实时更新当前时间显示
+  currentTime.value = (percent / 100) * playerStore.duration;
+};
+
+onUnmounted(() => {
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('mouseup', stopDrag);
+  if (volumeHideTimeout) {
+    clearTimeout(volumeHideTimeout);
+  }
 });
 
-const play = () => {
-  if (!audio.value) {
-    console.error('音频未初始化');
-    return;
-  }
-  audio.value.play();
-  player.play = true;
-}
+onMounted(() => {
+  playerStore.initAudio();
+  startProgressUpdate();
 
-// 暂停
-const pause = () => {
-  audio.value.pause()
-  player.play = false;
-}
+  // 监听播放状态变化
+  const unwatch = playerStore.$subscribe((mutation, state) => {
+    if (state.isPlaying) {
+      startProgressUpdate();
+    } else {
+      stopProgressUpdate();
+    }
+  });
 
-// 上一首
-const previous = () => {
-  // 切换到上一首歌曲的逻辑
-  audio.src = '上一首的URL'
-  audio.value.play()
-}
+  const titleObserver = new ResizeObserver(entries => {
+    for (let entry of entries) {
+      titleWidth.value = entry.contentRect.width;
+      shouldScroll.value = titleWidth.value > 265;
+    }
+  });
+  titleObserver.observe(titleRef.value);
 
-// 下一首
-const next = () => {
-  // 切换到下一首歌曲的逻辑
-  audio.src = '下一首的URL'
-  audio.play()
-}
+  onUnmounted(() => {
+    unwatch();
+    stopProgressUpdate();
+  });
+});
 
-// 设置音量（0-1）
-const setVolume = (volume) => {
-  audio.volume = volume
-}
-
-// 跳转到指定时间（秒）
-const seek = (time) => {
-  audio.currentTime = time
-}
-
+const baseUrl = 'http://localhost:8080';
 </script>
 
 <template>
   <div class="player-component">
     <div class="cover-container">
       <div class="cover-content">
-        <img src="/images/default/cover.png" style="height: 45px;border-radius: 23px" alt="">
+        <img
+            :src=" baseUrl + playerStore.currentPlaylist[playerStore.currentIndex].coverImage ||'/images/default/cover.png'"
+            style="height: 45px;border-radius: 23px" alt="">
       </div>
       <div class="info-container">
         <div class="title-container">
-          <div class="scroll-wrapper">
-            <div class="title-content">
-              this is title123123123123123123123123
+          <div :class="shouldScroll ? 'scroll-wrapper animation-scroll' : 'scroll-wrapper'">
+            <div ref="titleRef" class="title-content">
+              <span style="color: #333333">{{ playerStore.currentTitle }} - </span>
+              <span style="font-size: 14px;color: #7b818f">{{ playerStore.currentName }}</span>
             </div>
-            <div class="title-content">
-              this is title123123123123123123123123
+            <div v-if="shouldScroll" class="title-content">
+              <span style="color: #333333">{{ playerStore.currentTitle }} - </span>
+              <span style="font-size: 14px;color: #7b818f">{{ playerStore.currentName }}</span>
             </div>
           </div>
         </div>
@@ -96,15 +218,15 @@ const seek = (time) => {
           <img src="/icons/player/like.svg" style="height: 22px" alt="">
         </div>
         <div class="menu-button">
-          <img src="/icons/player/last.svg" style="height: 30px;" alt="">
+          <img @click="playerStore.prev()" src="/icons/player/last.svg" style="height: 30px;" alt="">
         </div>
         <div class="play-button">
-          <img v-if="!player.play" @click="play()" src="/icons/player/play.svg" style="width: 30px;margin-left: 1px;"
-               alt="">
-          <img v-if="player.play" @click="pause()" src="/icons/player/pause.svg" style="width: 30px;margin-left: 1px;"
+          <img @click="playerStore.togglePlay"
+               :src="playerStore.isPlaying ? '/icons/player/pause.svg' : '/icons/player/play.svg'"
+               style="width: 30px;margin-left: 1px;"
                alt="">
         </div>
-        <div class="menu-button">
+        <div @click="playerStore.next()" class="menu-button">
           <img src="/icons/player/next.svg" style="height: 30px;" alt="">
         </div>
         <div class="menu-button">
@@ -112,16 +234,29 @@ const seek = (time) => {
         </div>
       </div>
       <div class="progress-container">
-        <span>114</span>
-        <div class="progress-content">
-          <div class="progress-bar"></div>
+        <span>{{ formatTime(duration) }}</span>
+        <div class="progress-content"
+             ref="progressBar"
+             @click="handleClick"
+             @mousedown="startDrag">
+          <div class="progress-bar" :style="{ width: progress + '%' }"></div>
         </div>
-        <span>514</span>
+        <span>{{ formatTime(currentTime) }}</span>
       </div>
     </div>
     <div class="selection-container">
-      <div class="selection-button">
-        <img src="/icons/player/volume.svg" style="height: 22px" alt="">
+      <div class="selection-button" 
+           @mouseenter="handleVolumeButtonEnter"
+           @mouseleave="handleVolumeButtonLeave">
+        <img src="/icons/player/volume.svg" style="width: 22px;" alt="">
+      </div>
+      <div class="volume-container" 
+           v-show="showVolumeControl"
+           @mouseenter="handleVolumeContainerEnter"
+           @mouseleave="handleVolumeContainerLeave">
+        <div class="volume-content">
+          <div class="volume-progress"></div>
+        </div>
       </div>
       <div class="selection-button">
         <img @click="show" src="/icons/player/playlist.svg" style="height: 23px" alt="">
@@ -216,6 +351,9 @@ const seek = (time) => {
   display: flex;
   white-space: nowrap;
   font-size: 18px;
+}
+
+.animation-scroll {
   animation: scroll 10s linear infinite;
 }
 
@@ -258,6 +396,11 @@ const seek = (time) => {
   margin: 0 13px;
 }
 
+.menu-button:hover {
+  filter: brightness(80%);
+  cursor: pointer;
+}
+
 .play-button {
   width: 45px;
   height: 45px;
@@ -266,6 +409,15 @@ const seek = (time) => {
   justify-content: center;
   border-radius: 23px;
   background-color: #fc3d4e;
+}
+
+.play-button:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.play-button:active {
+  transform: scale(0.95);
 }
 
 .progress-container {
@@ -293,7 +445,6 @@ const seek = (time) => {
 
 .progress-bar {
   height: 5px;
-  width: 100px;
   background-color: #f26c79;
   border-radius: 3px;
 }
@@ -308,6 +459,7 @@ const seek = (time) => {
 
 .selection-button {
   margin-left: 24px;
+  cursor: pointer;
 }
 
 .list-form {
@@ -321,7 +473,7 @@ const seek = (time) => {
   transform: translateX(450px) translateY(-50%);
   background-color: #fafafa;
   border-radius: 10px;
-  box-shadow: 0 0 10px 2px #7b818f;
+  box-shadow: 0 0 10px 2px #cbcbcf;
   transition: transform 0.5s ease;
 }
 
@@ -329,7 +481,7 @@ const seek = (time) => {
   transform: translateX(10px) translateY(-50%);
 }
 
-.form-head{
+.form-head {
   height: 60px;
   width: 100%;
   display: flex;
@@ -338,9 +490,22 @@ const seek = (time) => {
 
 }
 
-.form-action{
+.form-action {
   display: flex;
   flex-direction: row;
+}
+
+.volume-container {
+  position: fixed;
+  height: 135px;
+  width: 40px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 2px #cbcbcf;
+  right: 65px;
+  bottom: 60px;
+  /* 添加z-index确保音量控制器在其他元素上方 */
+  z-index: 100;
 }
 
 </style>

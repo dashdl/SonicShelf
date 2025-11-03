@@ -5,7 +5,9 @@ import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
 import InfiniteTable from "@/components/list/InfiniteTable.vue";
 import {onMounted, reactive, ref, watch} from "vue";
-import {usePlaylistStore} from "@/store/playlist.js";
+import {usePlayerStore} from "@/store/player.js";
+
+
 
 const route = useRoute();
 
@@ -18,13 +20,13 @@ const data = reactive({
 })
 
 const replace=async () => {
-  let musics = ref([])
   const currentId = route.params.id;
   await request.get('playlists/' + currentId + '/musics').then(res => {
-    musics.value = [...musics.value, ...res.data];
+    usePlayerStore().updatePlaylist(res.data)
+    localStorage.setItem("playlist", JSON.stringify(res.data))
+    usePlayerStore().playSong(0);
   })
-  console.log(musics.value)
-  localStorage.setItem("nowPlaying", musics.value)
+
 }
 
 const loading = ref(false)
