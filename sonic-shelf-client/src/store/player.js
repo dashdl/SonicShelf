@@ -17,6 +17,7 @@ export const usePlayerStore = defineStore('player', {
         currentIndex: 0,       // 当前播放索引
         isPlaying: false,      // 播放状态
         currentTime: 0,        // 当前播放时间
+        volume: 0.5,           // 当前音量（默认50%）
         duration: 0,           // 总时长
         currentTitle: '',
         currentName: '',
@@ -35,6 +36,10 @@ export const usePlayerStore = defineStore('player', {
             this.currentIndex = now;
             this.currentTitle = this.currentPlaylist[now].title
             this.currentName = this.currentPlaylist[now].artistName
+            // 从localStorage获取保存的音量，如果没有则使用默认值
+            const savedVolume = localStorage.getItem('playerVolume');
+            this.volume = savedVolume ? parseFloat(savedVolume) : 0.5;
+            this.audio.volume = this.volume;
             return this.audio
         },
 
@@ -46,11 +51,20 @@ export const usePlayerStore = defineStore('player', {
 
             this.audio.addEventListener('timeupdate', () => {
                 this.currentTime = this.audio.currentTime
-
             })
 
             this.audio.addEventListener('ended', () => {
                 this.next()
+            })
+
+            // 监听音量变化
+            this.audio.addEventListener('volumechange', () => {
+                // 只有当不是通过setVolume方法修改时才更新状态
+                // 这可以防止循环更新
+                if (Math.abs(this.audio.volume - this.volume) > 0.01) {
+                    this.volume = this.audio.volume;
+                    localStorage.setItem('playerVolume', this.volume.toString());
+                }
             })
         },
 
@@ -118,6 +132,18 @@ export const usePlayerStore = defineStore('player', {
         setCurrentTime(time) {
             if (this.audio) {
                 this.audio.currentTime = time
+            }
+        },
+
+        // 设置音量
+        setVolume(volumeLevel) {
+            if (this.audio) {
+                // 确保音量在0-1之间
+                const normalizedVolume = Math.max(0, Math.min(1, volumeLevel));
+                this.volume = normalizedVolume;
+                this.audio.volume = normalizedVolume;
+                // 保存音量设置到localStorage
+                localStorage.setItem('playerVolume', normalizedVolume.toString());
             }
         }
     }

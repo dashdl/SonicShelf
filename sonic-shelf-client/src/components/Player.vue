@@ -4,50 +4,35 @@ import {usePlayerStore} from "@/store/player.js";
 
 const playerStore = usePlayerStore();
 
-// 音量控制器状态管理
 const showVolumeControl = ref(false);
 let volumeHideTimeout = null;
 
-// 处理音量按钮鼠标进入事件
 const handleVolumeButtonEnter = () => {
-  // 清除可能存在的定时器
   if (volumeHideTimeout) {
     clearTimeout(volumeHideTimeout);
     volumeHideTimeout = null;
   }
-  // 显示音量控制器
   showVolumeControl.value = true;
 };
 
-// 处理音量按钮鼠标离开事件
 const handleVolumeButtonLeave = () => {
-  // 设置延迟隐藏，给用户时间移动到控制器上
   volumeHideTimeout = setTimeout(() => {
     showVolumeControl.value = false;
   }, 300);
 };
 
-// 处理音量控制器鼠标进入事件
 const handleVolumeContainerEnter = () => {
-  // 用户进入控制器区域，清除隐藏定时器
   if (volumeHideTimeout) {
     clearTimeout(volumeHideTimeout);
     volumeHideTimeout = null;
   }
 };
 
-// 处理音量控制器鼠标离开事件
 const handleVolumeContainerLeave = () => {
-  // 用户离开控制器区域，设置延迟隐藏
   volumeHideTimeout = setTimeout(() => {
     showVolumeControl.value = false;
   }, 300);
 };
-
-// 组件卸载时清理定时器
-onUnmounted(() => {
-
-});
 
 const show = () => {
   isClick.value = !isClick.value;
@@ -61,10 +46,15 @@ const titleWidth = ref(0);
 const shouldScroll = ref(false);
 
 const progress = ref(0);
+const volumeProgress = ref(0);
 const duration = ref(0);
 const currentTime = ref(0);
+const currentVolume = ref(0);
 const progressBar = ref(null);
+const volumeProgressBar = ref(null);
+
 const isDragging = ref(false);
+const isVolumeDragging = ref(false);
 
 const updateProgressFromStore = () => {
   if (isDragging.value) return;
@@ -74,18 +64,34 @@ const updateProgressFromStore = () => {
     currentTime.value = playerStore.currentTime;
   }
 };
+const updateVolumeProgressFromStore = () => {
+  if (isVolumeDragging.value) return;
+  volumeProgress.value = playerStore.volume * 100;
+  currentVolume.value = playerStore.volume;
+};
 
 let progressInterval = null;
+let VolumeProgressInterval = null;
 
 const startProgressUpdate = () => {
   if (progressInterval) clearInterval(progressInterval);
   progressInterval = setInterval(updateProgressFromStore, 100); // 每100ms更新一次
+};
+const startVolumeProgressUpdate = () => {
+  if (VolumeProgressInterval) clearInterval(VolumeProgressInterval);
+  VolumeProgressInterval = setInterval(updateVolumeProgressFromStore, 100); // 每100ms更新一次
 };
 
 const stopProgressUpdate = () => {
   if (progressInterval) {
     clearInterval(progressInterval);
     progressInterval = null;
+  }
+};
+const stopVolumeProgressUpdate = () => {
+  if (VolumeProgressInterval) {
+    clearInterval(VolumeProgressInterval);
+    VolumeProgressInterval = null;
   }
 };
 
@@ -96,11 +102,30 @@ const formatTime = (seconds) => {
   return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
+
+// ref="volumeProgressBar"
+// @click="handleVolumeClick"
+// @mousedown="startVolumeDrag"
+
+
+
 // 点击跳转
 const handleClick = (e) => {
   const rect = progressBar.value.getBoundingClientRect();
   const percent = (e.clientX - rect.left) / rect.width * 100;
   updateProgress(percent);
+  // 点击后直接设置时间
+  const newTime = percent / 100 * playerStore.duration;
+  playerStore.setCurrentTime(newTime);
+};
+const handleVolumeClick = (e) => {
+  const rect = volumeProgressBar.value.getBoundingClientRect();
+  // 垂直进度条，从下往上
+  const percent = Math.max(0, Math.min(100, ((rect.bottom - e.clientY) / rect.height) * 100));
+  updateVolumeProgress(percent);
+  // 点击后直接设置音量
+  const newVolume = percent / 100;
+  playerStore.setVolume(newVolume);
 };
 
 // 开始拖动
@@ -110,6 +135,12 @@ const startDrag = (e) => {
   document.addEventListener('mousemove', onDrag);
   document.addEventListener('mouseup', stopDrag);
 };
+const startVolumeDrag = (e) => {
+  e.preventDefault(); // 防止文本选择
+  isVolumeDragging.value = true;
+  document.addEventListener('mousemove', onVolumeDrag);
+  document.addEventListener('mouseup', stopVolumeDrag);
+};
 
 // 拖动中
 const onDrag = (e) => {
@@ -117,6 +148,13 @@ const onDrag = (e) => {
   const rect = progressBar.value.getBoundingClientRect();
   const percent = (e.clientX - rect.left) / rect.width * 100;
   updateProgress(percent);
+};
+const onVolumeDrag = (e) => {
+  if (!isVolumeDragging.value) return;
+  const rect = volumeProgressBar.value.getBoundingClientRect();
+  // 垂直进度条，从下往上
+  const percent = Math.max(0, Math.min(100, ((rect.bottom - e.clientY) / rect.height) * 100));
+  updateVolumeProgress(percent);
 };
 
 // 停止拖动
@@ -129,6 +167,15 @@ const stopDrag = (e) => {
   document.removeEventListener('mousemove', onDrag);
   document.removeEventListener('mouseup', stopDrag);
 };
+const stopVolumeDrag = (e) => {
+  isVolumeDragging.value = false;
+  const rect = volumeProgressBar.value.getBoundingClientRect();
+  // 垂直进度条，从下往上
+  const percent = Math.max(0, Math.min(100, ((rect.bottom - e.clientY) / rect.height)));
+  playerStore.setVolume(percent / 100);
+  document.removeEventListener('mousemove', onVolumeDrag);
+  document.removeEventListener('mouseup', stopVolumeDrag);
+};
 
 // 更新进度
 const updateProgress = (percent) => {
@@ -136,10 +183,17 @@ const updateProgress = (percent) => {
   // 实时更新当前时间显示
   currentTime.value = (percent / 100) * playerStore.duration;
 };
+const updateVolumeProgress = (percent) => {
+  volumeProgress.value = Math.max(0, Math.min(100, percent));
+  // 实时更新当前音量显示
+  currentVolume.value = percent / 100;
+};
 
 onUnmounted(() => {
   document.removeEventListener('mousemove', onDrag);
   document.removeEventListener('mouseup', stopDrag);
+  document.removeEventListener('mousemove', onVolumeDrag);
+  document.removeEventListener('mouseup', stopVolumeDrag);
   if (volumeHideTimeout) {
     clearTimeout(volumeHideTimeout);
   }
@@ -148,6 +202,7 @@ onUnmounted(() => {
 onMounted(() => {
   playerStore.initAudio();
   startProgressUpdate();
+  startVolumeProgressUpdate(); // 启动音量更新
 
   // 监听播放状态变化
   const unwatch = playerStore.$subscribe((mutation, state) => {
@@ -156,6 +211,8 @@ onMounted(() => {
     } else {
       stopProgressUpdate();
     }
+    // 监听音量变化
+    updateVolumeProgressFromStore();
   });
 
   const titleObserver = new ResizeObserver(entries => {
@@ -169,6 +226,7 @@ onMounted(() => {
   onUnmounted(() => {
     unwatch();
     stopProgressUpdate();
+    stopVolumeProgressUpdate(); // 停止音量更新
   });
 });
 
@@ -245,17 +303,21 @@ const baseUrl = 'http://localhost:8080';
       </div>
     </div>
     <div class="selection-container">
-      <div class="selection-button" 
+      <div class="selection-button"
            @mouseenter="handleVolumeButtonEnter"
            @mouseleave="handleVolumeButtonLeave">
         <img src="/icons/player/volume.svg" style="width: 22px;" alt="">
       </div>
-      <div class="volume-container" 
+      <div class="volume-container"
            v-show="showVolumeControl"
            @mouseenter="handleVolumeContainerEnter"
            @mouseleave="handleVolumeContainerLeave">
-        <div class="volume-content">
-          <div class="volume-progress"></div>
+        <div class="volume-content"
+               ref="volumeProgressBar"
+               @click="handleVolumeClick"
+               @mousedown="startVolumeDrag">
+          <div class="volume-progress" :style="{ height: volumeProgress + '%'}"></div>
+          <span style="font-size: 10px">{{ Math.round(volumeProgress) }}%</span>
         </div>
       </div>
       <div class="selection-button">
@@ -499,13 +561,39 @@ const baseUrl = 'http://localhost:8080';
   position: fixed;
   height: 135px;
   width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #ffffff;
   border-radius: 10px;
   box-shadow: 0 0 10px 2px #cbcbcf;
   right: 65px;
   bottom: 60px;
-  /* 添加z-index确保音量控制器在其他元素上方 */
   z-index: 100;
 }
 
+.volume-content {
+  height: 100px;
+  width: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: #e9eaec;
+  border-radius: 3px;
+  position: relative;
+}
+.volume-progress{
+  width: 6px;
+  height: 50%;
+  border-radius: 3px;
+  background-color: #f26c79;
+}
+.volume-content span{
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
 </style>
