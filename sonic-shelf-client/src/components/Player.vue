@@ -1,6 +1,8 @@
 <script setup>
 import {onMounted, onUnmounted, ref} from "vue";
 import {usePlayerStore} from "@/store/player.js";
+import request from "@/utils/request.js";
+import {ElMessage} from "element-plus";
 
 const playerStore = usePlayerStore();
 
@@ -56,6 +58,48 @@ const volumeProgressBar = ref(null);
 const isDragging = ref(false);
 const isVolumeDragging = ref(false);
 
+const favorite = () => {
+  if(playerStore.currentPlaylist[playerStore.currentIndex].isFavorite==='0') {
+    request.post('favorites/music/' + playerStore.currentPlaylist[playerStore.currentIndex].id).then(res => {
+      if(res.code==='200'){
+        ElMessage.success('收藏成功');
+        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite='1'
+        localStorage.setItem("playlist", JSON.stringify(playerStore.currentPlaylist));
+      }else {
+        ElMessage.error(res.message)
+        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite='1'
+      }
+    })
+  }else {
+    request.delete('favorites/music/' + playerStore.currentPlaylist[playerStore.currentIndex].id).then(res => {
+      if(res.code==='200'){
+        ElMessage.success('取消收藏成功');
+        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite='0'
+        localStorage.setItem("playlist", JSON.stringify(playerStore.currentPlaylist));
+      }else {
+        ElMessage.error(res.message)
+        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite='0'
+      }
+    })
+  }
+}
+
+const favoriteAll = (currentPlaylist) => {
+  const playlistCopy = JSON.parse(JSON.stringify(currentPlaylist));
+  request.post('favorites/playlist', playlistCopy).then(res => {
+    ElMessage.success(res.data || '收藏成功');
+  }).catch(err => {
+    console.error('收藏失败:', err);
+    ElMessage.error('收藏失败，请稍后重试');
+  });
+}
+const cleanAll = () => {
+  playerStore.currentPlaylist = [];
+  playerStore.currentIndex = 0;
+  playerStore.currentTitle = '';
+  playerStore.currentName = '';
+}
+
 const updateProgressFromStore = () => {
   if (isDragging.value) return;
   if (playerStore.duration > 0) {
@@ -102,12 +146,9 @@ const formatTime = (seconds) => {
   return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
-
 // ref="volumeProgressBar"
 // @click="handleVolumeClick"
 // @mousedown="startVolumeDrag"
-
-
 
 // 点击跳转
 const handleClick = (e) => {
@@ -238,19 +279,19 @@ const baseUrl = 'http://localhost:8080';
     <div class="cover-container">
       <div class="cover-content">
         <img
-            :src=" baseUrl + playerStore.currentPlaylist[playerStore.currentIndex].coverImage ||'/images/default/cover.png'"
+            :src=" playerStore.currentPlaylist && playerStore.currentPlaylist[playerStore.currentIndex] ? baseUrl + playerStore.currentPlaylist[playerStore.currentIndex].coverImage : '/images/default/cover.png'"
             style="height: 45px;border-radius: 23px" alt="">
       </div>
       <div class="info-container">
         <div class="title-container">
           <div :class="shouldScroll ? 'scroll-wrapper animation-scroll' : 'scroll-wrapper'">
             <div ref="titleRef" class="title-content">
-              <span style="color: #333333">{{ playerStore.currentTitle }} - </span>
-              <span style="font-size: 14px;color: #7b818f">{{ playerStore.currentName }}</span>
+              <span style="color: #333333">{{ playerStore.currentTitle || '未知歌曲' }} - </span>
+              <span style="font-size: 14px;color: #7b818f">{{ playerStore.currentName || '未知艺术家' }}</span>
             </div>
             <div v-if="shouldScroll" class="title-content">
-              <span style="color: #333333">{{ playerStore.currentTitle }} - </span>
-              <span style="font-size: 14px;color: #7b818f">{{ playerStore.currentName }}</span>
+              <span style="color: #333333">{{ playerStore.currentTitle || '未知歌曲' }} - </span>
+              <span style="font-size: 14px;color: #7b818f">{{ playerStore.currentName || '未知艺术家' }}</span>
             </div>
           </div>
         </div>
@@ -273,7 +314,10 @@ const baseUrl = 'http://localhost:8080';
     <div class="player-container">
       <div class="player-menu">
         <div class="menu-button">
-          <img src="/icons/player/like.svg" style="height: 22px" alt="">
+          <img
+              @click="favorite"
+              :src="playerStore.currentPlaylist[playerStore.currentIndex].isFavorite==='1' ? '/icons/player/like.svg': '/icons/player/unlike.svg' "
+              style="height: 22px" alt="">
         </div>
         <div class="menu-button">
           <img @click="playerStore.prev()" src="/icons/player/last.svg" style="height: 30px;" alt="">
@@ -313,9 +357,9 @@ const baseUrl = 'http://localhost:8080';
            @mouseenter="handleVolumeContainerEnter"
            @mouseleave="handleVolumeContainerLeave">
         <div class="volume-content"
-               ref="volumeProgressBar"
-               @click="handleVolumeClick"
-               @mousedown="startVolumeDrag">
+             ref="volumeProgressBar"
+             @click="handleVolumeClick"
+             @mousedown="startVolumeDrag">
           <div class="volume-progress" :style="{ height: volumeProgress + '%'}"></div>
           <span style="font-size: 10px">{{ Math.round(volumeProgress) }}%</span>
         </div>
@@ -328,12 +372,33 @@ const baseUrl = 'http://localhost:8080';
       <div class="form-head">
         <div class="form-title">
           <span style="font-size: 20px;font-weight: bold">播放列表</span>
+          <span id="count">{{ playerStore.currentPlaylist.length }}</span>
         </div>
         <div class="form-action">
-          <img src="/icons/player/favorite.svg" style="height: 15px;align-self: center;margin-right: 3px" alt="">
-          <span style="margin-right: 25px">收藏全部</span>
-          <img src="/icons/player/favorite.svg" style="height: 15px;align-self: center;margin-right: 3px" alt="">
-          <span>清空</span>
+          <img @click="favoriteAll(playerStore.currentPlaylist)" src="/icons/player/favorite.svg"
+               style="height: 15px;align-self: center;margin-right: 3px;margin-bottom: 2px" alt="">
+          <span @click="favoriteAll(playerStore.currentPlaylist)" style="margin-right: 25px">收藏全部</span>
+          <img @click="cleanAll" src="/icons/player/favorite.svg"
+               style="height: 15px;align-self: center;margin-right: 3px;margin-bottom: 2px" alt="">
+          <span @click="cleanAll">清空</span>
+        </div>
+      </div>
+      <div class="form-info">
+        <div v-for="(item,index) in playerStore.currentPlaylist" class="list-item">
+          <div @click="playerStore.playSong(index)" class="item-cover">
+            <img :src="baseUrl + item.coverImage||'/images/default/cover.png'"
+                 style="height: 50px;width: 50px;border-radius: 5px" alt="">
+            <img id="play" src="/icons/player/play.svg" style="height: 30px;" alt="">
+          </div>
+          <div class="music-info">
+            <div class="info-left">
+              <span style="font-size: 20px">{{ item.title }}</span>
+              <span>{{ item.artistName }}</span>
+            </div>
+            <div class="info-right">
+              <span>{{ formatTime(item.duration) }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -341,6 +406,7 @@ const baseUrl = 'http://localhost:8080';
 </template>
 
 <style scoped>
+
 
 .player-component {
   position: relative;
@@ -487,7 +553,7 @@ const baseUrl = 'http://localhost:8080';
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .progress-container span {
@@ -526,8 +592,6 @@ const baseUrl = 'http://localhost:8080';
 
 .list-form {
   position: fixed;
-  padding-left: 20px;
-  padding-right: 30px;
   height: calc(100% - 195px);
   width: 438px;
   right: 0;
@@ -544,6 +608,8 @@ const baseUrl = 'http://localhost:8080';
 }
 
 .form-head {
+  padding-left: 20px;
+  padding-right: 30px;
   height: 60px;
   width: 100%;
   display: flex;
@@ -552,9 +618,78 @@ const baseUrl = 'http://localhost:8080';
 
 }
 
+.form-title {
+  position: relative;
+}
+
+#count {
+  position: absolute;
+  top: -4px;
+}
+
 .form-action {
   display: flex;
   flex-direction: row;
+}
+
+.form-action img:hover, .form-action span:hover {
+  cursor: pointer;
+}
+
+.form-info {
+  height: calc(100% - 65px);
+  overflow-y: scroll;
+}
+
+.list-item {
+  padding: 9px 30px 9px 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: #7b818f;
+
+}
+
+.list-item:hover {
+  background-color: #edeeef;
+}
+
+.list-item:hover #play {
+  opacity: 1;
+}
+
+.item-cover {
+  position: relative;
+  width: 60px;
+  margin-right: 10px;
+}
+
+.item-cover:hover {
+  cursor: pointer;
+}
+
+#play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  opacity: 0;
+}
+
+.music-info {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.info-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-right {
+  display: flex;
+  align-items: center;
 }
 
 .volume-container {
@@ -583,13 +718,15 @@ const baseUrl = 'http://localhost:8080';
   border-radius: 3px;
   position: relative;
 }
-.volume-progress{
+
+.volume-progress {
   width: 6px;
   height: 50%;
   border-radius: 3px;
   background-color: #f26c79;
 }
-.volume-content span{
+
+.volume-content span {
   position: absolute;
   bottom: -20px;
   left: 50%;

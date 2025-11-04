@@ -10,6 +10,8 @@
         <result column="artist_name" property="artistName"/>
         <result column="album_title" property="albumTitle"/>
         <result column="file_url" property="fileUrl"/>
+        <result column="duration" property="duration"/>
+        <result column="is_favorite" property="isFavorite"/>
     </resultMap>
 
     <select id="findAsPageByListId" resultMap="MusicResponse">
@@ -18,12 +20,17 @@
                m.cover_image,
                a.name   as artist_name,
                am.title as album_title,
-               m.file_url
+               m.file_url,
+               m.duration,
+               CASE WHEN f.id IS NOT NULL THEN 1 ELSE 0 END as is_favorite
         FROM musics m
                  LEFT JOIN playlist_musics pm ON pm.music_id = m.id
                  LEFT JOIN playlists p ON p.id = pm.playlist_id
                  LEFT JOIN artists a ON m.artist_id = a.id
-                 LEFT JOIN albums am On am.id = m.album_id
+                 LEFT JOIN albums am ON am.id = m.album_id
+                 LEFT JOIN favorites f ON f.target_id = m.id
+            AND f.user_id = #{userId}
+            AND f.target_type = 'music'
         WHERE p.id = #{id}
     </select>
 
@@ -34,11 +41,16 @@
                m.cover_image,
                a.name   as artist_name,
                am.title as album_title,
-               m.file_url
+               m.file_url,
+               m.duration,
+               CASE WHEN f.id IS NOT NULL THEN 1 ELSE 0 END as isFavorite # 1已收藏0未收藏
         FROM musics m
                  LEFT JOIN artists a ON m.artist_id = a.id
-                 LEFT JOIN albums am On am.id = m.album_id
-        WHERE m.id = #{id};
+                 LEFT JOIN albums am ON am.id = m.album_id
+                 LEFT JOIN favorites f ON f.target_id = m.id
+            AND f.user_id = #{userId}
+            AND f.target_type = 'music'
+        WHERE m.id = #{id}
     </select>
 
 </mapper>

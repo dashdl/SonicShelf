@@ -10,7 +10,7 @@ public interface FavoriteService {
 
     FavoriteResponse addFavorite(String targetType, Long targetId);
 
-    void removeFavoritePlaylist(String targetType, Long playlistId);
+    void removeFavorite(String targetType, Long playlistId);
 
     List<PlaylistsResponse> findPlaylists();
 

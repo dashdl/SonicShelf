@@ -196,10 +196,10 @@ const baseUrl = 'http://localhost:8080';
             <img @click="createTable" src="/icons/view/table.svg" style="width: 20px" alt="">
           </div>
         </div>
-        <GridList v-if="listSwitch.createGrid" style="max-width: 1660px; margin-bottom: 25px;"
+        <GridList v-if="listSwitch.createGrid" style="max-width: 1490px; margin-bottom: 25px;"
                   :info="playlistInfo"
         />
-        <TableList v-if="listSwitch.createTable" style="max-width: 1660px; margin-bottom: 50px;"
+        <TableList v-if="listSwitch.createTable" style="max-width: 1490px; margin-bottom: 50px;"
                    :info="playlistInfo"
         />
         <div class="page-container">
@@ -233,10 +233,10 @@ const baseUrl = 'http://localhost:8080';
             <img @click="favoritesTable" src="/icons/view/table.svg" style="width: 20px" alt="">
           </div>
         </div>
-        <GridList v-if="listSwitch.favoritesGrid" style="max-width: 1660px; margin-bottom: 50px;"
+        <GridList v-if="listSwitch.favoritesGrid" style="max-width: 1490px; margin-bottom: 50px;"
                   :info="favoritePlaylistInfo"
         />
-        <TableList v-if="listSwitch.favoritesTable" style="max-width: 1660px;margin-bottom: 50px;"
+        <TableList v-if="listSwitch.favoritesTable" style="max-width: 1495px;margin-bottom: 50px;"
                    :info="favoritePlaylistInfo"
         />
         <div class="page-container">
@@ -325,7 +325,7 @@ hr {
 
 .separate-content {
   width: 100%;
-  max-width: 1660px;
+  max-width: 1495px;
   margin-bottom: 10px;
   display: flex;
   flex-direction: row;

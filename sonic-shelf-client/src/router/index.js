@@ -20,7 +20,7 @@ const router = createRouter({
         {
             path: '/', component: Layout,
             children: [
-                {path: '', component: PlaylistForm},
+                {path: '', component: PlaylistEdit},
                 {path: '/profile', component: Profile},
                 {path: '/profile-settings', component: ProfileSettings},
                 {

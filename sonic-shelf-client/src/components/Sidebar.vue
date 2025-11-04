@@ -111,9 +111,9 @@ const baseUrl = 'http://localhost:8080';
 .sidebar-content {
   user-select: none;
   height: 100%;
-  width: 220px;
+  width: 205px;
   padding-left: 25px;
-  padding-right: 20px;
+  padding-right: 15px;
   background-color: $sidebar-color;
   color: #50596b;
   display: flex;
@@ -131,7 +131,7 @@ hr {
   width: 85%;
   margin: 10px 0;
   border: none;
-  height: 2px;
+  height: 1px;
   justify-self: center;
   background-color: #e4e8ec;
 }
@@ -144,7 +144,7 @@ hr {
 }
 
 .playlist-sidebar {
-  margin-top: 25px;
+  margin-top: 20px;
   padding-left: 10px;
   width: 100%;
   display: flex;
@@ -155,7 +155,6 @@ hr {
   margin-bottom: 10px;
   width: 100%;
   position: relative;
-
 }
 
 .click-content {
@@ -170,7 +169,7 @@ hr {
 
 #create {
   position: absolute;
-  left: 135px;
+  left: 130px;
   top: 50%;
   transform: translateY(-50%);
 }

@@ -11,6 +11,16 @@ public enum FavoriteType {
         this.value = value;
     }
 
+    public static String toChinese(String targetType) {
+
+        return switch (targetType) {
+            case "music" -> "音乐";
+            case "album" -> "专辑";
+            case "playlist" -> "歌单";
+            default -> targetType;
+        };
+    }
+
     public String getValue() {
         return value;
     }

@@ -8,6 +8,7 @@ import com.zhongxin.sonicshelf.mapper.FavoriteMapper;
 import com.zhongxin.sonicshelf.mapper.PlaylistMapper;
 import com.zhongxin.sonicshelf.service.FavoriteService;
 import com.zhongxin.sonicshelf.util.CurrentUserUtil;
+import com.zhongxin.sonicshelf.util.FavoriteType;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,24 +26,24 @@ public class FavoriteServiceImpl implements FavoriteService {
     public FavoriteResponse addFavorite(String targetType, Long targetId) {
         Favorite favorite = new Favorite(targetType, targetId);
 
-        if (isFavorite(favorite))
-            throw new CustomException("400", "您已收藏该歌单");
+        if (isFavorite(favorite)){
+            throw new CustomException("400", "您已收藏该"+ FavoriteType.toChinese(targetType));
+        }
         favoriteMapper.addFavorite(favorite);
         return favoriteMapper.selectFavoriteById(favorite.getId().intValue());
     }
 
     @Override
-    public void removeFavoritePlaylist(String targetType, Long playlistId) {
+    public void removeFavorite(String targetType, Long playlistId) {
         Favorite favorite = new Favorite(targetType, playlistId);
 
-        if (!isFavorite(favorite)) throw new CustomException("400", "您未收藏该歌单");
+        if (!isFavorite(favorite)) throw new CustomException("400", "您未收藏该"+FavoriteType.toChinese(targetType));
 
         favoriteMapper.removeFavorite(favorite);
     }
 
     @Override
     public List<PlaylistsResponse> findPlaylists() {
-
         return playlistMapper.selectFavoriteByUserId(CurrentUserUtil.getCurrentUserId());
     }
 

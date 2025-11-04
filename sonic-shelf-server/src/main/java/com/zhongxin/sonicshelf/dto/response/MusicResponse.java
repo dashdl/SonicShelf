@@ -10,4 +10,6 @@ public class MusicResponse {
     private String artistName;
     private String albumTitle;
     private String fileUrl;
+    private String duration;
+    private String isFavorite;
 }

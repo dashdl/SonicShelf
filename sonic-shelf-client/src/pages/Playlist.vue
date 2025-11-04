@@ -8,7 +8,6 @@ import {onMounted, reactive, ref, watch} from "vue";
 import {usePlayerStore} from "@/store/player.js";
 
 
-
 const route = useRoute();
 
 let musicInfo = ref([])
@@ -19,7 +18,7 @@ const data = reactive({
   total: 1,
 })
 
-const replace=async () => {
+const replace = async () => {
   const currentId = route.params.id;
   await request.get('playlists/' + currentId + '/musics').then(res => {
     usePlayerStore().updatePlaylist(res.data)
@@ -42,15 +41,16 @@ const Info = reactive({
   createTime: '',
   userAvatar: '',
   playCount: '',
+  isFavorite: null,
 })
 
 const loadMore = async () => {
-  if(!hasMore.value || loading.value) return
+  if (!hasMore.value || loading.value) return
   loading.value = true
   try {
     await load()
     // 加载完成后检查是否还有更多数据
-    if(data.pageNum * data.pageSize >= data.total) hasMore.value = false
+    if (data.pageNum * data.pageSize >= data.total) hasMore.value = false
   } catch (error) {
     console.error('加载更多数据失败:', error)
     ElMessage.error('加载更多音乐失败')
@@ -65,7 +65,7 @@ const loadPlaylistData = async (playlistId) => {
   data.total = 1;
   hasMore.value = true;
   musicInfo.value = [];
-  
+
   await Promise.all([
     request.get('playlists/' + playlistId).then(res => {
       if (res.code === '200') {
@@ -77,7 +77,6 @@ const loadPlaylistData = async (playlistId) => {
         Info.coverImage = res.data.coverImage;
         Info.musicCount = res.data.musicCount;
         Info.playCount = res.data.playCount;
-        Info.createTime = res.data.createTime.substring(0, 10);
       } else {
         ElMessage.error("歌单信息获取失败")
       }
@@ -106,6 +105,13 @@ const load = async () => {
   })
 }
 
+const handleUpdateFavorite = (musicId, newFavoriteState) => {
+  const itemIndex = musicInfo.value.findIndex(item => item.id === musicId);
+  if (itemIndex !== -1) {
+    musicInfo.value[itemIndex].isFavorite = newFavoriteState;
+  }
+};
+
 watch(() => route.params.id, (newId, oldId) => {
   if (newId !== oldId) {
     loadPlaylistData(newId);
@@ -115,7 +121,6 @@ watch(() => route.params.id, (newId, oldId) => {
 onMounted(async () => {
   await loadPlaylistData(route.params.id);
 });
-
 
 
 const baseUrl = 'http://localhost:8080';
@@ -149,8 +154,9 @@ const baseUrl = 'http://localhost:8080';
           <span style="font-size: 12px;color: #b7bac4">{{ Info.createTime }}创建</span>
         </div>
         <div class="button-group">
-          <div @click="replace" class="button" style="color: #ffffff;background: linear-gradient(to right, #fc3b5b, #fc3d49);">
-            <img  src="/icons/player/play.svg" style="height: 15px;margin-right: 5px" alt="">
+          <div @click="replace" class="button"
+               style="color: #ffffff;background: linear-gradient(to right, #fc3b5b, #fc3d49);">
+            <img src="/icons/player/play.svg" style="height: 15px;margin-right: 5px" alt="">
             播放全部
           </div>
         </div>
@@ -178,6 +184,7 @@ const baseUrl = 'http://localhost:8080';
           :has-more="hasMore"
           :loading="loading"
           :load-more="loadMore"
+          @update-favorite="handleUpdateFavorite"
       />
     </div>
   </div>
@@ -185,6 +192,7 @@ const baseUrl = 'http://localhost:8080';
 
 <style scoped>
 .main-container {
+  user-select: none;
   display: flex;
   flex-direction: column;
 }
@@ -238,6 +246,10 @@ const baseUrl = 'http://localhost:8080';
   border-radius: 10px;
   align-items: center;
   justify-content: center;
+}
+
+.button-group .button:hover {
+  cursor: pointer;
 }
 
 .select-button {

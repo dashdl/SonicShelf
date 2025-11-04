@@ -1,7 +1,10 @@
 <script setup>
+import {onMounted, onUnmounted, ref, nextTick, watch} from "vue";
+import request from "@/utils/request.js";
+import {ElMessage} from "element-plus";
+import {usePlayerStore} from "@/store/player.js";
 
-import router from "@/router/index.js";
-import {onMounted, onUnmounted, ref, nextTick} from "vue";
+const playerStore = usePlayerStore();
 
 const props = defineProps({
   items: {
@@ -25,6 +28,16 @@ const props = defineProps({
     default: 300 // 增加默认阈值，减少触发频率
   }
 })
+
+const reactiveItems = ref([]);
+
+watch(() => props.items, (newItems) => {
+  reactiveItems.value = JSON.parse(JSON.stringify(newItems));
+}, { immediate: true, deep: true });
+
+const play=(id)=>{
+  playerStore.checkMusicId(id)
+}
 
 let currentContainer = null;
 const tableRef = ref(null);
@@ -51,7 +64,7 @@ const handleScroll = (event) => {
   const container = event.target || currentContainer;
   if (!container) return;
 
-  const { scrollTop, scrollHeight, clientHeight } = container;
+  const {scrollTop, scrollHeight, clientHeight} = container;
 
   if (scrollHeight - scrollTop - clientHeight < props.threshold) {
     debouncedLoadMore();
@@ -62,6 +75,58 @@ const goToMusic = (musicId) => {
   // router.push(`/playlist/${musicId}`);
 };
 
+const emit = defineEmits(['updateFavorite']);
+
+const favorite=(id,isFavorite)=>{
+  if (isFavorite === '0') {
+    request.post('favorites/music/' + id).then(res => {
+      if (res.code === '200') {
+        ElMessage.success('收藏成功');
+        // 找到响应式副本中对应的项并更新状态
+        const item = reactiveItems.value.find(item => item.id === id);
+        if (item) {
+          item.isFavorite = '1';
+        }
+        // 通知父组件持久化更改
+        emit('updateFavorite', id, '1');
+      } else {
+        ElMessage.error(res.message);
+        // 请求失败，恢复原状态
+        const item = reactiveItems.value.find(item => item.id === id);
+        if (item) item.isFavorite = '0';
+      }
+    }).catch(err => {
+      console.error('收藏失败:', err);
+      ElMessage.error('收藏失败，请稍后重试');
+      // 请求失败，恢复原状态
+      const item = reactiveItems.value.find(item => item.id === id);
+      if (item) item.isFavorite = '0';
+    });
+  } else {
+    request.delete('favorites/music/' + id).then(res => {
+      if (res.code === '200') {
+        ElMessage.success('取消收藏成功');
+        const item = reactiveItems.value.find(item => item.id === id);
+        if (item) {
+          item.isFavorite = '0';
+        }
+        emit('updateFavorite', id, '0');
+      } else {
+        ElMessage.error(res.message);
+        // 请求失败，恢复原状态
+        const item = reactiveItems.value.find(item => item.id === id);
+        if (item) item.isFavorite = '1';
+      }
+    }).catch(err => {
+      console.error('取消收藏失败:', err);
+      ElMessage.error('取消收藏失败，请稍后重试');
+      // 请求失败，恢复原状态
+      const item = reactiveItems.value.find(item => item.id === id);
+      if (item) item.isFavorite = '1';
+    });
+  }
+}
+
 const findScrollableParent = (element) => {
   let parent = element.parentElement;
   while (parent && parent !== document.body) {
@@ -69,7 +134,7 @@ const findScrollableParent = (element) => {
       return parent;
     }
     const style = window.getComputedStyle(parent);
-    if ((style.overflow === 'auto' || style.overflow === 'scroll') && 
+    if ((style.overflow === 'auto' || style.overflow === 'scroll') &&
         parent.scrollHeight > parent.clientHeight) {
       return parent;
     }
@@ -130,12 +195,12 @@ const baseUrl = 'http://localhost:8080';
         </div>
       </div>
     </div>
-    <div class="table-row" v-for="(item, index) in props.items" @click="goToMusic(item.id)" :key="index">
+    <div class="table-row" v-for="(item, index) in reactiveItems" @click="goToMusic(item.id)" :key="item.id">
       <div class="left-cell">
         <div class="rank-cell">
           <span id="title" style="font-size: 12px">{{ index + 1 }}</span>
           <div class="play-button">
-            <img src="/icons/player/play.svg" style="width: 20px;filter: brightness(0.4);" alt="">
+            <img @click="play(item.id)" src="/icons/player/play.svg" style="width: 20px;filter: brightness(0.4);" alt="">
           </div>
         </div>
         <div class="title-cell">
@@ -151,7 +216,10 @@ const baseUrl = 'http://localhost:8080';
       </div>
       <div class="right-cell">
         <div class="total-cell"><span>{{ item.albumTitle }}</span></div>
-        <div class="like-cell"><img src="/icons/status/like.svg" style="width: 18px;" alt=""></div>
+        <div class="like-cell">
+          <img @click="favorite(item.id,item.isFavorite)" :src="item.isFavorite==='1' ? '/icons/player/like.svg':'/icons/player/unlike.svg' " style="width: 18px;"
+               alt="">
+        </div>
         <div class="time-cell"><span style="color: #7b818f">04:55</span></div>
       </div>
     </div>
@@ -244,6 +312,13 @@ span {
 
 .total-cell {
   width: 70%;
+  overflow: hidden;
+}
+.total-cell span{
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .like-cell {

@@ -78,7 +78,7 @@ onMounted(async () => {
 
 .left-container {
   height: 100%;
-  width: 220px;
+  width: 205px;
   display: flex;
   flex-shrink: 0;
   position: relative;
@@ -113,7 +113,7 @@ onMounted(async () => {
   }
 
   .right-container {
-    padding-left: 120px;
+    padding-left: 115px;
   }
 }
 </style>

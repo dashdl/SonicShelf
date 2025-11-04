@@ -416,6 +416,25 @@ onUnmounted(() => {
           <span>选择...</span>
           <img src="/icons/status/down.svg" style="width: 14px;" alt="">
         </div>
+        <div class="categories-form">
+          <div class="categories-title">
+            <span style="font-size: 18px;margin-right: 25px">114514</span>
+            <span style="font-size: 18px;margin-right: 25px">114514</span>
+            <span style="font-size: 18px;margin-right: 25px">114514</span>
+            <span style="font-size: 18px;margin-right: 25px">114514</span>
+          </div>
+          <div class="categories-second">
+            <div class="grid-list">
+              <div class="tag">114</div>
+              <div class="tag">114</div>
+              <div class="tag">114</div>
+              <div class="tag">114</div>
+              <div class="tag">114</div>
+              <div class="tag">114</div>
+              <div class="tag">114</div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="profile-item" style="padding-left: 74px;margin-top: 36px">
         <div class="save-button" @click="saveProfile">保存</div>
@@ -452,6 +471,7 @@ onUnmounted(() => {
 }
 
 .profile-item {
+  position: relative;
   display: flex;
   margin-bottom: 18px;
 }
@@ -505,5 +525,43 @@ input, textarea {
   justify-content: space-between;
   border: 1px solid #e4e8ec;
   border-radius: 10px;
+}
+
+.categories-form{
+  position: absolute;
+  top:35px;
+  left: 75px;
+  height: 375px;
+  width: 575px;
+  padding: 20px 25px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 15px  #7b818f;
+  z-index: 1;
+}
+
+.grid-list{
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  row-gap: 15px;
+}
+
+.tag{
+  height: 30px;
+  width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f2f3f4;
+  border-radius: 15px;
+  border: 1px solid #e4e8ec;
+}
+
+.tag:hover{
+  background-color: #fff0f0;
+  color: #ff3a3a;
+  border-color: #ff6f6f;
+  cursor: pointer;
 }
 </style>

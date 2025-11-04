@@ -1,5 +1,6 @@
 // stores/playerStore.js
 import {defineStore} from 'pinia'
+import request from "@/utils/request.js";
 
 export const usePlayerStore = defineStore('player', {
     state: () => ({
@@ -11,7 +12,9 @@ export const usePlayerStore = defineStore('player', {
                 coverImage: "",
                 artistName: "",
                 albumTitle: "",
-                fileUrl: ""
+                fileUrl: "",
+                duration: 0,
+                isFavorite: true,
             }
         ],   // 当前播放列表
         currentIndex: 0,       // 当前播放索引
@@ -36,14 +39,12 @@ export const usePlayerStore = defineStore('player', {
             this.currentIndex = now;
             this.currentTitle = this.currentPlaylist[now].title
             this.currentName = this.currentPlaylist[now].artistName
-            // 从localStorage获取保存的音量，如果没有则使用默认值
             const savedVolume = localStorage.getItem('playerVolume');
             this.volume = savedVolume ? parseFloat(savedVolume) : 0.5;
             this.audio.volume = this.volume;
             return this.audio
         },
 
-        // 设置音频事件监听
         setupAudioEvents() {
             this.audio.addEventListener('loadedmetadata', () => {
                 this.duration = this.audio.duration
@@ -57,7 +58,6 @@ export const usePlayerStore = defineStore('player', {
                 this.next()
             })
 
-            // 监听音量变化
             this.audio.addEventListener('volumechange', () => {
                 // 只有当不是通过setVolume方法修改时才更新状态
                 // 这可以防止循环更新
@@ -68,7 +68,6 @@ export const usePlayerStore = defineStore('player', {
             })
         },
 
-        // 更新播放列表
         updatePlaylist(newPlaylist) {
             this.currentPlaylist = newPlaylist
             this.currentIndex = 0 // 重置到第一首
@@ -145,6 +144,22 @@ export const usePlayerStore = defineStore('player', {
                 // 保存音量设置到localStorage
                 localStorage.setItem('playerVolume', normalizedVolume.toString());
             }
+        },
+
+        checkMusicId(id) {
+            let index = 0
+            for (let item of this.currentPlaylist) {
+                if (item.id === id) {
+                    this.playSong(index)
+                    return
+                }
+                index++
+            }
+            request.get('/musics/' + id).then(res => {
+                this.currentPlaylist.splice(this.currentIndex + 1, 0, res.data)
+                localStorage.setItem(("playlist"),JSON.stringify(this.currentPlaylist))
+                this.playSong(this.currentIndex + 1)
+            })
         }
     }
 })
