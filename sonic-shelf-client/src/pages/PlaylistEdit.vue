@@ -2,214 +2,85 @@
 import {onMounted, reactive, watch, ref, onUnmounted} from 'vue';
 import request from '@/utils/request.js';
 import {ElMessage} from 'element-plus';
-import {useUserStore} from "@/store/userStore.js";
+import {useRoute} from "vue-router";
 
-const userStore = useUserStore();
+const route = useRoute();
+
+let categories = reactive([]);
+const userSelected = ref(1);
+const tags = reactive([])
+const tagForm = ref(false)
+let selectedTags = reactive([])
+let confirmTags = reactive([])
 
 const formData = reactive({
-  nickname: '',
-  bio: '',
-  gender: 1, // 1:男, 2:女
-  birthYear: '',
-  birthMonth: '',
-  birthDay: '',
-  province: '',
-  city: '',
-  avatar: ''
-});
-
-const dateOptions = reactive({
-  years: [],
-  months: [],
-  days: []
-});
-
-const regionOptions = reactive({
-  provinces: [],
-  cities: []
+  id: '',
+  title: '',
+  description: '',
+  coverImage: '',
+  tags: []
 });
 
 const avatarPreview = ref('');
 const fileInput = ref(null);
 let selectedFile = null;
 
-const initYears = () => {
-  const currentYear = new Date().getFullYear();
-  for (let year = currentYear; year >= 1950; year--) {
-    dateOptions.years.push(year);
-  }
-};
-const initMonths = () => {
-  for (let month = 1; month <= 12; month++) {
-
-    if (month < 10) {
-      dateOptions.months.push("0" + month);
-    } else {
-      dateOptions.months.push(month);
+const changeTags = (parentId) => {
+  request.get('categories', {
+    params: {
+      parentId: parentId,
     }
+  }).then((res) => {
+    if (res.code === '200') {
+      tags.length = 0; // 清空数组
+      tags.push(...res.data); // 添加新数据
+      console.log(tags)
+    }
+  })
+  userSelected.value = parentId;
+}
 
-
-  }
-};
-const updateDays = () => {
-  if (!formData.birthYear || !formData.birthMonth) {
-    dateOptions.days = [];
-    return;
-  }
-
-  const year = parseInt(formData.birthYear);
-  const month = parseInt(formData.birthMonth);
-
-  const daysInMonth = new Date(year, month, 0).getDate();
-
-  dateOptions.days = [];
-  for (let day = 1; day <= daysInMonth; day++) {
-    if (day < 10) {
-      dateOptions.days.push("0" + day);
-    } else {
-      dateOptions.days.push(day);
+const handleUserSelect = (id) => {
+  if (!selectedTags.includes(id)) {
+    selectedTags.push(id);
+  } else {
+    const index = selectedTags.indexOf(id);
+    if (index > -1) {
+      selectedTags.splice(index, 1); // 使用splice删除
     }
   }
-
-  // 如果之前选择的天数超过了当月最大天数，清空天数选择
-  if (formData.birthDay > daysInMonth) {
-    formData.birthDay = '';
-  }
-};
-
-const initProvinces = async () => {
-  try {
-    const response = await fetch('https://raw.githubusercontent.com/modood/Administrative-divisions-of-China/master/dist/provinces.json');
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    // 提取省份数据
-    if (Array.isArray(data)) {
-      regionOptions.provinces = data.map(item => ({
-        value: item.code,
-        label: item.name
-      }));
-    } else {
-      // 如果数据结构不符合预期，使用备用API
-      await fetchProvincesFromAlternativeAPI();
-    }
-  } catch (error) {
-    console.error('获取省份数据失败:', error);
-    // 尝试使用备用API
-    await fetchProvincesFromAlternativeAPI();
-  }
-};
-
-const updateCities = async () => {
-  if (!formData.province) {
-    regionOptions.cities = [];
-    formData.city = '';
-    return;
-  }
-
-  // 保存当前城市值，以便在更新后检查是否有效
-  const currentCity = formData.city;
-
-  try {
-    // 使用GitHub Pages托管的城市数据
-    const response = await fetch('https://raw.githubusercontent.com/modood/Administrative-divisions-of-China/master/dist/cities.json');
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    // 过滤出对应省份的城市
-    if (Array.isArray(data)) {
-      const filteredCities = data.filter(city => city.code.startsWith(formData.province));
-
-      if (filteredCities.length > 0) {
-        // 提取城市数据
-        regionOptions.cities = filteredCities.map(item => ({
-          value: item.code,
-          label: item.name
-        }));
-      } else {
-        // 如果找不到对应省份的城市，使用备用API
-        await fetchCitiesFromAlternativeAPI();
+  if (selectedTags.length > 0) {
+    request.get('categories', {
+      params: {
+        tags: selectedTags.join(',')
       }
-    } else {
-      await fetchCitiesFromAlternativeAPI();
-    }
-  } catch (error) {
-    console.error('获取城市数据失败:', error);
-    // 尝试使用备用API
-    await fetchCitiesFromAlternativeAPI();
+    }).then((res) => {
+      confirmTags.length = 0;
+      confirmTags.push(...res.data);
+    })
+  } else {
+    confirmTags.length = 0;
   }
-
-  // 检查保存的城市值是否在新的城市列表中，如果是则保留，否则清空
-  const isCityValid = regionOptions.cities.some(city => city.value === currentCity);
-  if (!isCityValid) {
-    formData.city = '';
+}
+const deleteTag = (id) => {
+  const index = selectedTags.indexOf(id);
+  if (index > -1) {
+    selectedTags.splice(index, 1); // 使用splice删除
   }
-  // 注意：如果城市值有效，我们不会清空它，保留用户原有的选择
-};
-
-const fetchProvincesFromAlternativeAPI = async () => {
-  try {
-    const response = await fetch('https://cdn.jsdelivr.net/npm/china-province-city-district-data@1.2.3/data.js');
-
-    if (!response.ok) {
-      throw new Error(`备用API请求失败`);
-    }
-
-    // 处理响应数据
-    const text = await response.text();
-    // 提取JSON部分（移除可能的赋值语句）
-    const jsonMatch = text.match(/\{[^;]+\}/);
-
-    if (jsonMatch && jsonMatch[0]) {
-      const data = JSON.parse(jsonMatch[0]);
-      // 提取省份数据
-      if (data) {
-        regionOptions.provinces = Object.entries(data).map(([code, name]) => ({
-          value: code,
-          label: name
-        }));
+  if (selectedTags.length > 0) {
+    request.get('categories', {
+      params: {
+        tags: selectedTags.join(',')
       }
-    }
-  } catch (fallbackError) {
-    console.error('备用API获取省份数据失败:', fallbackError);
-    regionOptions.provinces = [
-      {value: '110000', label: '北京市'},
-      {value: '310000', label: '上海市'},
-      {value: '440000', label: '广东省'}
-    ];
+    }).then((res) => {
+      confirmTags.length = 0;
+      confirmTags.push(...res.data);
+    })
+  } else {
+    confirmTags.length = 0;
   }
-};
+}
 
-const fetchCitiesFromAlternativeAPI = async () => {
-  try {
-    if (!formData.province) {
-      regionOptions.cities = [];
-      return;
-    }
-
-    const province = regionOptions.provinces.find(p => p.value === formData.province);
-    if (province) {
-      regionOptions.cities = [
-        {value: `${formData.province}01`, label: `${province.label}市`}
-      ];
-    } else {
-      regionOptions.cities = [];
-    }
-  } catch (error) {
-    console.error('备用API获取城市数据失败:', error);
-    regionOptions.cities = [];
-  }
-};
-
-// 添加文件上传相关方法
 const triggerFileUpload = () => {
   fileInput.value.click();
 };
@@ -242,106 +113,59 @@ const handleFileSelect = (event) => {
   }
 };
 
-watch(() => [formData.birthYear, formData.birthMonth], () => {
-  updateDays();
-});
-
-watch(() => formData.province, async () => {
-  await updateCities();
-});
-
 onMounted(async () => {
-  // 初始化日期选项
-  initYears();
-  initMonths();
 
-  // 初始化地区选项（异步）
-  await initProvinces();
+  const currentId = route.params.id;
+  await request.get('playlists/' + currentId).then(res => {
+    Object.assign(formData, res.data)
+    selectedTags = formData.tags;
+  })
 
-  // 加载用户信息
-  const userData = userStore.userInfo || {};
-  formData.nickname = userData.nickname || '';
-  formData.bio = userData.bio || '';
-  formData.gender = userData.gender || 1;
-
-  // 解析生日
-  if (userData.birthday) {
-    const [year, month, day] = userData.birthday.split('-');
-    formData.birthYear = year;
-    formData.birthMonth = month;
-    formData.birthDay = day;
-  }
-
-  // 地区解析逻辑优化
-  if (userData.location) {
-    try {
-      const locationParts = userData.location.split('-');
-      const provinceName = locationParts[0];
-      const cityName = locationParts[1];
-
-      // 查找对应的省份编码
-      const province = regionOptions.provinces.find(p => p.label === provinceName);
-      if (province) {
-        formData.province = province.value;
-
-        // 确保城市列表已加载
-        await updateCities();
-
-        // 尝试精确匹配城市
-        let city = regionOptions.cities.find(c => c.label === cityName);
-
-        // 如果精确匹配失败，尝试模糊匹配
-        if (!city && cityName) {
-          city = regionOptions.cities.find(c => c.label.includes(cityName) || cityName.includes(c.label));
-        }
-
-        // 使用setTimeout确保DOM更新后再设置城市值，解决响应式绑定问题
-        setTimeout(() => {
-          if (city) {
-            formData.city = city.value;
-          } else if (regionOptions.cities.length > 0) {
-            formData.city = regionOptions.cities[0].value;
-          }
-        }, 0);
-      }
-    } catch (error) {
-      console.error('解析地区信息时出错:', error);
+  request.get('categories', {
+    params: {
+      tags: formData.tags
     }
-  }
+  }).then((res) => {
+    confirmTags.length = 0;
+    confirmTags.push(...res.data);
+  })
 
-  formData.avatar = userData.avatar || '';
-
-  const avatarPath = formData.avatar;
+  const coverPath = formData.coverImage;
   const baseUrl = 'http://localhost:8080';
-  const imgElement = document.getElementById('userAvatar');
+  const imgElement = document.getElementById('playlistCover');
   if (imgElement) {
-    imgElement.src = avatarPath ? baseUrl + avatarPath : '/images/default/avatar.jpg';
+    imgElement.src = coverPath ? baseUrl + coverPath : '/images/default/avatar.jpg';
   }
+
+  request.get('categories').then((res) => {
+    if (res.code === '200') {
+      categories = res.data;
+    }
+  })
+
+  request.get('categories', {
+    params: {
+      parentId: 1,
+    }
+  }).then((res) => {
+    if (res.code === '200') {
+      tags.length = 0; // 清空数组
+      tags.push(...res.data); // 添加新数据
+    }
+  })
 });
 
 const saveProfile = async () => {
-  if (!formData.nickname.trim()) {
-    ElMessage.warning('昵称不能为空');
-    return;
-  }
 
-  // 如果有选择新头像，先上传头像
   if (selectedFile) {
     try {
-      const formDataForUpload = new FormData();
-      formDataForUpload.append('file', selectedFile);
+      const formForUpload = new FormData();
+      formForUpload.append('file', selectedFile);
 
-      console.log('上传文件信息:', selectedFile);
-      console.log('FormData内容:', formDataForUpload.getAll('file'));
-      console.log('API请求路径:', '/upload/avatar');
-
-      // 上传头像
-      const uploadResponse = await request.post('/upload/avatar', formDataForUpload);
-      console.log('上传响应:', uploadResponse);
+      const uploadResponse = await request.post('/upload/cover', formForUpload);
 
       if (uploadResponse.code === '200') {
-        // 更新头像路径到formData
-        formData.avatar = uploadResponse.data.avatarPath;
+        formData.coverImage = uploadResponse.data.coverPath;
       } else {
         ElMessage.error(uploadResponse.message || '头像上传失败');
         return;
@@ -355,31 +179,23 @@ const saveProfile = async () => {
     }
   }
 
-  // 修改后的保存个人信息逻辑
-  const submitData = {
-    ...formData,
-    birthday: formData.birthYear && formData.birthMonth && formData.birthDay
-        ? `${formData.birthYear}-${formData.birthMonth}-${formData.birthDay}`
-        : null,
-    location: formData.province && formData.city
-        ? `${regionOptions.provinces.find(p => p.value === formData.province)?.label || formData.province}-${regionOptions.cities.find(c => c.value === formData.city)?.label || formData.city}`
-        : null
-  };
+  formData.tags = selectedTags;
 
-  request.put('/users/profile', submitData).then(async res => {
+  request.put('/playlists/' + formData.id, formData).then(async res => {
     if (res.code === '200') {
-      ElMessage.success('个人信息保存成功');
+      ElMessage.success('歌单信息保存成功');
       try {
-        await userStore.restoreUserState();
+        console.log(res.data)
       } catch (error) {
-        ElMessage.error("用户状态加载失败");
+        ElMessage.error("歌单状态加载失败");
       }
     } else {
-      ElMessage.error(res.message || '个人信息保存失败');
+      ElMessage.error(res.message || '歌单信息保存失败');
     }
   }).catch(err => {
-    ElMessage.error('个人信息保存失败');
+    ElMessage.error('歌单信息保存失败');
   });
+
 };
 
 const cancelEdit = () => {
@@ -403,35 +219,38 @@ onUnmounted(() => {
       </div>
       <div class="profile-item">
         <label style="margin-right: 30px">名称：</label>
-        <input v-model="formData.nickname" placeholder="请输入昵称">
+        <input v-model="formData.title" placeholder="请输入歌单名称">
       </div>
       <div class="profile-item">
         <label style="margin-right: 30px;">简介：</label>
-        <textarea v-model="formData.bio" style="height: 230px;outline: none;resize: none;"
-                  placeholder="请输入个人简介"></textarea>
+        <textarea v-model="formData.description" style="height: 230px;outline: none;resize: none;"
+                  placeholder="请输入歌单简介"></textarea>
       </div>
       <div class="profile-item">
         <label style="margin-right: 30px;">标签：</label>
-        <div class="select-button">
-          <span>选择...</span>
-          <img src="/icons/status/down.svg" style="width: 14px;" alt="">
+        <div @click="tagForm=!tagForm" class="select-button">
+          <span v-if="confirmTags.length<=0">选择...</span>
+          <div class="selected-grid">
+            <div class="selected-t" v-for="item in confirmTags">
+              {{ item.name }}
+              <img @click="deleteTag(item.id)" src="/icons/status/close.svg" style="height: 10px" alt="">
+            </div>
+          </div>
+          <img :src="!tagForm ? '/icons/status/down.svg' :'/icons/status/up.svg'" style="width: 14px;" alt="">
         </div>
-        <div class="categories-form">
+        <div v-if="tagForm" class="categories-form">
           <div class="categories-title">
-            <span style="font-size: 18px;margin-right: 25px">114514</span>
-            <span style="font-size: 18px;margin-right: 25px">114514</span>
-            <span style="font-size: 18px;margin-right: 25px">114514</span>
-            <span style="font-size: 18px;margin-right: 25px">114514</span>
+            <div class="title-content" v-for="item in categories">
+              <div v-if="item.id===userSelected" class="select-underline"></div>
+              <span @click="changeTags(item.id)" :class="{ 'bold-text': item.id === userSelected }"
+                    style="font-size: 18px;">{{ item.name }}</span>
+            </div>
           </div>
           <div class="categories-second">
             <div class="grid-list">
-              <div class="tag">114</div>
-              <div class="tag">114</div>
-              <div class="tag">114</div>
-              <div class="tag">114</div>
-              <div class="tag">114</div>
-              <div class="tag">114</div>
-              <div class="tag">114</div>
+              <div @click="handleUserSelect(item.id)" v-for="item in tags"
+                   :class="['tag', { 'tag-selected': selectedTags.includes(item.id) }]">{{ item.name }}
+              </div>
             </div>
           </div>
         </div>
@@ -443,9 +262,9 @@ onUnmounted(() => {
     </div>
     <div class="avatar">
       <img
-          id="userAvatar"
-          :src="avatarPreview || (formData.avatar ? 'http://localhost:8080' + formData.avatar : '/images/default/avatar.jpg')"
-          alt="点击上传头像"
+          id="playlistCover"
+          :src="avatarPreview || (formData.coverImage ? 'http://localhost:8080' + formData.coverImage : '/images/default/cover.jpg')"
+          alt="点击上传封面"
           @click="triggerFileUpload"
       >
       <input type="file" ref="fileInput" @change="handleFileSelect" accept="image/*" style="display: none;">
@@ -516,9 +335,9 @@ input, textarea {
   cursor: pointer;
 }
 
-.select-button{
-  width: 100px;
-  height: 30px;
+.select-button {
+  min-width: 100px;
+  min-height: 30px;
   padding: 0 10px;
   display: flex;
   align-items: center;
@@ -527,27 +346,88 @@ input, textarea {
   border-radius: 10px;
 }
 
-.categories-form{
+.select-button:hover {
+  cursor: pointer;
+}
+
+.selected-grid {
+  margin-right: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.selected-t {
+  position: relative;
+  margin: 5px;
+  min-width: 60px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f2f3f4;
+  border-radius: 15px;
+  border: 1px solid #e4e8ec;
+}
+
+.selected-t img {
   position: absolute;
-  top:35px;
+  right: 4px;
+}
+
+.selected-t img:hover {
+  cursor: pointer;
+}
+
+.categories-form {
+  position: absolute;
+  top: 35px;
   left: 75px;
   height: 375px;
   width: 575px;
   padding: 20px 25px;
   background-color: #ffffff;
   border-radius: 10px;
-  box-shadow: 0 0 15px  #7b818f;
+  box-shadow: 0 0 15px #7b818f;
   z-index: 1;
 }
 
-.grid-list{
+.categories-title {
+  display: flex;
+}
+
+.title-content {
+  position: relative;
+  margin-right: 25px;
+}
+
+.select-underline {
+  position: absolute;
+
+  height: 3px;
+  width: 18px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fc3b56;
+  border-radius: 2px;
+}
+
+.bold-text {
+  font-weight: bold;
+}
+
+.title-content span:hover {
+  cursor: pointer;
+}
+
+.grid-list {
   margin-top: 20px;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   row-gap: 15px;
 }
 
-.tag{
+.tag {
   height: 30px;
   width: 80px;
   display: flex;
@@ -558,7 +438,18 @@ input, textarea {
   border: 1px solid #e4e8ec;
 }
 
-.tag:hover{
+.tag:hover {
+  background-color: #fff0f0;
+  color: #ff3a3a;
+  border-color: #ff6f6f;
+  cursor: pointer;
+}
+
+.tag:active {
+  scale: 0.95;
+}
+
+.tag-selected {
   background-color: #fff0f0;
   color: #ff3a3a;
   border-color: #ff6f6f;

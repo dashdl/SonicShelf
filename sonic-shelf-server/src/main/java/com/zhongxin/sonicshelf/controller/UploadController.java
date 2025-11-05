@@ -2,6 +2,8 @@ package com.zhongxin.sonicshelf.controller;
 
 import cn.hutool.core.io.FileUtil;
 
+import com.zhongxin.sonicshelf.entity.Playlist;
+import com.zhongxin.sonicshelf.service.PlaylistService;
 import com.zhongxin.sonicshelf.service.UserService;
 import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
@@ -18,6 +20,8 @@ public class UploadController {
 
     @Resource
     UserService userService;
+    @Resource
+    PlaylistService playlistService;
 
     @PostMapping("/avatar")
     public Result uploadAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
@@ -33,6 +37,19 @@ public class UploadController {
             token = authorizationHeader.substring(7);
         }
         userService.updateUserAvatar("/uploads/avatars/" + fileName, token);
+
+        return Result.success("上传成功", "/uploads/avatars/" + fileName);
+    }
+
+    @PostMapping("/cover/{id}")
+    public Result uploadCover(@RequestParam("file") MultipartFile file,@PathVariable Long id) throws IOException {
+        String filePath = System.getProperty("user.dir") + "/files/uploads/covers/";
+
+        byte[] bytes = file.getBytes();
+        // 使用时间戳前缀避免文件名冲突，直接使用原始文件名（包含中文）
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        FileUtil.writeBytes(bytes, filePath + fileName);
+        playlistService.updatePlaylistCover("/uploads/covers/" + fileName,id);
 
         return Result.success("上传成功", "/uploads/avatars/" + fileName);
     }

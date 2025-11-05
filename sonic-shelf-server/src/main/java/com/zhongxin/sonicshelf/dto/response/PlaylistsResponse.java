@@ -14,4 +14,5 @@ public class PlaylistsResponse {
     private String playCount;
     private LocalDateTime createTime;
     private String userAvatar;
+    private Long[] tags;
 }

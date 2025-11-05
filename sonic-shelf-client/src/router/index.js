@@ -4,7 +4,6 @@ import Home from "@/pages/Home.vue";
 import UserPanel from "@/components/form/UserPanel.vue";
 import LoginForm from "@/components/form/LoginForm.vue";
 import Profile from "@/pages/Profile.vue";
-import upload from "@/pages/upload.vue";
 import {useUserStore} from "@/store/userStore.js";
 import ProfileSettings from "@/pages/ProfileSettings.vue";
 import GridList from "@/components/list/GridList.vue";
@@ -27,6 +26,11 @@ const router = createRouter({
                     path: '/playlist/:id',
                     component: () => import("@/pages/Playlist.vue"),
                     props: true // 启用props接收参数
+                },
+                {
+                    path: '/Playlist-edit/:id',
+                    component: () => import("@/pages/PlaylistEdit.vue"),
+                    props: true
                 },
             ]
         },

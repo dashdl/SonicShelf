@@ -1,8 +1,11 @@
 package com.zhongxin.sonicshelf.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.dto.request.PlaylistRequest;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
+import com.zhongxin.sonicshelf.entity.Playlist;
+import com.zhongxin.sonicshelf.service.CategoriesService;
 import com.zhongxin.sonicshelf.service.MusicService;
 import com.zhongxin.sonicshelf.service.PlaylistService;
 import com.zhongxin.sonicshelf.util.Result;
@@ -17,11 +20,13 @@ public class PlaylistsController {
     private PlaylistService playlistsService;
     @Resource
     private MusicService musicService;
+    @Resource
+    private CategoriesService categoriesService;
+
     @GetMapping("")
     public Result playlists(@RequestParam(required = false) Integer pageNum,
                             @RequestParam(required = false) Integer pageSize,
                             Long id) {
-
         if (pageNum == null || pageNum < 1) {
             return  Result.success(playlistsService.findAll(id));
         }
@@ -31,6 +36,17 @@ public class PlaylistsController {
 
     @GetMapping("/{id}")
     public Result playlists(@PathVariable Long id) {
+        return Result.success(playlistsService.findByPlaylistId(id));
+    }
+
+    @PutMapping("/{id}")
+    public Result updatePlaylist(@PathVariable Long id,
+                                 @RequestBody PlaylistRequest playlistRequest){
+        Playlist playlist = new Playlist(playlistRequest);
+        playlist.setId(id);
+        playlistsService.updatePlaylistTags(id, playlistRequest.getTags());
+        playlistsService.updatePlaylist(playlist);
+
         return Result.success(playlistsService.findByPlaylistId(id));
     }
 

@@ -6,6 +6,7 @@ import {useRoute} from "vue-router";
 import InfiniteTable from "@/components/list/InfiniteTable.vue";
 import {onMounted, reactive, ref, watch} from "vue";
 import {usePlayerStore} from "@/store/player.js";
+import router from "@/router/index.js";
 
 
 const route = useRoute();
@@ -25,7 +26,6 @@ const replace = async () => {
     localStorage.setItem("playlist", JSON.stringify(res.data))
     usePlayerStore().playSong(0);
   })
-
 }
 
 const loading = ref(false)
@@ -122,6 +122,10 @@ onMounted(async () => {
   await loadPlaylistData(route.params.id);
 });
 
+const goToEditPlaylist = () => {
+  const currentId = route.params.id
+  router.push(`/Playlist-edit/${currentId}`);
+}
 
 const baseUrl = 'http://localhost:8080';
 </script>
@@ -141,7 +145,7 @@ const baseUrl = 'http://localhost:8080';
       <div class="profile-content">
         <div class="title">
           <span style="margin-top: -5px; margin-right: 8px;font-size: 24px;font-weight: bold;">{{ Info.title }}</span>
-          <img src="/icons/actions/edit.svg" style="width: 20px" alt="">
+          <img @click="goToEditPlaylist()" src="/icons/actions/edit.svg" style="width: 20px" alt="">
         </div>
         <div class="description" style="margin-bottom: 10px;">
           <span style="color: #7b818f;">{{ Info.description }}</span>
