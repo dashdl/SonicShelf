@@ -12,6 +12,7 @@ import Playlist from "@/pages/Playlist.vue";
 import InfiniteTable from "@/components/list/InfiniteTable.vue";
 import PlaylistEdit from "@/pages/PlaylistEdit.vue";
 import PlaylistForm from "@/components/form/PlaylistForm.vue";
+import Comment from "@/components/list/Comment.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,7 +20,7 @@ const router = createRouter({
         {
             path: '/', component: Layout,
             children: [
-                {path: '', component: PlaylistEdit},
+                {path: '', component: Comment},
                 {path: '/profile', component: Profile},
                 {path: '/profile-settings', component: ProfileSettings},
                 {

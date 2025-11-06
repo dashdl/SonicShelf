@@ -4,12 +4,16 @@ import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
 import InfiniteTable from "@/components/list/InfiniteTable.vue";
+import Comment from "@/components/list/Comment.vue";
 import {onMounted, reactive, ref, watch} from "vue";
 import {usePlayerStore} from "@/store/player.js";
 import router from "@/router/index.js";
 
-
 const route = useRoute();
+
+const userSelect = reactive({
+  page: 1
+});
 
 let musicInfo = ref([])
 
@@ -17,6 +21,7 @@ const data = reactive({
   pageNum: 1,
   pageSize: 10,
   total: 1,
+  commentCount: 0,
 })
 
 const replace = async () => {
@@ -60,12 +65,10 @@ const loadMore = async () => {
 }
 
 const loadPlaylistData = async (playlistId) => {
-
   data.pageNum = 1;
   data.total = 1;
   hasMore.value = true;
   musicInfo.value = [];
-
   await Promise.all([
     request.get('playlists/' + playlistId).then(res => {
       if (res.code === '200') {
@@ -77,6 +80,7 @@ const loadPlaylistData = async (playlistId) => {
         Info.coverImage = res.data.coverImage;
         Info.musicCount = res.data.musicCount;
         Info.playCount = res.data.playCount;
+        Info.createTime = res.data.createTime.substring(0, 10);
       } else {
         ElMessage.error("歌单信息获取失败")
       }
@@ -89,6 +93,18 @@ const loadPlaylistData = async (playlistId) => {
     }).then(res => {
       data.total = res.data.total;
       musicInfo.value = res.data.list;
+    }),
+    request.get('comments', {
+      params: {
+        targetType: 'playlist',
+        targetId: playlistId
+      }
+    }).then(res => {
+      if (res.code === '200') {
+        data.commentCount= res.data.length
+      } else {
+        ElMessage.error("歌单信息获取失败")
+      }
     })
   ]);
 }
@@ -172,10 +188,20 @@ const baseUrl = 'http://localhost:8080';
           <div class="numb">
             <span style="font-size:12px;font-weight: bold">{{ Info.musicCount }}</span>
           </div>
-          <span>歌曲</span>
+          <span @click="userSelect.page=1" :class="{ 'bold-text': userSelect.page === 1 }">歌曲</span>
+          <div v-if="userSelect.page === 1" class="button-underline"></div>
         </div>
-        <div class="button"><span>评论</span></div>
-        <div class="button"><span>收藏者</span></div>
+        <div class="button">
+          <div class="numb">
+            <span style="font-size:12px;font-weight: bold">{{ data.commentCount }}</span>
+          </div>
+          <span @click="userSelect.page=2" :class="{ 'bold-text': userSelect.page === 2 }">评论</span>
+          <div v-if="userSelect.page === 2" class="button-underline"></div>
+        </div>
+        <div class="button">
+          <span @click="userSelect.page=3">收藏者</span>
+          <div v-if="userSelect.page === 3" class="button-underline"></div>
+        </div>
       </div>
       <div class="search">
         <img src="/icons/navigation/search.svg" style="height: 13px;margin-right: 3px;" alt="">
@@ -184,11 +210,17 @@ const baseUrl = 'http://localhost:8080';
     </div>
     <div class="list-container">
       <InfiniteTable
+          v-if="userSelect.page===1"
           :items="musicInfo"
           :has-more="hasMore"
           :loading="loading"
           :load-more="loadMore"
           @update-favorite="handleUpdateFavorite"
+      />
+      <Comment
+          v-if="userSelect.page===2"
+          :target-id="route.params.id"
+          :target-type="'playlist'"
       />
     </div>
   </div>
@@ -266,6 +298,15 @@ const baseUrl = 'http://localhost:8080';
   color: #888888;
 }
 
+.select-button .button:hover {
+  cursor: pointer;
+}
+
+.bold-text {
+  color: #333333;
+  font-weight: bold;
+}
+
 .favorites-content {
   position: relative;
   display: flex;
@@ -281,6 +322,17 @@ const baseUrl = 'http://localhost:8080';
   position: absolute;
   left: 37px;
   top: -8px;
+}
+
+.button-underline {
+  position: absolute;
+  height: 3px;
+  width: 18px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fc3b56;
+  border-radius: 2px;
 }
 
 .search {

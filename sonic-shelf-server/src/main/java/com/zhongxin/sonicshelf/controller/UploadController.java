@@ -41,7 +41,7 @@ public class UploadController {
         return Result.success("上传成功", "/uploads/avatars/" + fileName);
     }
 
-    @PostMapping("/cover/{id}")
+    @PostMapping("/cover/{id}/")
     public Result uploadCover(@RequestParam("file") MultipartFile file,@PathVariable Long id) throws IOException {
         String filePath = System.getProperty("user.dir") + "/files/uploads/covers/";
 

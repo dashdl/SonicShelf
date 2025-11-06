@@ -23,5 +23,8 @@ public interface PlaylistMapper {
     void updatePlaylist(Playlist playlist);
 
     @Update("update playlists set cover_image=#{url} where id=#{id}")
-    void updateUserAvatar(@Param("url") String url, @Param("id") Long id);
+    void updatePlaylistCover(@Param("url") String url, @Param("id") Long id);
+
+    @Select("select user_id from playlists where id=#{id}")
+    Long findCreatorByPlaylistId(Long id);
 }

@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.entity.Playlist;
+import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.mapper.CategoriesMapper;
 import com.zhongxin.sonicshelf.mapper.PlaylistMapper;
 import com.zhongxin.sonicshelf.service.PlaylistService;
@@ -12,6 +13,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PlaylistServiceImpl implements PlaylistService {
@@ -69,7 +71,11 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public void updatePlaylistCover(String url,Long id) {
-        playlistMapper.updateUserAvatar(url, id);
+    public void updatePlaylistCover(String url, Long id) {
+        if (Objects.equals(playlistMapper.findCreatorByPlaylistId(id), CurrentUserUtil.getCurrentUserId())) {
+            playlistMapper.updatePlaylistCover(url, id);
+        }else {
+            throw new CustomException("这不是您创建的歌单");
+        }
     }
 }

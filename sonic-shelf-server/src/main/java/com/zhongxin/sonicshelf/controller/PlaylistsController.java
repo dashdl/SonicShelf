@@ -5,12 +5,17 @@ import com.zhongxin.sonicshelf.dto.request.PlaylistRequest;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.entity.Playlist;
+import com.zhongxin.sonicshelf.exception.CustomException;
+import com.zhongxin.sonicshelf.mapper.PlaylistMapper;
 import com.zhongxin.sonicshelf.service.CategoriesService;
 import com.zhongxin.sonicshelf.service.MusicService;
 import com.zhongxin.sonicshelf.service.PlaylistService;
+import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/playlists")
@@ -21,14 +26,14 @@ public class PlaylistsController {
     @Resource
     private MusicService musicService;
     @Resource
-    private CategoriesService categoriesService;
+    private PlaylistMapper playlistMapper;
 
     @GetMapping("")
     public Result playlists(@RequestParam(required = false) Integer pageNum,
                             @RequestParam(required = false) Integer pageSize,
                             Long id) {
         if (pageNum == null || pageNum < 1) {
-            return  Result.success(playlistsService.findAll(id));
+            return Result.success(playlistsService.findAll(id));
         }
         PageInfo<PlaylistsResponse> pageInfo = playlistsService.findAsPage(pageNum, pageSize, id);
         return Result.success(pageInfo);
@@ -41,12 +46,15 @@ public class PlaylistsController {
 
     @PutMapping("/{id}")
     public Result updatePlaylist(@PathVariable Long id,
-                                 @RequestBody PlaylistRequest playlistRequest){
+                                 @RequestBody PlaylistRequest playlistRequest) {
         Playlist playlist = new Playlist(playlistRequest);
         playlist.setId(id);
-        playlistsService.updatePlaylistTags(id, playlistRequest.getTags());
-        playlistsService.updatePlaylist(playlist);
-
+        if (Objects.equals(playlistMapper.findCreatorByPlaylistId(id), CurrentUserUtil.getCurrentUserId())) {
+            playlistsService.updatePlaylistTags(id, playlistRequest.getTags());
+            playlistsService.updatePlaylist(playlist);
+        }else {
+            throw new CustomException("这不是您的歌单");
+        }
         return Result.success(playlistsService.findByPlaylistId(id));
     }
 
@@ -56,7 +64,7 @@ public class PlaylistsController {
                             @RequestParam(required = false) Integer pageSize) {
 
         if (pageNum == null || pageNum < 1) {
-            return  Result.success(musicService.findByListId(id));
+            return Result.success(musicService.findByListId(id));
         }
 
         PageInfo<MusicResponse> pageInfo = musicService.findAsPageByListId(pageNum, pageSize, id);

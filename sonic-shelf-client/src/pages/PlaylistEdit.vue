@@ -162,7 +162,7 @@ const saveProfile = async () => {
       const formForUpload = new FormData();
       formForUpload.append('file', selectedFile);
 
-      const uploadResponse = await request.post('/upload/cover', formForUpload);
+      const uploadResponse = await request.post('/upload/cover/'+formData.id, formForUpload);
 
       if (uploadResponse.code === '200') {
         formData.coverImage = uploadResponse.data.coverPath;
@@ -402,7 +402,6 @@ input, textarea {
 
 .select-underline {
   position: absolute;
-
   height: 3px;
   width: 18px;
   bottom: 0;
