@@ -7,7 +7,6 @@ import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.entity.Playlist;
 import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.mapper.PlaylistMapper;
-import com.zhongxin.sonicshelf.service.CategoriesService;
 import com.zhongxin.sonicshelf.service.MusicService;
 import com.zhongxin.sonicshelf.service.PlaylistService;
 import com.zhongxin.sonicshelf.util.CurrentUserUtil;
@@ -32,10 +31,11 @@ public class PlaylistsController {
     public Result playlists(@RequestParam(required = false) Integer pageNum,
                             @RequestParam(required = false) Integer pageSize,
                             Long id) {
-        if (pageNum == null || pageNum < 1) {
-            return Result.success(playlistsService.findAll(id));
-        }
-        PageInfo<PlaylistsResponse> pageInfo = playlistsService.findAsPage(pageNum, pageSize, id);
+        Long targetUserId = (id == null ? CurrentUserUtil.getCurrentUserId() : id);
+
+        if (pageNum == null || pageNum < 1) return Result.success(playlistsService.findAll(id));
+
+        PageInfo<PlaylistsResponse> pageInfo = playlistsService.findAsPage(pageNum, pageSize, targetUserId);
         return Result.success(pageInfo);
     }
 
@@ -52,7 +52,7 @@ public class PlaylistsController {
         if (Objects.equals(playlistMapper.findCreatorByPlaylistId(id), CurrentUserUtil.getCurrentUserId())) {
             playlistsService.updatePlaylistTags(id, playlistRequest.getTags());
             playlistsService.updatePlaylist(playlist);
-        }else {
+        } else {
             throw new CustomException("这不是您的歌单");
         }
         return Result.success(playlistsService.findByPlaylistId(id));

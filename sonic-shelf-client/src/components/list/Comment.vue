@@ -3,6 +3,9 @@
 import {onMounted, reactive, ref} from "vue";
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
+import {useUserStore} from "@/store/userStore.js";
+
+const user = useUserStore();
 
 const props = defineProps({
   targetType: {
@@ -30,13 +33,11 @@ const formatCommentContent = (content) => {
   }
   const replyPattern = /^回复\s+[^：]+：/;
   const match = content.match(replyPattern);
-
   if (match) {
     return content.replace(replyPattern, '').trim();
   }
   comment.parentId = '';
   return content.trim();
-
 };
 
 const handleLike = (id, like) => {
@@ -74,35 +75,55 @@ const handleReply = (parentId, nickname) => {
   comment.parentId = parentId
   comment.content = "回复 " + nickname + '：' + comment.content
 }
+const deleteComment = (id) => {
+  request.delete('comments', {
+    params: {
+      targetType: props.targetType,
+      targetId: props.targetId,
+      commentId: id
+    }
+  }).then((res) => {
+    if (res.code === '200') {
+      ElMessage.success("删除成功")
+      loadComments()
+    } else {
+      ElMessage.error(res.message);
+    }
+  })
+}
 
 const postComment = () => {
   comment.content = formatCommentContent(comment.content);
-  console.log(comment.content)
-
+  if (comment.content ==="") {
+    ElMessage.warning("评论不可为空")
+    return;
+  }
   request.post("comments", comment).then(res => {
     if (res.code === '200') {
       ElMessage.success("发布成功")
+      loadComments()
     } else {
       ElMessage.error("发布失败")
     }
   })
-  loadPlaylistComments(props.targetId)
+  comment.content=""
+  loadComments()
 }
 
 onMounted(() => {
-  loadPlaylistComments(props.targetId)
+  loadComments()
 })
 
-const loadPlaylistComments = async (playlistId) => {
+const loadComments = async () => {
   await Promise.all([
     request.get('comments', {
       params: {
         targetType: props.targetType,
-        targetId: playlistId
+        targetId: props.targetId
       }
     }).then(res => {
       if (res.code === '200') {
-        comments.value = [...comments.value, ...res.data];
+        comments.value = [...res.data];
       } else {
         ElMessage.error("评论信息获取失败")
       }
@@ -144,8 +165,12 @@ const baseUrl = 'http://localhost:8080';
             <span>{{ item.parentComment.content }}</span>
           </div>
           <div class="comment-info">
-            <span style="font-size: 11px;color: #a9adb7">{{ item.createdAt.substring(0, 10) }}</span>
+            <span style="font-size: 11px;color: #a9adb7">{{
+                item.createdAt.substring(0, 10)
+              }}</span>
             <div class="interact">
+              <span @click="deleteComment(item.id)" v-if="user.userInfo.id === item.userId"
+                    style="margin-right:30px;padding-top: 3px;line-height: 1">删除</span>
               <div class="likeCount">{{ item.likeCount }}</div>
               <img @click="handleLike(item.id,item.like)"
                    :src=" item.like ? '/icons/status/thumbs.svg' : '/icons/status/unThumb.svg'"
@@ -207,6 +232,9 @@ const baseUrl = 'http://localhost:8080';
   flex-direction: column;
   align-items: end;
 }
+.editor-info span:hover{
+  cursor: pointer;
+}
 
 .title {
   margin-bottom: 15px;
@@ -261,6 +289,10 @@ const baseUrl = 'http://localhost:8080';
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.interact span:hover {
+  cursor: pointer;
 }
 
 .interact img:hover {

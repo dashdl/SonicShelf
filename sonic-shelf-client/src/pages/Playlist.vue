@@ -8,6 +8,7 @@ import Comment from "@/components/list/Comment.vue";
 import {onMounted, reactive, ref, watch} from "vue";
 import {usePlayerStore} from "@/store/player.js";
 import router from "@/router/index.js";
+import Collectors from "@/components/list/Collectors.vue";
 
 const route = useRoute();
 
@@ -221,6 +222,11 @@ const baseUrl = 'http://localhost:8080';
           v-if="userSelect.page===2"
           :target-id="route.params.id"
           :target-type="'playlist'"
+      />
+      <Collectors
+        v-if="userSelect.page===3"
+        :target-id="route.params.id"
+        :target-type="'playlist'"
       />
     </div>
   </div>

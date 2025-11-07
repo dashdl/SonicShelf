@@ -7,6 +7,7 @@ import {useUserStore} from "@/store/userStore.js";
 import {onMounted} from "vue";
 import {ElMessage} from "element-plus";
 import {usePlaylistStore} from "@/store/playlist.js";
+import {useRoute} from "vue-router"; const route = useRoute();
 
 const userStore = useUserStore();
 const playlistStore = usePlaylistStore();

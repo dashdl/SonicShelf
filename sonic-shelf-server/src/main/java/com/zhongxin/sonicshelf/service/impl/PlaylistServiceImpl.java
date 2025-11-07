@@ -44,7 +44,6 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     public List<PlaylistsResponse> findAll(Long id) {
-
         return playlistMapper.selectByUserId(id);
     }
 
@@ -74,7 +73,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     public void updatePlaylistCover(String url, Long id) {
         if (Objects.equals(playlistMapper.findCreatorByPlaylistId(id), CurrentUserUtil.getCurrentUserId())) {
             playlistMapper.updatePlaylistCover(url, id);
-        }else {
+        } else {
             throw new CustomException("这不是您创建的歌单");
         }
     }

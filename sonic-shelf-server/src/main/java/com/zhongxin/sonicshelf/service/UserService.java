@@ -22,4 +22,6 @@ public interface UserService {
     Map<String,Object> updateUserProfile(String token, User user);
 
     void updateUserAvatar(String url,String token);
+
+    UserProfileResponse findUserById(Long id);
 }

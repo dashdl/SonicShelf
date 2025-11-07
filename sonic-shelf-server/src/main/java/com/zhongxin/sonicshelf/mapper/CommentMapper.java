@@ -3,7 +3,6 @@ package com.zhongxin.sonicshelf.mapper;
 import com.zhongxin.sonicshelf.dto.response.CommentResponse;
 import com.zhongxin.sonicshelf.entity.Comment;
 import org.apache.ibatis.annotations.*;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -57,4 +56,10 @@ public interface CommentMapper {
             " values " +
             "(#{userId},#{targetType},#{targetId},#{content},#{parentId})")
     void addComment(Comment comment);
+
+    @Select("select user_id,target_id,target_type,id from comments where id = #{commentId}")
+    Comment selectByCommentId(Long commentId);
+
+    @Delete("delete from comments where id=#{commentId}")
+    void deleteById(Long commentId);
 }

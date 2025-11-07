@@ -25,16 +25,16 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentResponse> findCommentsByTargetTypeAndTargetId(String targetType, Long targetId) {
 
-        List<CommentResponse> commentList =  commentMapper.findCommentsByTargetTypeAndTargetId(targetType,targetId);
+        List<CommentResponse> commentList = commentMapper.findCommentsByTargetTypeAndTargetId(targetType, targetId);
 
         for (CommentResponse comment : commentList) {
 
-            if (likeService.findByTargetIdAndTargetType("comment", comment.getId())!=null) comment.setLike(true);
+            if (likeService.findByTargetIdAndTargetType("comment", comment.getId()) != null) comment.setLike(true);
 
-            if (comment.getParentId()!=null) {
-                try{
+            if (comment.getParentId() != null) {
+                try {
                     comment.setParentComment(commentMapper.findCommentById(comment.getParentId()));
-                }catch (RuntimeException e){
+                } catch (RuntimeException e) {
                     throw new CustomException("未找到被您回复的评论");
                 }
 
@@ -55,4 +55,29 @@ public class CommentServiceImpl implements CommentService {
         comment.setUserId(CurrentUserUtil.getCurrentUserId());
         commentMapper.addComment(comment);
     }
+
+    @Override
+    public void deleteCommentById(Long commentId) {
+        commentMapper.deleteById(commentId);
+    }
+
+    @Override
+    public boolean isCommentFromUser(String targetType, Long targetId, Long commentId) {
+        try {
+            Comment comment = commentMapper.selectByCommentId(commentId);
+            if (comment == null) {
+                return false;
+            }else {
+                Comment commentRequest = new Comment();
+                commentRequest.setUserId(CurrentUserUtil.getCurrentUserId());
+                commentRequest.setTargetType(targetType);
+                commentRequest.setTargetId(targetId);
+                commentRequest.setId(commentId);
+                return comment.equals(commentRequest);
+            }
+        } catch (RuntimeException e) {
+            throw new CustomException("评论不存在");
+        }
+    }
+
 }

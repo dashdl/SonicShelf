@@ -12,4 +12,8 @@ public interface CommentService {
     PageInfo<CommentResponse> findCommentsByTargetTypeAndTargetIdAsPage(Integer pageNum, Integer pageSize, String targetType, Long targetId);
 
     void addComment(Comment comment);
+
+    void deleteCommentById(Long commentId);
+
+    boolean isCommentFromUser(String targetType, Long targetId, Long commentId);
 }

@@ -13,5 +13,5 @@ public class Comment {
     private Long parentId;
     private Long likeCount;
     private String targetType;
-    private String targetId;
+    private Long targetId;
 }

@@ -109,6 +109,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public UserProfileResponse findUserById(Long id) {
+        return new UserProfileResponse(userMapper.selectById(id));
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userMapper.findByUsername(username);
     }

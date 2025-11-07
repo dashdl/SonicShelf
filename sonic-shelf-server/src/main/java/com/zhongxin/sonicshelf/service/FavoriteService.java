@@ -1,10 +1,11 @@
 package com.zhongxin.sonicshelf.service;
 
+import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.dto.response.CollectorResponse;
 import com.zhongxin.sonicshelf.dto.response.FavoriteResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 
 import java.util.List;
-import java.util.Map;
 
 public interface FavoriteService {
 
@@ -12,7 +13,11 @@ public interface FavoriteService {
 
     void removeFavorite(String targetType, Long playlistId);
 
-    List<PlaylistsResponse> findPlaylists();
+    List<PlaylistsResponse> findPlaylists(Long id);
+
+    List<CollectorResponse> findCollectorByTargetTypeAndTargetId(String targetType, Long targetId);
+
+    PageInfo<PlaylistsResponse> findAsPage(Integer pageNum, Integer pageSize, Long currentUserId);
 
 //    PageResult<FavoriteItemDto> getUserFavorites(Long userId, String targetType, int page, int limit, String sort);
 

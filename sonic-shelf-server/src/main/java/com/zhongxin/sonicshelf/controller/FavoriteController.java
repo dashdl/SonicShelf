@@ -1,10 +1,12 @@
 package com.zhongxin.sonicshelf.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.entity.Music;
 import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.service.FavoriteService;
+import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import com.zhongxin.sonicshelf.util.FavoriteType;
 import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
@@ -44,9 +46,10 @@ public class FavoriteController {
             try {
                 favoriteService.addFavorite(FavoriteType.MUSIC.getValue(), music.getId());
                 successList.add(music.getTitle());
-            } catch (CustomException ignored) {}
+            } catch (CustomException ignored) {
+            }
         }
-        return Result.success("收藏成功",successList);
+        return Result.success("收藏成功", successList);
     }
 
     @DeleteMapping("/playlist/{id}")
@@ -56,8 +59,30 @@ public class FavoriteController {
     }
 
     @GetMapping("/playlists")
-    public Result getFavoritePlaylists() {
-        List<PlaylistsResponse> list = favoriteService.findPlaylists();
-        return Result.success("获取成功", list);
+    public Result getFavoritePlaylists(@RequestParam(required = false) Integer pageNum,
+                                       @RequestParam(required = false) Integer pageSize,
+                                       @RequestParam(required = false) Long id) {
+        Long targetUserId = (id == null) ? CurrentUserUtil.getCurrentUserId() : id;
+
+        if (pageNum == null || pageNum < 1) {
+            List<PlaylistsResponse> list = favoriteService.findPlaylists(targetUserId);
+            return Result.success("获取成功", list);
+        } else {
+            PageInfo<PlaylistsResponse> pageInfo = favoriteService.findAsPage(pageNum, pageSize, targetUserId);
+            return Result.success("获取成功", pageInfo);
+        }
+
+    }
+
+    @GetMapping("/collectors")
+    public Result getFavoriteCollectors(@RequestParam(required = false) String targetType,
+                                        @RequestParam(required = false) Long targetId) {
+
+        try {
+            return Result.success(favoriteService.findCollectorByTargetTypeAndTargetId(targetType, targetId));
+        } catch (Exception e) {
+            throw new CustomException("请求失败");
+        }
+
     }
 }

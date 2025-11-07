@@ -10,7 +10,8 @@
       </div>
     </div>
     <div class="right-content">
-      <img id="avatar" @click="router.push('/profile')" :src="avatarUrl" style="height: 30px;border-radius: 15px; margin-right: 5px;cursor: pointer;" alt="">
+      <img id="avatar" @click="jumpToProfile" :src="avatarUrl"
+           style="height: 30px;border-radius: 15px; margin-right: 5px;cursor: pointer;" alt="">
       <span>{{ userStore.getNickname }}</span>
       <img src="" alt="">
       <img @click="data.userPanelVisible=!data.userPanelVisible" src="/icons/status/down.svg"
@@ -72,6 +73,13 @@ const handleClickOutside = (event) => {
   }
 };
 
+const jumpToProfile = () => {
+  router.push({
+    name: 'Profile',
+    state: {userId: userStore.getUserId}
+  })
+}
+
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
 });
@@ -79,7 +87,6 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
-
 
 </script>
 
@@ -101,8 +108,19 @@ onUnmounted(() => {
 
 .right-content {
   display: flex;
-  flex-direction: column;
   height: 40px;
+  flex-direction: row;
+  align-items: center;
+  color: #666d7e;
+}
+
+.right-content span {
+  margin-right: 5px;
+  font-size: 13px;
+  width: 80px;
+  white-space: nowrap; /* 禁止换行 */
+  overflow: hidden; /* 隐藏溢出内容 */
+  text-overflow: ellipsis; /* 显示省略号 */
 }
 
 .left-button {
@@ -135,22 +153,6 @@ onUnmounted(() => {
   margin: 0 !important;
   font: inherit !important;
   color: inherit !important;
-}
-
-.right-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  color: #666d7e;
-}
-
-.right-content span {
-  margin-right: 5px;
-  font-size: 13px;
-  width: 80px;
-  white-space: nowrap; /* 禁止换行 */
-  overflow: hidden; /* 隐藏溢出内容 */
-  text-overflow: ellipsis; /* 显示省略号 */
 }
 
 .login-modal {
