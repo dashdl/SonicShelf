@@ -5,6 +5,8 @@ import {onBeforeUnmount, onMounted, onUnmounted, reactive, ref, watch} from "vue
 import TableList from "@/components/list/TableList.vue";
 import {ElMessage} from "element-plus";
 import request from "@/utils/request.js";
+import { useRoute } from 'vue-router';
+const route = useRoute();
 
 const userId = ref(null);
 
@@ -181,13 +183,11 @@ const resetPageState = () => {
   pageFavorite.pages = 0;
 };
 
-watch(() => userId.value, (newId, oldId) => {
-  if (newId && newId !== oldId) {
-    // 重置分页
-    page.pageNum = 1;
-    pageFavorite.pageNum = 1;
-    // 重新加载数据
-    loadUserInfo(newId);
+watch(() => route.params.userId, (newUserId, oldUserId) => {
+  if (newUserId && newUserId !== oldUserId) {
+    userId.value = newUserId;
+    resetPageState();
+    loadUserInfo(newUserId);
     loadPlaylist();
     loadFavorites();
   }
@@ -218,14 +218,10 @@ const favoritesTable = () => {
 
 onMounted(() => {
   resetPageState();
-  userId.value = history.state?.userId;
+  userId.value = route.params.userId
   loadUserInfo(userId.value);
   loadPlaylist();
   loadFavorites();
-});
-
-onBeforeUnmount(() => {
-  resetPageState();
 });
 
 const baseUrl = 'http://localhost:8080';

@@ -8,7 +8,8 @@
         <result column="title" property="title"/>
         <result column="description" property="description"/>
         <result column="cover_image" property="coverImage"/>
-        <result column="user_name" property="userName"/>
+        <result column="user_id" property="userId"/>
+        <result column="nickname" property="nickname"/>
         <result column="music_count" property="musicCount"/>
         <result column="play_count" property="playCount"/>
         <result column="user_avatar" property="userAvatar"/>
@@ -21,7 +22,8 @@
                p.title,
                p.description,
                p.cover_image,
-               u.nickname as user_name,
+               u.nickname as nickname,
+               p.user_id,
                p.music_count,
                p.play_count,
                p.created_at,
@@ -37,7 +39,8 @@
                p.title,
                p.description,
                p.cover_image,
-               u.nickname as user_name,
+               u.nickname as nickname,
+               p.user_id,
                p.music_count,
                p.play_count,
                p.created_at,
@@ -61,6 +64,19 @@
                  INNER JOIN playlists p ON f.target_id = p.id AND f.target_type = 'playlist'
                  LEFT JOIN users u ON p.user_id = u.id
         WHERE f.user_id = #{userId}
+    </select>
+    <select id="selectAll" resultType="com.zhongxin.sonicshelf.dto.response.PlaylistCardResponse">
+        select id,title,cover_image as coverImage,play_count as play_count from playlists
+        <if test="limit != null and limit > 0">
+            limit #{limit}
+        </if>
+    </select>
+    <select id="selectByPlaylistId" resultType="java.lang.String">
+        SELECT m.title
+        FROM musics m
+                 INNER JOIN playlist_musics pm ON m.id = pm.music_id
+        WHERE pm.playlist_id = #{i}
+        LIMIT 3
     </select>
 
 </mapper>

@@ -9,7 +9,8 @@ public class PlaylistsResponse {
     private String title;
     private String description;
     private String coverImage;
-    private String userName;
+    private String userId;
+    private String nickname;
     private String musicCount;
     private String playCount;
     private LocalDateTime createTime;

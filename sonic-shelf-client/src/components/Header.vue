@@ -76,7 +76,8 @@ const handleClickOutside = (event) => {
 const jumpToProfile = () => {
   router.push({
     name: 'Profile',
-    state: {userId: userStore.getUserId}
+    // state: {userId: userStore.getUserId}
+    params: { userId: userStore.getUserId }
   })
 }
 

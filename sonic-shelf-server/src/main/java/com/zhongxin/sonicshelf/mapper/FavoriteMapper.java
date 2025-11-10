@@ -29,4 +29,14 @@ public interface FavoriteMapper {
 
     @Delete("delete from favorites where user_id=#{userId} and target_type= #{targetType} and target_id=#{targetId}")
     void removeFavorite(Favorite favorite);
+
+    @Select("select target_id from favorites where user_id=#{currentUserId} and target_type=#{targetType} limit 100")
+    List<Long> selectByUserIdAndTargetType(Long currentUserId, String targetType);
+
+    Long selectByUserIdAndTargetTypeAndTargetId(Long currentUserId, String music, Long id);
+
+//    List<Long> selectByIds(@Param("ids") List<Long> ids);
+
+//    @Select("select id from categories where id in #{ids}")
+//    List<Long> selectByIds(List<Long> ids);
 }

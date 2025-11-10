@@ -14,6 +14,8 @@ import PlaylistEdit from "@/pages/PlaylistEdit.vue";
 import PlaylistForm from "@/components/form/PlaylistForm.vue";
 import Comment from "@/components/list/Comment.vue";
 import Collectors from "@/components/list/Collectors.vue";
+import PlaylistCard from "@/components/common/cards/PlaylistCard.vue";
+import MusicCard from "@/components/common/cards/MusicCard.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,8 +23,8 @@ const router = createRouter({
         {
             path: '/', component: Layout,
             children: [
-                {path: '', component: Collectors},
-                {path: '/profile', component: Profile,name: 'Profile'},
+                {path: '', component: Home},
+                {path: '/profile/:userId', component: Profile,name: 'Profile'},
                 {path: '/profile-settings', component: ProfileSettings},
                 {
                     path: '/playlist/:id',

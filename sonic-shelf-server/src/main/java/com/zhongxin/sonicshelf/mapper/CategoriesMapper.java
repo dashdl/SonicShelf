@@ -32,4 +32,7 @@ public interface CategoriesMapper {
 
     @Delete("delete from playlist_categories where playlist_id=#{id} and category_id=#{tag}")
     void removePlaylistTags(@Param("id") Long id, @Param("tag") Long tag);
+
+
+    List<Long> selectMusicIdByCategoryId(List<Long> ids);
 }

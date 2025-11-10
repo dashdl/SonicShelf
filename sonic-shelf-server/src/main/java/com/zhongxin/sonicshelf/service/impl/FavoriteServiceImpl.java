@@ -11,7 +11,6 @@ import com.zhongxin.sonicshelf.mapper.FavoriteMapper;
 import com.zhongxin.sonicshelf.mapper.PlaylistMapper;
 import com.zhongxin.sonicshelf.mapper.UserMapper;
 import com.zhongxin.sonicshelf.service.FavoriteService;
-import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import com.zhongxin.sonicshelf.util.FavoriteType;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,4 +67,8 @@ public class FavoriteServiceImpl implements FavoriteService {
         return favoriteMapper.findByUserAndTarget(favorite) != null;
     }
 
+    @Override
+    public List<Long> findByUserIdAndTargetType(Long currentUserId, String targetType) {
+        return favoriteMapper.selectByUserIdAndTargetType(currentUserId, targetType);
+    }
 }

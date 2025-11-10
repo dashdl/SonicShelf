@@ -1,5 +1,6 @@
 package com.zhongxin.sonicshelf.mapper;
 
+import com.zhongxin.sonicshelf.dto.response.PlaylistCardResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.entity.Playlist;
 import org.apache.ibatis.annotations.Mapper;
@@ -27,4 +28,9 @@ public interface PlaylistMapper {
 
     @Select("select user_id from playlists where id=#{id}")
     Long findCreatorByPlaylistId(Long id);
+
+
+    List<PlaylistCardResponse> selectAll(Integer limit);
+
+    List<String> selectByPlaylistId(Long i);
 }

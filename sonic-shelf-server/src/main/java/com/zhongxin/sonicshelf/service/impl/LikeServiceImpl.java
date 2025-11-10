@@ -6,6 +6,8 @@ import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class LikeServiceImpl implements LikeService {
 
@@ -26,4 +28,5 @@ public class LikeServiceImpl implements LikeService {
     public Long findByTargetIdAndTargetType(String targetType, Long targetId) {//targetId playlistId
         return likeMapper.selectLike(targetType,targetId,CurrentUserUtil.getCurrentUserId());
     }
+
 }

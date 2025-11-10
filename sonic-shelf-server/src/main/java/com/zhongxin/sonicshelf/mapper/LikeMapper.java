@@ -2,6 +2,8 @@ package com.zhongxin.sonicshelf.mapper;
 
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface LikeMapper {
 
@@ -13,4 +15,5 @@ public interface LikeMapper {
 
     @Select("select id from likes where target_type=#{targetType} and target_id=#{targetId} and user_id=#{userId}")
     Long selectLike(@Param("targetType") String targetType, @Param("targetId") Long targetId, @Param("userId") Long userId);
+
 }

@@ -19,4 +19,5 @@ public class MusicsController {
     public Result findById(@PathVariable Long id) {
         return Result.success(musicService.findById(id));
     }
+
 }

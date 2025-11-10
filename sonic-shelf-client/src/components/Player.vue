@@ -601,6 +601,7 @@ const baseUrl = 'http://localhost:8080';
   border-radius: 10px;
   box-shadow: 0 0 10px 2px #cbcbcf;
   transition: transform 0.5s ease;
+  z-index: 10;
 }
 
 .show {

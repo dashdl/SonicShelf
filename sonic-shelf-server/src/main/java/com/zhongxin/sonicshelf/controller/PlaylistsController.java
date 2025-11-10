@@ -4,9 +4,11 @@ import com.github.pagehelper.PageInfo;
 import com.zhongxin.sonicshelf.dto.request.PlaylistRequest;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
+import com.zhongxin.sonicshelf.entity.Favorite;
 import com.zhongxin.sonicshelf.entity.Playlist;
 import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.mapper.PlaylistMapper;
+import com.zhongxin.sonicshelf.service.FavoriteService;
 import com.zhongxin.sonicshelf.service.MusicService;
 import com.zhongxin.sonicshelf.service.PlaylistService;
 import com.zhongxin.sonicshelf.util.CurrentUserUtil;
@@ -14,6 +16,7 @@ import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -26,6 +29,8 @@ public class PlaylistsController {
     private MusicService musicService;
     @Resource
     private PlaylistMapper playlistMapper;
+    @Resource
+    private FavoriteService favoriteService;
 
     @GetMapping("")
     public Result playlists(@RequestParam(required = false) Integer pageNum,
@@ -33,7 +38,7 @@ public class PlaylistsController {
                             Long id) {
         Long targetUserId = (id == null ? CurrentUserUtil.getCurrentUserId() : id);
 
-        if (pageNum == null || pageNum < 1) return Result.success(playlistsService.findAll(id));
+        if (pageNum == null || pageNum < 1) return Result.success(playlistsService.findAllUserId(id));
 
         PageInfo<PlaylistsResponse> pageInfo = playlistsService.findAsPage(pageNum, pageSize, targetUserId);
         return Result.success(pageInfo);
@@ -69,5 +74,10 @@ public class PlaylistsController {
 
         PageInfo<MusicResponse> pageInfo = musicService.findAsPageByListId(pageNum, pageSize, id);
         return Result.success(pageInfo);
+    }
+
+    @GetMapping("/recommend")
+    public Result recommend(@RequestParam(required = false) Integer limit) {
+        return Result.success(playlistsService.findAll(limit));
     }
 }

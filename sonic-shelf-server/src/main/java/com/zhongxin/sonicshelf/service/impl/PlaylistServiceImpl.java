@@ -2,6 +2,7 @@ package com.zhongxin.sonicshelf.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.dto.response.PlaylistCardResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.entity.Playlist;
 import com.zhongxin.sonicshelf.exception.CustomException;
@@ -12,6 +13,7 @@ import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,7 +45,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public List<PlaylistsResponse> findAll(Long id) {
+    public List<PlaylistsResponse> findAllUserId(Long id) {
         return playlistMapper.selectByUserId(id);
     }
 
@@ -76,5 +78,17 @@ public class PlaylistServiceImpl implements PlaylistService {
         } else {
             throw new CustomException("这不是您创建的歌单");
         }
+    }
+
+    @Override
+    public List<PlaylistCardResponse> findAll(Integer limit) {
+
+        List<PlaylistCardResponse> playlistCardResponses = playlistMapper.selectAll(limit);
+
+        for (PlaylistCardResponse playlistCardResponse : playlistCardResponses) {
+            playlistCardResponse.setSongs(playlistMapper.selectByPlaylistId(playlistCardResponse.getId()));
+        }
+
+        return playlistCardResponses;
     }
 }

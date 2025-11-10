@@ -30,14 +30,13 @@ const loadCollectors = async () => {
   })
   if (res.code === '200') {
     collectors.value = [...res.data];
-    console.log(collectors.value)
   }
 }
 
 const jump = (id) => {
   router.push({
     name: 'Profile',
-    state: {userId: id}
+    params: { userId: id }
   })
 }
 

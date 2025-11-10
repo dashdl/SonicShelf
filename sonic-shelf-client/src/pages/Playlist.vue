@@ -9,6 +9,9 @@ import {onMounted, reactive, ref, watch} from "vue";
 import {usePlayerStore} from "@/store/player.js";
 import router from "@/router/index.js";
 import Collectors from "@/components/list/Collectors.vue";
+import {useUserStore} from "@/store/userStore.js";
+
+const userStore = useUserStore();
 
 const route = useRoute();
 
@@ -17,6 +20,8 @@ const userSelect = reactive({
 });
 
 let musicInfo = ref([])
+
+let collectorNum = 0;
 
 const data = reactive({
   pageNum: 1,
@@ -43,11 +48,12 @@ const Info = reactive({
   musicCount: '',
   title: '',
   description: '',
-  userName: null,
+  nickname: null,
+  userId: null,
   createTime: '',
   userAvatar: '',
   playCount: '',
-  isFavorite: null,
+  favorite: false,
 })
 
 const loadMore = async () => {
@@ -66,6 +72,7 @@ const loadMore = async () => {
 }
 
 const loadPlaylistData = async (playlistId) => {
+  userSelect.page=1;
   data.pageNum = 1;
   data.total = 1;
   hasMore.value = true;
@@ -77,7 +84,8 @@ const loadPlaylistData = async (playlistId) => {
         Info.title = res.data.title;
         Info.description = res.data.description;
         Info.userAvatar = res.data.userAvatar;
-        Info.userName = res.data.userName;
+        Info.nickname = res.data.nickname;
+        Info.userId = res.data.userId;
         Info.coverImage = res.data.coverImage;
         Info.musicCount = res.data.musicCount;
         Info.playCount = res.data.playCount;
@@ -94,6 +102,7 @@ const loadPlaylistData = async (playlistId) => {
     }).then(res => {
       data.total = res.data.total;
       musicInfo.value = res.data.list;
+      console.log(musicInfo.value)
     }),
     request.get('comments', {
       params: {
@@ -102,10 +111,18 @@ const loadPlaylistData = async (playlistId) => {
       }
     }).then(res => {
       if (res.code === '200') {
-        data.commentCount= res.data.length
+        data.commentCount = res.data.length
       } else {
         ElMessage.error("歌单信息获取失败")
       }
+    }),
+    request.get('favorites/collectors', {
+      params: {
+        targetType: 'playlist',
+        targetId: route.params.id
+      }
+    }).then((res) => {
+      collectorNum = res.data.length;
     })
   ]);
 }
@@ -125,7 +142,7 @@ const load = async () => {
 const handleUpdateFavorite = (musicId, newFavoriteState) => {
   const itemIndex = musicInfo.value.findIndex(item => item.id === musicId);
   if (itemIndex !== -1) {
-    musicInfo.value[itemIndex].isFavorite = newFavoriteState;
+    musicInfo.value[itemIndex].favorite = newFavoriteState;
   }
 };
 
@@ -162,7 +179,8 @@ const baseUrl = 'http://localhost:8080';
       <div class="profile-content">
         <div class="title">
           <span style="margin-top: -5px; margin-right: 8px;font-size: 24px;font-weight: bold;">{{ Info.title }}</span>
-          <img @click="goToEditPlaylist()" src="/icons/actions/edit.svg" style="width: 20px" alt="">
+          <img v-if="Info.userId==userStore.getUserId" @click="goToEditPlaylist()" src="/icons/actions/edit.svg"
+               style="width: 20px" alt="">
         </div>
         <div class="description" style="margin-bottom: 10px;">
           <span style="color: #7b818f;">{{ Info.description }}</span>
@@ -171,7 +189,7 @@ const baseUrl = 'http://localhost:8080';
           <img :src="baseUrl+Info.userAvatar||'/images/default/avatar.jpg'"
                style="width: 25px;height: 25px;border-radius: 23px;margin-right: 8px;"
                alt="">
-          <span style="font-size: 13px;color: #7b818f;margin-right: 12px">{{ Info.userName }}</span>
+          <span style="font-size: 13px;color: #7b818f;margin-right: 12px">{{ Info.nickname }}</span>
           <span style="font-size: 12px;color: #b7bac4">{{ Info.createTime }}创建</span>
         </div>
         <div class="button-group">
@@ -200,7 +218,10 @@ const baseUrl = 'http://localhost:8080';
           <div v-if="userSelect.page === 2" class="button-underline"></div>
         </div>
         <div class="button">
-          <span @click="userSelect.page=3">收藏者</span>
+          <div class="numb">
+            <span style="font-size:12px;font-weight: bold">{{ collectorNum }}</span>
+          </div>
+          <span @click="userSelect.page=3" :class="{ 'bold-text': userSelect.page === 3 }">收藏者</span>
           <div v-if="userSelect.page === 3" class="button-underline"></div>
         </div>
       </div>
@@ -224,9 +245,9 @@ const baseUrl = 'http://localhost:8080';
           :target-type="'playlist'"
       />
       <Collectors
-        v-if="userSelect.page===3"
-        :target-id="route.params.id"
-        :target-type="'playlist'"
+          v-if="userSelect.page===3"
+          :target-id="route.params.id"
+          :target-type="'playlist'"
       />
     </div>
   </div>
@@ -326,7 +347,7 @@ const baseUrl = 'http://localhost:8080';
 
 .numb {
   position: absolute;
-  left: 37px;
+  left: 100%;
   top: -8px;
 }
 

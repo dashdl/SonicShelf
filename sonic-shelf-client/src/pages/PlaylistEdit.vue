@@ -101,11 +101,7 @@ const handleFileSelect = (event) => {
       ElMessage.warning('图片大小不能超过2MB');
       return;
     }
-
-    // 保存文件引用
     selectedFile = file;
-
-    // 生成预览URL
     if (avatarPreview.value) {
       URL.revokeObjectURL(avatarPreview.value); // 清理之前的预览以避免内存泄漏
     }
@@ -118,17 +114,23 @@ onMounted(async () => {
   const currentId = route.params.id;
   await request.get('playlists/' + currentId).then(res => {
     Object.assign(formData, res.data)
-    selectedTags = formData.tags;
+    if (formData.tags && Array.isArray(formData.tags)) {
+      selectedTags = [...formData.tags];
+    } else {
+      selectedTags = [];
+    }
   })
 
-  request.get('categories', {
-    params: {
-      tags: formData.tags
-    }
-  }).then((res) => {
-    confirmTags.length = 0;
-    confirmTags.push(...res.data);
-  })
+  if (selectedTags.length > 0) {
+    request.get('categories', {
+      params: {
+        tags: selectedTags
+      }
+    }).then((res) => {
+      confirmTags.length = 0;
+      confirmTags.push(...res.data);
+    })
+  }
 
   const coverPath = formData.coverImage;
   const baseUrl = 'http://localhost:8080';
@@ -151,6 +153,7 @@ onMounted(async () => {
     if (res.code === '200') {
       tags.length = 0; // 清空数组
       tags.push(...res.data); // 添加新数据
+
     }
   })
 });
@@ -162,7 +165,7 @@ const saveProfile = async () => {
       const formForUpload = new FormData();
       formForUpload.append('file', selectedFile);
 
-      const uploadResponse = await request.post('/upload/cover/'+formData.id, formForUpload);
+      const uploadResponse = await request.post('/upload/cover/' + formData.id, formForUpload);
 
       if (uploadResponse.code === '200') {
         formData.coverImage = uploadResponse.data.coverPath;
@@ -202,7 +205,6 @@ const cancelEdit = () => {
   ElMessage.info('已取消编辑');
 };
 
-// 组件卸载时清理资源
 onUnmounted(() => {
   if (avatarPreview.value) {
     URL.revokeObjectURL(avatarPreview.value);
@@ -380,8 +382,8 @@ input, textarea {
 
 .categories-form {
   position: absolute;
-  top: 35px;
-  left: 75px;
+  bottom: -380px;
+  left: 74px;
   height: 375px;
   width: 575px;
   padding: 20px 25px;

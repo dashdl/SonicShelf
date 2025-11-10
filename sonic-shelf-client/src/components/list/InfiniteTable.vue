@@ -77,30 +77,28 @@ const goToMusic = (musicId) => {
 
 const emit = defineEmits(['updateFavorite']);
 
-const favorite=(id,isFavorite)=>{
-  if (isFavorite === '0') {
+const favorite=(id,favorite)=>{
+  if (favorite === false) {
     request.post('favorites/music/' + id).then(res => {
       if (res.code === '200') {
         ElMessage.success('收藏成功');
-        // 找到响应式副本中对应的项并更新状态
         const item = reactiveItems.value.find(item => item.id === id);
         if (item) {
-          item.isFavorite = '1';
+          item.favorite = true;
         }
-        // 通知父组件持久化更改
-        emit('updateFavorite', id, '1');
+        emit('updateFavorite', id, true);
       } else {
         ElMessage.error(res.message);
         // 请求失败，恢复原状态
         const item = reactiveItems.value.find(item => item.id === id);
-        if (item) item.isFavorite = '0';
+        if (item) item.favorite = false;
       }
     }).catch(err => {
       console.error('收藏失败:', err);
       ElMessage.error('收藏失败，请稍后重试');
       // 请求失败，恢复原状态
       const item = reactiveItems.value.find(item => item.id === id);
-      if (item) item.isFavorite = '0';
+      if (item) item.favorite = false;
     });
   } else {
     request.delete('favorites/music/' + id).then(res => {
@@ -108,21 +106,21 @@ const favorite=(id,isFavorite)=>{
         ElMessage.success('取消收藏成功');
         const item = reactiveItems.value.find(item => item.id === id);
         if (item) {
-          item.isFavorite = '0';
+          item.favorite = false;
         }
-        emit('updateFavorite', id, '0');
+        emit('updateFavorite', id, false);
       } else {
         ElMessage.error(res.message);
         // 请求失败，恢复原状态
         const item = reactiveItems.value.find(item => item.id === id);
-        if (item) item.isFavorite = '1';
+        if (item) item.favorite = true;
       }
     }).catch(err => {
       console.error('取消收藏失败:', err);
       ElMessage.error('取消收藏失败，请稍后重试');
       // 请求失败，恢复原状态
       const item = reactiveItems.value.find(item => item.id === id);
-      if (item) item.isFavorite = '1';
+      if (item) item.favorite = true;
     });
   }
 }
@@ -217,7 +215,7 @@ const baseUrl = 'http://localhost:8080';
       <div class="right-cell">
         <div class="total-cell"><span>{{ item.albumTitle }}</span></div>
         <div class="like-cell">
-          <img @click="favorite(item.id,item.isFavorite)" :src="item.isFavorite==='1' ? '/icons/player/like.svg':'/icons/player/unlike.svg' " style="width: 18px;"
+          <img @click="favorite(item.id,item.favorite)" :src="item.favorite===true ? '/icons/player/like.svg':'/icons/player/unlike.svg' " style="width: 18px;"
                alt="">
         </div>
         <div class="time-cell"><span style="color: #7b818f">04:55</span></div>

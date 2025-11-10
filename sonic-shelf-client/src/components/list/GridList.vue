@@ -23,7 +23,8 @@ const baseUrl = 'http://localhost:8080';
   <div class="grid-list">
     <div class="grid-container">
       <div v-for="item in info" @click="goToPlaylist(item.id)" class="grid-item">
-        <img :src="baseUrl + item.coverImage||'/images/default/cover.png'" style="height: 100%;object-fit: cover;" alt="">
+        <img :src="baseUrl + item.coverImage||'/images/default/cover.png'" style="height: 100%;object-fit: cover;"
+             alt="">
         <div class="background"></div>
         <div class="play-button">
           <img src="/icons/player/play.svg" style="width: 26px" alt="">
@@ -34,9 +35,12 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div class="headphone">
           <img v-if="item.playCount>=1" src="/icons/content/headphone.svg" style="width: 15px" alt="">
-          <span v-if="item.playCount>=1" style="font-size: 12px;color: #ffffff;font-weight: bold;">{{item.playCount }}</span>
+          <span v-if="item.playCount>=1" style="font-size: 12px;color: #ffffff;font-weight: bold;">{{
+              item.playCount
+            }}</span>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -46,7 +50,7 @@ const baseUrl = 'http://localhost:8080';
 .grid-container {
   min-width: 757px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
   grid-row-gap: 20px;
   grid-column-gap: 20px;
   user-select: none;
@@ -115,6 +119,12 @@ const baseUrl = 'http://localhost:8080';
   right: 8px;
   top: 10px;
   z-index: 1;
+}
+
+@media (min-width: 1280px) and (max-width: 1679px) {
+  .grid-container {
+    grid-template-columns: repeat(5, minmax(180px, 1fr));
+  }
 }
 
 @media (min-width: 1680px) {

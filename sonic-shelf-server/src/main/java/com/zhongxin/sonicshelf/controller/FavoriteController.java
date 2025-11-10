@@ -1,7 +1,6 @@
 package com.zhongxin.sonicshelf.controller;
 
 import com.github.pagehelper.PageInfo;
-import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.entity.Music;
 import com.zhongxin.sonicshelf.exception.CustomException;
