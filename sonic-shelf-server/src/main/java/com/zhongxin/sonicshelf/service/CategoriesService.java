@@ -12,4 +12,6 @@ public interface CategoriesService {
     List<CategoriesResponse> findByParentId(int parentId);
 
     List<CategoriesResponse> findParents();
+
+    List<Long> findCategoryIdsByTargetIdFromMusicCategories(List<Long> ids);
 }

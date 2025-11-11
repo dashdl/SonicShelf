@@ -1,23 +1,59 @@
-<script>
-export default {
-  name: "MusicCard"
+<script setup>
+
+import request from "@/utils/request.js";
+import {ElMessage} from "element-plus";
+import {usePlayerStore} from "@/store/player.js";
+
+const player = usePlayerStore();
+
+const props = defineProps({
+  item: {type: Object, required: true},
+})
+console.log(props.item)
+
+const favorite = () => {
+  if (props.item.favorite === false) {
+    request.post('favorites/music/' + props.item.id).then(res => {
+      if (res.code === '200') {
+        ElMessage.success('收藏成功');
+        props.item.favorite = true;
+      } else {
+        ElMessage.error('收藏失败，请稍后重试');
+      }
+    })
+  } else {
+    request.delete('favorites/music/' + props.item.id).then(res => {
+      if (res.code === '200') {
+        ElMessage.success('取消收藏成功');
+        props.item.favorite = false;
+      } else {
+        ElMessage.error('取消收藏失败，请稍后重试');
+      }
+    })
+  }
 }
+
+const baseUrl = 'http://localhost:8080';
 </script>
 
 <template>
   <div class="music-card">
     <div class="info">
-      <div class="cover">
-        <img id="cover" src="/images/default/cover.png" alt="">
+      <div @click="player.checkMusicId(props.item.id)" class="cover">
+        <img id="cover" :src="props.item.coverImage ? baseUrl + props.item.coverImage : '/images/default/cover.png'"
+             alt="">
         <img id="playButton" src="/icons/player/play.svg" alt="">
       </div>
       <div class="text">
-        <span style="font-size: 16px;color:#333333;">love yourself</span>
-        <span>justin bieber</span>
+        <span style="font-size: 16px;color:#333333;">{{ props.item.title }}</span>
+        <span>{{ props.item.artistName }}</span>
       </div>
     </div>
     <div class="button-group">
-      <div class="button"><img src="/icons/player/like.svg" style="width: 20px;" alt=""></div>
+      <div class="button"><img @click="favorite"
+                               :src=" props.item.favorite ?'/icons/player/like.svg' :'/icons/player/unlike.svg'"
+                               style="width: 20px;" alt="">
+      </div>
       <div class="button"><img src="/icons/status/more.svg" style="height: 20px" alt=""></div>
     </div>
   </div>
@@ -103,7 +139,8 @@ export default {
   align-items: center;
   justify-items: center;
 }
-.button-group .button:hover{
+
+.button-group .button:hover {
   cursor: pointer;
   filter: brightness(80%);
 }

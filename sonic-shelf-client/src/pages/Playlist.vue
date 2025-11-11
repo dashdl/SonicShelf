@@ -33,9 +33,10 @@ const data = reactive({
 const replace = async () => {
   const currentId = route.params.id;
   await request.get('playlists/' + currentId + '/musics').then(res => {
-    usePlayerStore().updatePlaylist(res.data)
+    const playerStore = usePlayerStore();
+    playerStore.updatePlaylist(res.data)
     localStorage.setItem("playlist", JSON.stringify(res.data))
-    usePlayerStore().playSong(0);
+    playerStore.playSong(0)
   })
 }
 
@@ -72,7 +73,7 @@ const loadMore = async () => {
 }
 
 const loadPlaylistData = async (playlistId) => {
-  userSelect.page=1;
+  userSelect.page = 1;
   data.pageNum = 1;
   data.total = 1;
   hasMore.value = true;
@@ -102,7 +103,6 @@ const loadPlaylistData = async (playlistId) => {
     }).then(res => {
       data.total = res.data.total;
       musicInfo.value = res.data.list;
-      console.log(musicInfo.value)
     }),
     request.get('comments', {
       params: {

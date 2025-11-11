@@ -59,26 +59,26 @@ const isDragging = ref(false);
 const isVolumeDragging = ref(false);
 
 const favorite = () => {
-  if(playerStore.currentPlaylist[playerStore.currentIndex].isFavorite==='0') {
+  if (playerStore.currentPlaylist[playerStore.currentIndex].isFavorite === false) {
     request.post('favorites/music/' + playerStore.currentPlaylist[playerStore.currentIndex].id).then(res => {
-      if(res.code==='200'){
+      if (res.code === '200') {
         ElMessage.success('收藏成功');
-        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite='1'
+        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite = true
         localStorage.setItem("playlist", JSON.stringify(playerStore.currentPlaylist));
-      }else {
+      } else {
         ElMessage.error(res.message)
-        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite='1'
+        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite = true
       }
     })
-  }else {
+  } else {
     request.delete('favorites/music/' + playerStore.currentPlaylist[playerStore.currentIndex].id).then(res => {
-      if(res.code==='200'){
+      if (res.code === '200') {
         ElMessage.success('取消收藏成功');
-        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite='0'
+        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite = false
         localStorage.setItem("playlist", JSON.stringify(playerStore.currentPlaylist));
-      }else {
+      } else {
         ElMessage.error(res.message)
-        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite='0'
+        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite = true
       }
     })
   }
@@ -92,12 +92,6 @@ const favoriteAll = (currentPlaylist) => {
     console.error('收藏失败:', err);
     ElMessage.error('收藏失败，请稍后重试');
   });
-}
-const cleanAll = () => {
-  playerStore.currentPlaylist = [];
-  playerStore.currentIndex = 0;
-  playerStore.currentTitle = '';
-  playerStore.currentName = '';
 }
 
 const updateProgressFromStore = () => {
@@ -279,7 +273,7 @@ const baseUrl = 'http://localhost:8080';
     <div class="cover-container">
       <div class="cover-content">
         <img
-            :src=" playerStore.currentPlaylist && playerStore.currentPlaylist[playerStore.currentIndex] ? baseUrl + playerStore.currentPlaylist[playerStore.currentIndex].coverImage : '/images/default/cover.png'"
+            :src=" playerStore.currentPlaylist && playerStore.currentIndex >= 0 && playerStore.currentIndex < playerStore.currentPlaylist.length ? baseUrl + playerStore.currentPlaylist[playerStore.currentIndex].coverImage : '/images/default/cover.png'"
             style="height: 45px;border-radius: 23px" alt="">
       </div>
       <div class="info-container">
@@ -316,7 +310,7 @@ const baseUrl = 'http://localhost:8080';
         <div class="menu-button">
           <img
               @click="favorite"
-              :src="playerStore.currentPlaylist[playerStore.currentIndex].isFavorite==='1' ? '/icons/player/like.svg': '/icons/player/unlike.svg' "
+              :src="playerStore.currentPlaylist && playerStore.currentIndex >= 0 && playerStore.currentIndex < playerStore.currentPlaylist.length && playerStore.currentPlaylist[playerStore.currentIndex].isFavorite===true ? '/icons/player/like.svg': '/icons/player/unlike.svg' "
               style="height: 22px" alt="">
         </div>
         <div class="menu-button">
@@ -378,9 +372,9 @@ const baseUrl = 'http://localhost:8080';
           <img @click="favoriteAll(playerStore.currentPlaylist)" src="/icons/player/favorite.svg"
                style="height: 15px;align-self: center;margin-right: 3px;margin-bottom: 2px" alt="">
           <span @click="favoriteAll(playerStore.currentPlaylist)" style="margin-right: 25px">收藏全部</span>
-          <img @click="cleanAll" src="/icons/player/favorite.svg"
+          <img @click="playerStore.clearPlaylist();" src="/icons/player/favorite.svg"
                style="height: 15px;align-self: center;margin-right: 3px;margin-bottom: 2px" alt="">
-          <span @click="cleanAll">清空</span>
+          <span @click="playerStore.clearPlaylist();">清空</span>
         </div>
       </div>
       <div class="form-info">

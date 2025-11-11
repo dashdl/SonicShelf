@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import com.zhongxin.sonicshelf.entity.Favorite;
+import com.zhongxin.sonicshelf.entity.Music;
 import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.mapper.CategoriesMapper;
 import com.zhongxin.sonicshelf.mapper.FavoriteMapper;
@@ -16,6 +17,7 @@ import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,7 +44,6 @@ public class MusicServiceImpl implements MusicService {
     @Override
     public List<MusicResponse> findByListId(Long id) {
 
-
         List<MusicResponse> musicResponses = musicMapper.findAsPageByListId(id, CurrentUserUtil.getCurrentUserId());
 
         for (MusicResponse music : musicResponses) {
@@ -55,7 +56,7 @@ public class MusicServiceImpl implements MusicService {
     @Override
     public MusicResponse findById(Long id) {
         try {
-            return musicMapper.findById(id, CurrentUserUtil.getCurrentUserId());
+            return musicMapper.selectById(id).setFavorite(isFavorite(id));
         } catch (RuntimeException e) {
             throw new CustomException("404", "音乐不存在或已下架");
         }
@@ -68,7 +69,12 @@ public class MusicServiceImpl implements MusicService {
 
     @Override
     public List<MusicInfoResponse> findByIds(List<Long> musics) {
-        return List.of();
+
+        List<MusicInfoResponse> musicInfoResponseList = musicMapper.selectByIds(musics);
+
+        for (MusicInfoResponse music : musicInfoResponseList) music.setFavorite(isFavorite(music.getId()));
+
+        return musicInfoResponseList;
     }
 
 

@@ -11,20 +11,31 @@ const recommendCount = ref(5) // 默认值
 const recommendPlaylists = ref([])
 const likeRecommend = ref([])
 
+const musicList = ref([])
 
 const updateRecommendCount = () => {
   const width = window.innerWidth
+  let newRecommendCount, newLikeRecommend, newMusicCount
   if (width < 1200) {
-    recommendCount.value = 5
-    getRecommends(5)
-    likeRecommend.value = 2
-  } else if (width < 1360) {
-    recommendCount.value = 6
-    getRecommends(6)
+    newRecommendCount = 5
+    newLikeRecommend = 2
+    newMusicCount = 6
+  } else if (width < 1485) {
+    newRecommendCount = 6
+    newLikeRecommend = 2
+    newMusicCount = 6
   } else {
-    recommendCount.value = 7
-    getRecommends(7)
-    likeRecommend.value = 3
+    newRecommendCount = 7
+    newLikeRecommend = 3
+    newMusicCount = 9
+  }
+
+  if (recommendCount.value !== newRecommendCount ||
+      likeRecommend.value !== newLikeRecommend) {
+    recommendCount.value = newRecommendCount
+    likeRecommend.value = newLikeRecommend
+    getRecommends(newRecommendCount)
+    getRecommendsMusic(newMusicCount)
   }
 }
 
@@ -36,10 +47,10 @@ const gridLikeColumns = computed(() => {
   return `repeat(${likeRecommend.value}, minmax(380px, 1fr))`
 })
 
-const getRecommends = (numb) => {
+const getRecommends = (playlistNumb,) => {
   request.get('playlists/recommend', {
     params: {
-      limit: numb,
+      limit: playlistNumb,
     }
   }).then(res => {
     if (res.code === '200') {
@@ -48,10 +59,20 @@ const getRecommends = (numb) => {
   })
 }
 
+const getRecommendsMusic = async (musicNumb) => {
+  const res = await request.get('recommend/music/likes', {
+    params: {
+      limit: musicNumb
+    }
+  })
+  if (res.code === '200') {
+    musicList.value = res.data;
+  }
+}
+
 onMounted(() => {
   updateRecommendCount() // 初始化
   window.addEventListener('resize', updateRecommendCount)
-
 })
 
 onUnmounted(() => {
@@ -73,18 +94,17 @@ onUnmounted(() => {
     </div>
     <div class="separator-container">根据你喜欢的推荐</div>
     <div class="like-recommend" :style="{ 'grid-template-columns': gridLikeColumns }">
-      <MusicCard/>
-      <MusicCard/>
-      <MusicCard/>
-      <MusicCard/>
-      <MusicCard/>
-      <MusicCard/>
+      <MusicCard
+          v-for="item in musicList"
+          :item="item"
+      />
     </div>
   </div>
 </template>
 
 <style scoped>
 .home-container {
+  width: 100%;
   display: flex;
   flex-direction: column;
 }

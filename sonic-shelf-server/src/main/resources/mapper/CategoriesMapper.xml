@@ -9,6 +9,15 @@
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
+        limit 500
+    </select>
+
+    <select id="selectCategoryIdsFromMusicCategories" resultType="java.lang.Long">
+        SELECT category_id FROM music_categories
+        WHERE music_id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
     </select>
 
 </mapper>

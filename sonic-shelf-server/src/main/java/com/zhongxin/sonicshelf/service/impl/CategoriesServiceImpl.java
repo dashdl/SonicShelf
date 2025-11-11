@@ -35,4 +35,9 @@ public class CategoriesServiceImpl implements CategoriesService {
     public List<CategoriesResponse> findParents() {
         return categoriesMapper.selectParents();
     }
+
+    @Override
+    public List<Long> findCategoryIdsByTargetIdFromMusicCategories(List<Long> ids) {
+        return categoriesMapper.selectCategoryIdsFromMusicCategories(ids);
+    }
 }

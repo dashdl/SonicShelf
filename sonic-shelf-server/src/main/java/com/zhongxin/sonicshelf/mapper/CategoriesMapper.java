@@ -35,4 +35,6 @@ public interface CategoriesMapper {
 
 
     List<Long> selectMusicIdByCategoryId(List<Long> ids);
+
+    List<Long> selectCategoryIdsFromMusicCategories(List<Long> ids);
 }

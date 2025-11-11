@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class MusicInfoResponse {
-    private String id;
+    private Long id;
     private String title;
     private String coverImage;
     private String artistName;
-    private String isFavorite;
+    private boolean isFavorite;
 }
