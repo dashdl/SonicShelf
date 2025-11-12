@@ -20,4 +20,8 @@ public class MusicsController {
         return Result.success(musicService.findById(id));
     }
 
+    @GetMapping("/lyrics/{id}")
+    public Result findLyrics(@PathVariable Long id) {
+        return Result.success("获取成功",musicService.findLyricsById(id));
+    }
 }

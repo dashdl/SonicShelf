@@ -4,6 +4,7 @@ import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -17,4 +18,7 @@ public interface MusicMapper {
     MusicResponse selectById(Long id);
 
     List<MusicInfoResponse> selectByIds(List<Long> ids);
+
+    @Select("select lyrics from musics where id=#{id}")
+    String selectLyricById(Long id);
 }

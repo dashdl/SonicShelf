@@ -3,6 +3,7 @@ import {onMounted, onUnmounted, ref} from "vue";
 import {usePlayerStore} from "@/store/player.js";
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
+import Lyric from "@/components/common/Lyric.vue";
 
 const playerStore = usePlayerStore();
 
@@ -224,6 +225,14 @@ const updateVolumeProgress = (percent) => {
   currentVolume.value = percent / 100;
 };
 
+const lyricTop = ref(0)
+const showLyric = () => {
+  lyricTop.value = -100
+}
+const hideLyric = () => {
+  lyricTop.value = 0
+}
+
 onUnmounted(() => {
   document.removeEventListener('mousemove', onDrag);
   document.removeEventListener('mouseup', stopDrag);
@@ -271,7 +280,7 @@ const baseUrl = 'http://localhost:8080';
 <template>
   <div class="player-component">
     <div class="cover-container">
-      <div class="cover-content">
+      <div @click="showLyric" class="cover-content">
         <img
             :src=" playerStore.currentPlaylist && playerStore.currentIndex >= 0 && playerStore.currentIndex < playerStore.currentPlaylist.length ? baseUrl + playerStore.currentPlaylist[playerStore.currentIndex].coverImage : '/images/default/cover.png'"
             style="height: 45px;border-radius: 23px" alt="">
@@ -316,9 +325,8 @@ const baseUrl = 'http://localhost:8080';
         <div class="menu-button">
           <img @click="playerStore.prev()" src="/icons/player/last.svg" style="height: 30px;" alt="">
         </div>
-        <div class="play-button">
-          <img @click="playerStore.togglePlay"
-               :src="playerStore.isPlaying ? '/icons/player/pause.svg' : '/icons/player/play.svg'"
+        <div @click="playerStore.togglePlay" class="play-button">
+          <img :src="playerStore.isPlaying ? '/icons/player/pause.svg' : '/icons/player/play.svg'"
                style="width: 30px;margin-left: 1px;"
                alt="">
         </div>
@@ -397,6 +405,12 @@ const baseUrl = 'http://localhost:8080';
       </div>
     </div>
   </div>
+  <Lyric
+      :style="{ transform: 'translateY('+lyricTop+'vh)'}"
+      @close="hideLyric"
+      @favorite="favorite"
+      @show="show"
+  />
 </template>
 
 <style scoped>
@@ -439,6 +453,10 @@ const baseUrl = 'http://localhost:8080';
   border-radius: 33px;
   background-color: #0d0d0d;
   animation: rotate 40s linear infinite;
+}
+
+.cover-content:hover {
+  cursor: pointer;
 }
 
 .info-container {
@@ -593,9 +611,9 @@ const baseUrl = 'http://localhost:8080';
   transform: translateX(450px) translateY(-50%);
   background-color: #fafafa;
   border-radius: 10px;
-  box-shadow: 0 0 10px 2px #cbcbcf;
+  box-shadow: 0 0 10px #eaeaea;
   transition: transform 0.5s ease;
-  z-index: 10;
+  z-index: 11;
 }
 
 .show {

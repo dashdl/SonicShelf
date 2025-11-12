@@ -16,6 +16,7 @@ import Comment from "@/components/list/Comment.vue";
 import Collectors from "@/components/list/Collectors.vue";
 import PlaylistCard from "@/components/common/cards/PlaylistCard.vue";
 import MusicCard from "@/components/common/cards/MusicCard.vue";
+import Lyric from "@/components/common/Lyric.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),

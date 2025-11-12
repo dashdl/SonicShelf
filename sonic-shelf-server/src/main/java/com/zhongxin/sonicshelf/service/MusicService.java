@@ -16,4 +16,6 @@ public interface MusicService {
     List<Long> findByCategoryId(List<Long> ids);
 
     List<MusicInfoResponse> findByIds(List<Long> musics);
+
+    String findLyricsById(Long id);
 }

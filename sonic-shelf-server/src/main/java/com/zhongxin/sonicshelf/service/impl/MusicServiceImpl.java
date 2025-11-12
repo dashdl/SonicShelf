@@ -77,6 +77,11 @@ public class MusicServiceImpl implements MusicService {
         return musicInfoResponseList;
     }
 
+    @Override
+    public String findLyricsById(Long id) {
+        return musicMapper.selectLyricById(id);
+    }
+
 
     private boolean isFavorite(Long musicId) {
         Favorite favorite = new Favorite("music", musicId);

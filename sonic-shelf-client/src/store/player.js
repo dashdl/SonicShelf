@@ -14,12 +14,15 @@ export const usePlayerStore = defineStore('player', {
             duration: 0,           // 总时长
             currentTitle: '',
             currentName: '',
+            currentLyric: '',  // 原始歌词文本
+            parsedLyrics: [],  // 解析后的歌词数组 [{time, text}]
+            currentLyricIndex: -1
         }
     },
 
     actions: {
         // 初始化音频播放器
-        initAudio() {
+        async initAudio() {
             if (!this.audio) {
                 this.audio = new Audio()
                 this.setupAudioEvents()
@@ -29,7 +32,7 @@ export const usePlayerStore = defineStore('player', {
                 if (playlistData) {
                     this.currentPlaylist = JSON.parse(playlistData);
                 }
-            } catch(e) {
+            } catch (e) {
                 console.error('解析播放列表失败:', e);
                 this.currentPlaylist = [];
             }
@@ -40,48 +43,49 @@ export const usePlayerStore = defineStore('player', {
                 if (nowPlayingData) {
                     now = JSON.parse(nowPlayingData);
                 }
-                
                 if (this.currentPlaylist.length > 0 && now >= 0 && now < this.currentPlaylist.length) {
                     this.audio.src = 'http://localhost:8080' + this.currentPlaylist[now].fileUrl;
                     this.currentIndex = now;
                     this.currentTitle = this.currentPlaylist[now].title || '未知歌曲';
                     this.currentName = this.currentPlaylist[now].artistName || '未知艺术家';
+                    await this.fetchLyric(this.currentPlaylist[now].id);
                 }
-            } catch(e) {
+            } catch (e) {
                 console.error('设置当前播放歌曲失败:', e);
             }
-            
+
             const savedVolume = localStorage.getItem('playerVolume');
             this.volume = savedVolume ? parseFloat(savedVolume) : 0.5;
             if (this.audio) {
                 this.audio.volume = this.volume;
             }
-            
+
             return this.audio;
         },
 
         setupAudioEvents() {
             if (!this.audio) return;
-            
+
             this.audio.addEventListener('loadedmetadata', () => {
                 this.duration = this.audio.duration;
             });
-            
+
             this.audio.addEventListener('timeupdate', () => {
                 this.currentTime = this.audio.currentTime;
+                this.updateCurrentLyric();
             });
-            
+
             this.audio.addEventListener('ended', () => {
                 this.next();
             });
-            
+
             this.audio.addEventListener('volumechange', () => {
                 if (Math.abs(this.audio.volume - this.volume) > 0.01) {
                     this.volume = this.audio.volume;
                     localStorage.setItem('playerVolume', this.volume.toString());
                 }
             });
-            
+
             this.audio.addEventListener('error', (error) => {
                 console.error('音频播放错误:', error);
                 this.isPlaying = false;
@@ -95,6 +99,16 @@ export const usePlayerStore = defineStore('player', {
             if (newPlaylist.length > 0) {
                 this.currentTitle = newPlaylist[0].title || '未知歌曲';
                 this.currentName = newPlaylist[0].artistName || '未知艺术家';
+            }
+        },
+
+        updateCurrentLyric() {
+            if (this.parsedLyrics.length === 0) return;
+            for (let i = this.parsedLyrics.length - 1; i >= 0; i--) {
+                if (this.currentTime >= this.parsedLyrics[i].time) {
+                    this.currentLyricIndex = i
+                    break
+                }
             }
         },
 
@@ -115,7 +129,7 @@ export const usePlayerStore = defineStore('player', {
         },
 
 
-        playSong(index) {
+        async playSong(index) {
             if (index >= 0 && index < this.currentPlaylist.length && this.audio) {
                 try {
                     if (!this.audio.paused) {
@@ -123,6 +137,7 @@ export const usePlayerStore = defineStore('player', {
                     }
 
                     this.audio.currentTime = 0;
+                    this.currentLyricIndex = -1;
 
                     this.currentIndex = index;
                     const song = this.currentPlaylist[index];
@@ -130,8 +145,10 @@ export const usePlayerStore = defineStore('player', {
                     this.currentName = song.artistName || '未知艺术家';
 
                     this.audio.src = 'http://localhost:8080' + (song.fileUrl || '');
-                    this.isPlaying = true;
 
+                    await this.fetchLyric(song.id);
+
+                    this.isPlaying = true;
                     this.audio.play().catch(error => {
                         console.warn('播放需要用户交互:', error);
                     });
@@ -183,6 +200,56 @@ export const usePlayerStore = defineStore('player', {
                 this.volume = normalizedVolume;
                 this.audio.volume = normalizedVolume;
                 localStorage.setItem('playerVolume', normalizedVolume.toString());
+            }
+        },
+
+        parseLyrics(lyricText) {
+            if (!lyricText) return [];
+
+            const lines = lyricText.split('\n');
+            const result = [];
+
+            // const timeRegex = /\[(\d{2}):(\d{2})\.(\d{2})\]/;
+            const timeRegex = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/;
+
+            for (const line of lines) {
+                if (!line.trim()) continue;
+
+                const match = line.match(timeRegex);
+                if (!match) continue;
+
+                const [_, minutes, seconds, milliseconds] = match;
+
+                // const time = parseInt(minutes) * 60 + parseInt(seconds) + parseInt(milliseconds) / 100;
+
+                let time;
+                if (milliseconds.length === 2) {
+                    time = parseInt(minutes) * 60 + parseInt(seconds) + parseInt(milliseconds) / 100;
+                } else {
+                    time = parseInt(minutes) * 60 + parseInt(seconds) + parseInt(milliseconds) / 1000;
+                }
+
+                const text = line.replace(timeRegex, '').trim();
+
+                if (text) {
+                    result.push({
+                        time: parseFloat(time.toFixed(3)),
+                        text: text
+                    });
+                }
+            }
+
+            return result;
+        },
+
+        async fetchLyric(songId) {
+            try {
+                const res = await request.get(`musics/lyrics/` + songId);
+                this.currentLyric = res.data || '';
+                this.parsedLyrics = this.parseLyrics(res.data || '');
+            } catch (error) {
+                this.currentLyric = '';
+                this.parsedLyrics = [];
             }
         },
 
