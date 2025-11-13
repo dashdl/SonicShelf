@@ -4,13 +4,39 @@ import Header from "@/components/Header.vue";
 import Sidebar from "@/components/Sidebar.vue";
 import Player from "@/components/Player.vue";
 import {useUserStore} from "@/store/userStore.js";
-import {onMounted} from "vue";
+import {onMounted, reactive} from "vue";
 import {ElMessage} from "element-plus";
 import {usePlaylistStore} from "@/store/playlist.js";
-import {useRoute} from "vue-router"; const route = useRoute();
+import Collection from "@/components/list/Collection.vue";
+import request from "@/utils/request.js";
 
 const userStore = useUserStore();
 const playlistStore = usePlaylistStore();
+
+let style = reactive(({
+  scale: 0,
+  opacity: 0,
+}))
+
+let userSelectPlaylistId = 0;
+const saveSelect = async (id) => {
+  const res = await request.post('playlists/' + id + '/collect/' + userSelectPlaylistId)
+  if (res.code === '200') {
+    ElMessage.success("收藏成功");
+    closeCollection()
+  } else {
+    ElMessage.error(res.message);
+  }
+}
+const collect = (id) => {
+  userSelectPlaylistId = id
+  style.opacity = 1
+  style.scale = 1
+}
+const closeCollection = () => {
+  style.opacity = 0
+  style.scale = 0
+}
 
 onMounted(async () => {
   try {
@@ -20,7 +46,6 @@ onMounted(async () => {
     ElMessage.error("用户状态加载失败");
   }
 })
-
 </script>
 
 <template>
@@ -42,17 +67,23 @@ onMounted(async () => {
                 :userInfo="userStore.userInfo"
                 :userPlaylist="playlistStore.userPlaylist"
                 :favoritePlaylist="playlistStore.favoritePlaylist"
-            ></component>
+                @collect="collect"
+            />
           </router-view>
         </div>
       </div>
     </div>
     <div class="player-container">
-      <Player/>
+      <Player
+          @collect="collect"/>
     </div>
   </div>
-
-
+  <Collection
+      :style="{ opacity: style.opacity,scale: style.scale}"
+      :userPlaylist="playlistStore.userPlaylist"
+      @selectedPlaylist="saveSelect"
+      @closeCollection="closeCollection"
+  />
 </template>
 
 <style scoped>

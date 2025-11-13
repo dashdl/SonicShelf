@@ -4,11 +4,9 @@ import com.github.pagehelper.PageInfo;
 import com.zhongxin.sonicshelf.dto.request.PlaylistRequest;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
-import com.zhongxin.sonicshelf.entity.Favorite;
 import com.zhongxin.sonicshelf.entity.Playlist;
 import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.mapper.PlaylistMapper;
-import com.zhongxin.sonicshelf.service.FavoriteService;
 import com.zhongxin.sonicshelf.service.MusicService;
 import com.zhongxin.sonicshelf.service.PlaylistService;
 import com.zhongxin.sonicshelf.util.CurrentUserUtil;
@@ -16,7 +14,6 @@ import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -29,8 +26,6 @@ public class PlaylistsController {
     private MusicService musicService;
     @Resource
     private PlaylistMapper playlistMapper;
-    @Resource
-    private FavoriteService favoriteService;
 
     @GetMapping("")
     public Result playlists(@RequestParam(required = false) Integer pageNum,
@@ -79,5 +74,33 @@ public class PlaylistsController {
     @GetMapping("/recommend")
     public Result recommend(@RequestParam(required = false) Integer limit) {
         return Result.success(playlistsService.findAll(limit));
+    }
+
+    @PostMapping("/{playlistId}/collect/{musicId}")
+    public Result collect(@PathVariable Long playlistId,
+                          @PathVariable Long musicId) {
+
+        if (Objects.equals(playlistsService.findUserIdByPlaylistId(playlistId), CurrentUserUtil.getCurrentUserId())) {
+            if (musicService.findById(musicId) != null && playlistsService.findByPlaylistId(playlistId) != null)
+                playlistsService.collectMusicByPlaylistIdAndMusicId(playlistId, musicId);
+        } else {
+            throw new CustomException("这不是您的歌单");
+        }
+        return Result.success();
+    }
+
+    @DeleteMapping("/{playlistId}/collect/{musicId}")
+    public Result deleteMusic(@PathVariable Long playlistId,
+                              @PathVariable Long musicId) {
+
+        if (Objects.equals(playlistsService.findUserIdByPlaylistId(playlistId), CurrentUserUtil.getCurrentUserId())) {
+
+            if (musicService.findById(musicId) != null && playlistsService.findByPlaylistId(playlistId) != null)
+                playlistsService.deleteMusicByPlaylistIdAndMusicId(playlistId, musicId);
+
+        } else {
+            throw new CustomException("这不是您的歌单");
+        }
+        return Result.success();
     }
 }

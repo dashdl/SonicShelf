@@ -17,6 +17,9 @@ import Collectors from "@/components/list/Collectors.vue";
 import PlaylistCard from "@/components/common/cards/PlaylistCard.vue";
 import MusicCard from "@/components/common/cards/MusicCard.vue";
 import Lyric from "@/components/common/Lyric.vue";
+import Collection from "@/components/list/Collection.vue";
+import Music from "@/pages/Music.vue";
+import InteractCard from "@/components/common/cards/InteractCard.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,8 +27,8 @@ const router = createRouter({
         {
             path: '/', component: Layout,
             children: [
-                {path: '', component: Home},
-                {path: '/profile/:userId', component: Profile,name: 'Profile'},
+                {path: '', component: InteractCard},
+                {path: '/profile/:userId', component: Profile, name: 'Profile'},
                 {path: '/profile-settings', component: ProfileSettings},
                 {
                     path: '/playlist/:id',
@@ -36,6 +39,12 @@ const router = createRouter({
                     path: '/Playlist-edit/:id',
                     component: () => import("@/pages/PlaylistEdit.vue"),
                     props: true
+                },
+                {
+                    path: '/music/:musicId',
+                    component: () => import("@/pages/Music.vue"),
+                    props: true,
+                    name: 'Music'
                 },
             ]
         },

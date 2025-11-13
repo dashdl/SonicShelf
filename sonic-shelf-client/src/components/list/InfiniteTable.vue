@@ -3,6 +3,8 @@ import {onMounted, onUnmounted, ref, nextTick, watch} from "vue";
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import {usePlayerStore} from "@/store/player.js";
+import router from "@/router/index.js";
+import InteractCard from "@/components/common/cards/InteractCard.vue";
 
 const playerStore = usePlayerStore();
 
@@ -25,17 +27,35 @@ const props = defineProps({
   },
   threshold: {
     type: Number,
-    default: 300 // 增加默认阈值，减少触发频率
+    default: 300
   }
 })
 
 const reactiveItems = ref([]);
 
 watch(() => props.items, (newItems) => {
-  reactiveItems.value = JSON.parse(JSON.stringify(newItems));
-}, { immediate: true, deep: true });
+  reactiveItems.value = JSON.parse(JSON.stringify(newItems)).map(item => ({
+    ...item,
+    showInteract: false
+  }));
+}, {immediate: true, deep: true});
 
-const play=(id)=>{
+const toggleInteract = (item) => {
+  reactiveItems.value.forEach(i => {
+    if (i.id !== item.id) {
+      i.showInteract = false;
+    }
+  });
+  item.showInteract = !item.showInteract;
+};
+
+const closeAllInteract = () => {
+  reactiveItems.value.forEach(item => {
+    item.showInteract = false;
+  });
+};
+
+const play = (id) => {
   playerStore.checkMusicId(id)
 }
 
@@ -72,12 +92,19 @@ const handleScroll = (event) => {
 };
 
 const goToMusic = (musicId) => {
-  // router.push(`/playlist/${musicId}`);
+  router.push({
+    name: 'Music',
+    params: {musicId: musicId}
+  })
 };
 
-const emit = defineEmits(['updateFavorite']);
+const emit = defineEmits(['updateFavorite', 'collect']);
 
-const favorite=(id,favorite)=>{
+const collect = (id) => {
+  emit("collect", id);
+}
+
+const favorite = (id, favorite) => {
   if (favorite === false) {
     request.post('favorites/music/' + id).then(res => {
       if (res.code === '200') {
@@ -171,7 +198,7 @@ const baseUrl = 'http://localhost:8080';
 </script>
 
 <template>
-  <div class="table-container" ref="tableRef">
+  <div class="table-container" ref="tableRef" @click="closeAllInteract">
     <div class="table-row" style="margin-bottom: -12px">
       <div class="left-cell">
         <div class="rank-cell">
@@ -193,12 +220,13 @@ const baseUrl = 'http://localhost:8080';
         </div>
       </div>
     </div>
-    <div class="table-row" v-for="(item, index) in reactiveItems" @click="goToMusic(item.id)" :key="item.id">
+    <div @mouseleave="closeAllInteract" class="table-row" v-for="(item, index) in reactiveItems" :key="item.id">
       <div class="left-cell">
         <div class="rank-cell">
           <span id="title" style="font-size: 12px">{{ index + 1 }}</span>
           <div class="play-button">
-            <img @click="play(item.id)" src="/icons/player/play.svg" style="width: 20px;filter: brightness(0.4);" alt="">
+            <img @click="play(item.id)" src="/icons/player/play.svg" style="width: 20px;filter: brightness(0.4);"
+                 alt="">
           </div>
         </div>
         <div class="title-cell">
@@ -210,12 +238,31 @@ const baseUrl = 'http://localhost:8080';
             <span style="font-size: 16px;color: #333333;">{{ item.title }}</span>
             <span style="">{{ item.artistName }}</span>
           </div>
+          <div class="interact-group">
+            <div class="interact-button">
+              <img @click="collect(item.id)" src="/icons/player/favorite.svg" style="width: 18px" alt="">
+            </div>
+            <div @click="goToMusic(item.id)" class="interact-button">
+              <img src="/icons/player/comment.svg" style="width: 18px" alt="">
+            </div>
+            <div class="interact-button">
+              <img @click.stop="toggleInteract(item)" src="/icons/status/more.svg" style="width: 18px" alt="">
+            </div>
+            <InteractCard
+                v-if="item.showInteract"
+                @click.stop
+                :music-id="item.id"
+                @collect="collect"
+            />
+          </div>
+
         </div>
       </div>
       <div class="right-cell">
         <div class="total-cell"><span>{{ item.albumTitle }}</span></div>
         <div class="like-cell">
-          <img @click="favorite(item.id,item.favorite)" :src="item.favorite===true ? '/icons/player/like.svg':'/icons/player/unlike.svg' " style="width: 18px;"
+          <img @click="favorite(item.id,item.favorite)"
+               :src="item.favorite===true ? '/icons/player/like.svg':'/icons/player/unlike.svg' " style="width: 18px;"
                alt="">
         </div>
         <div class="time-cell"><span style="color: #7b818f">04:55</span></div>
@@ -261,6 +308,10 @@ span {
   z-index: -1;
 }
 
+.table-row:hover .interact-group {
+  opacity: 1;
+}
+
 .left-cell {
   width: 53%;
   max-width: 850px;
@@ -287,9 +338,11 @@ span {
 
 .play-button:hover {
   cursor: pointer;
+  filter: brightness(0.4);
 }
 
 .title-cell {
+  position: relative;
   display: flex;
   flex-grow: 1;
   align-items: center;
@@ -298,6 +351,24 @@ span {
 .title {
   display: flex;
   flex-direction: column;
+}
+
+.interact-group {
+  position: absolute;
+  right: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  opacity: 0;
+}
+
+.interact-button {
+  margin-right: 15px;
+}
+
+.interact-button:hover {
+  cursor: pointer;
+  filter: brightness(0.4);
 }
 
 .right-cell {
@@ -312,7 +383,8 @@ span {
   width: 70%;
   overflow: hidden;
 }
-.total-cell span{
+
+.total-cell span {
   display: block;
   white-space: nowrap;
   overflow: hidden;

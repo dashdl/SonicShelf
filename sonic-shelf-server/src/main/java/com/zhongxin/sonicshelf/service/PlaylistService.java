@@ -21,4 +21,10 @@ public interface PlaylistService {
     void updatePlaylistCover(String url,Long id);
 
     List<PlaylistCardResponse> findAll(Integer limit);
+
+    void collectMusicByPlaylistIdAndMusicId(Long playlistId, Long musicId);
+
+    void deleteMusicByPlaylistIdAndMusicId(Long playlistId, Long musicId);
+
+    Long findUserIdByPlaylistId(Long playlistId);
 }

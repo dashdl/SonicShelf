@@ -9,7 +9,6 @@ const player = usePlayerStore();
 const props = defineProps({
   item: {type: Object, required: true},
 })
-console.log(props.item)
 
 const favorite = () => {
   if (props.item.favorite === false) {

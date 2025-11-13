@@ -2,12 +2,13 @@
 
 import {usePlayerStore} from "@/store/player.js";
 import {ref, watch} from "vue";
+import router from "@/router/index.js";
 
 const player = usePlayerStore();
 
 const lyricMain = ref(null)
 
-const emit = defineEmits(['close', 'favorite', 'show'])
+const emit = defineEmits(['close', 'favorite', 'show', 'mouseenter', 'mouseleave','collect'])
 
 const closeLyric = () => {
   emit('close')
@@ -19,6 +20,18 @@ const favorite = () => {
 
 const show = () => {
   emit('show')
+}
+
+const collect = () => {
+  emit('collect', player.currentPlaylist[player.currentIndex].id);
+}
+
+const jumpToMusic = () => {
+  router.push({
+    name: 'Music',
+    params: {musicId: player.currentPlaylist[player.currentIndex].id}
+  })
+  emit('close')
 }
 
 // watch(() => player.currentLyricIndex, (newIndex, oldIndex) => {
@@ -88,16 +101,16 @@ watch(() => player.currentLyricIndex, (newIndex, oldIndex) => {
       <div class="lyric-main" ref="lyricMain">
         <div v-for="(item,index) in player.parsedLyrics"
              :class="[{'active-text': index === player.currentLyricIndex},'lyric-text']">
-          {{ item.text }}
+          <span style=" display: inline-block;text-align: center;">{{ item.text }}</span>
         </div>
       </div>
     </div>
     <div class="lyric-player">
       <div class="button-group">
-        <div class="button">
+        <div @click="collect" class="button">
           <img src="/icons/player/favorite.svg" style="width: 20px" alt="">
         </div>
-        <div class="button">
+        <div @click="jumpToMusic" class="button">
           <img src="/icons/player/comment.svg" style="width: 20px" alt="">
         </div>
         <div class="button">
@@ -130,7 +143,9 @@ watch(() => player.currentLyricIndex, (newIndex, oldIndex) => {
         </div>
       </div>
       <div class="selection-container">
-        <div class="selection-button">
+        <div class="selection-button"
+             @mouseleave="emit('mouseleave')"
+             @mouseenter="emit('mouseenter')">
           <img src="/icons/player/volume.svg" style="width: 22px;" alt="">
         </div>
         <div class="selection-button">
@@ -251,6 +266,10 @@ span {
 
 .button {
   margin-right: 25px;
+}
+
+.button:hover{
+  cursor: pointer;
 }
 
 .player-menu {

@@ -13,7 +13,6 @@ import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -90,5 +89,30 @@ public class PlaylistServiceImpl implements PlaylistService {
         }
 
         return playlistCardResponses;
+    }
+
+    @Override
+    public void collectMusicByPlaylistIdAndMusicId(Long playlistId, Long musicId) {
+        if (playlistMapper.findByPlaylistIdAndMusicId(playlistId, musicId) == null) {
+            playlistMapper.insertPlaylistMusic(playlistId, musicId);
+            playlistMapper.updateMusicCount(playlistId, playlistMapper.countMusicCount(playlistId));
+        } else {
+            throw new CustomException("歌单中已包含该音乐");
+        }
+    }
+
+    @Override
+    public void deleteMusicByPlaylistIdAndMusicId(Long playlistId, Long musicId) {
+        if (playlistMapper.findByPlaylistIdAndMusicId(playlistId, musicId) != null) {
+            playlistMapper.deletePlaylistMusic(playlistId, musicId);
+            playlistMapper.updateMusicCount(playlistId, playlistMapper.countMusicCount(playlistId));
+        } else {
+            throw new CustomException("歌单中未包含该音乐");
+        }
+    }
+
+    @Override
+    public Long findUserIdByPlaylistId(Long playlistId) {
+        return playlistMapper.selectUserIdByPlaylistId(playlistId);
     }
 }

@@ -3,7 +3,6 @@ package com.zhongxin.sonicshelf.controller;
 import com.zhongxin.sonicshelf.service.LikeService;
 import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

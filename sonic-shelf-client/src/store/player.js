@@ -283,7 +283,38 @@ export const usePlayerStore = defineStore('player', {
             }).catch(error => {
                 console.error('获取音乐信息失败:', error);
             });
-        }
+        },
 
+        // addNext(id) {
+        //     if (!this.audio) {
+        //         this.initAudio();
+        //     }
+        //
+        //     let index = 0;
+        //     for (let item of this.currentPlaylist) {
+        //         if (item.id === id) {
+        //             this.playSong(index);
+        //             return;
+        //         }
+        //         index++;
+        //     }
+        //
+        //     request.get('/musics/' + id).then(res => {
+        //         if (res.data) {
+        //             if (this.currentPlaylist.length === 0) {
+        //                 this.currentPlaylist.unshift(res.data);
+        //                 localStorage.setItem("playlist", JSON.stringify(this.currentPlaylist));
+        //                 this.currentIndex = 0;
+        //                 this.playSong(0);
+        //             } else {
+        //                 this.currentPlaylist.splice(this.currentIndex + 1, 0, res.data);
+        //                 localStorage.setItem("playlist", JSON.stringify(this.currentPlaylist));
+        //                 this.playSong(this.currentIndex + 1);
+        //             }
+        //         }
+        //     }).catch(error => {
+        //         console.error('获取音乐信息失败:', error);
+        //     });
+        // }
     }
 })

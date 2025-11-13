@@ -1,6 +1,6 @@
 <script setup>
 
-import {onMounted, reactive, ref} from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import {useUserStore} from "@/store/userStore.js";
@@ -22,7 +22,7 @@ const comments = ref([]);
 
 const comment = reactive({
   content: '',
-  targetType: 'playlist',
+  targetType: props.targetType,
   targetId: props.targetId,
   parentId: '',
 });
@@ -94,7 +94,7 @@ const deleteComment = (id) => {
 
 const postComment = () => {
   comment.content = formatCommentContent(comment.content);
-  if (comment.content ==="") {
+  if (comment.content === "") {
     ElMessage.warning("评论不可为空")
     return;
   }
@@ -106,7 +106,7 @@ const postComment = () => {
       ElMessage.error("发布失败")
     }
   })
-  comment.content=""
+  comment.content = ""
   loadComments()
 }
 
@@ -130,6 +130,14 @@ const loadComments = async () => {
     }),
   ]);
 }
+
+watch(() => [props.targetId, props.targetType], ([newId, newType], [oldId, oldType]) => {
+  if (newId !== oldId || newType !== oldType) {
+    loadComments();
+    comment.targetId = newId;
+    comment.targetType = newType;
+  }
+}, {immediate: false, deep: false});
 
 const baseUrl = 'http://localhost:8080';
 </script>
@@ -214,7 +222,7 @@ const baseUrl = 'http://localhost:8080';
   background-color: #f0f2f5;
   border: #e4e8ec 1px solid;
   border-radius: 10px;
-  z-index: 100;
+  z-index: 10;
 }
 
 .editor textarea {
@@ -232,7 +240,8 @@ const baseUrl = 'http://localhost:8080';
   flex-direction: column;
   align-items: end;
 }
-.editor-info span:hover{
+
+.editor-info span:hover {
   cursor: pointer;
 }
 

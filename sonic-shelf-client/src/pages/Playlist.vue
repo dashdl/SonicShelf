@@ -15,6 +15,11 @@ const userStore = useUserStore();
 
 const route = useRoute();
 
+const emit = defineEmits(['collect'])
+const collect = (id) => {
+  emit('collect', id)
+}
+
 const userSelect = reactive({
   page: 1
 });
@@ -25,7 +30,7 @@ let collectorNum = 0;
 
 const data = reactive({
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 40,
   total: 1,
   commentCount: 0,
 })
@@ -76,7 +81,6 @@ const loadPlaylistData = async (playlistId) => {
   userSelect.page = 1;
   data.pageNum = 1;
   data.total = 1;
-  hasMore.value = true;
   musicInfo.value = [];
   await Promise.all([
     request.get('playlists/' + playlistId).then(res => {
@@ -91,6 +95,7 @@ const loadPlaylistData = async (playlistId) => {
         Info.musicCount = res.data.musicCount;
         Info.playCount = res.data.playCount;
         Info.createTime = res.data.createTime.substring(0, 10);
+        hasMore.value = res.data.hasNextPage;
       } else {
         ElMessage.error("歌单信息获取失败")
       }
@@ -238,6 +243,7 @@ const baseUrl = 'http://localhost:8080';
           :loading="loading"
           :load-more="loadMore"
           @update-favorite="handleUpdateFavorite"
+          @collect="collect"
       />
       <Comment
           v-if="userSelect.page===2"

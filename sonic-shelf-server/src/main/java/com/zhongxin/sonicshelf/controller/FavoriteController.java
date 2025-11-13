@@ -70,13 +70,11 @@ public class FavoriteController {
             PageInfo<PlaylistsResponse> pageInfo = favoriteService.findAsPage(pageNum, pageSize, targetUserId);
             return Result.success("获取成功", pageInfo);
         }
-
     }
 
     @GetMapping("/collectors")
     public Result getFavoriteCollectors(@RequestParam(required = false) String targetType,
                                         @RequestParam(required = false) Long targetId) {
-
         try {
             return Result.success(favoriteService.findCollectorByTargetTypeAndTargetId(targetType, targetId));
         } catch (Exception e) {

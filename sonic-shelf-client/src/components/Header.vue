@@ -178,7 +178,6 @@ onUnmounted(() => {
   justify-content: center;
 }
 
-//410+30
 .modal-content {
   position: fixed;
   z-index: 1001;

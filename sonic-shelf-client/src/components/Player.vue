@@ -4,8 +4,11 @@ import {usePlayerStore} from "@/store/player.js";
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import Lyric from "@/components/common/Lyric.vue";
+import router from "@/router/index.js";
 
 const playerStore = usePlayerStore();
+
+const emit = defineEmits(['collect']);
 
 const showVolumeControl = ref(false);
 let volumeHideTimeout = null;
@@ -84,6 +87,11 @@ const favorite = () => {
     })
   }
 }
+
+const collect = () => {
+  emit('collect', playerStore.currentPlaylist[playerStore.currentIndex].id);
+}
+
 
 const favoriteAll = (currentPlaylist) => {
   const playlistCopy = JSON.parse(JSON.stringify(currentPlaylist));
@@ -274,6 +282,13 @@ onMounted(() => {
   });
 });
 
+const jumpToMusic = () => {
+  router.push({
+    name: 'Music',
+    params: {musicId: playerStore.currentPlaylist[playerStore.currentIndex].id}
+  })
+}
+
 const baseUrl = 'http://localhost:8080';
 </script>
 
@@ -299,10 +314,10 @@ const baseUrl = 'http://localhost:8080';
           </div>
         </div>
         <div class="button-group">
-          <div class="button">
+          <div @click="collect" class="button">
             <img src="/icons/player/favorite.svg" style="width: 20px" alt="">
           </div>
-          <div class="button">
+          <div @click="jumpToMusic" class="button">
             <img src="/icons/player/comment.svg" style="width: 20px" alt="">
           </div>
           <div class="button">
@@ -363,7 +378,7 @@ const baseUrl = 'http://localhost:8080';
              @click="handleVolumeClick"
              @mousedown="startVolumeDrag">
           <div class="volume-progress" :style="{ height: volumeProgress + '%'}"></div>
-          <span style="font-size: 10px">{{ Math.round(volumeProgress) }}%</span>
+          <span>{{ Math.round(volumeProgress) }}%</span>
         </div>
       </div>
       <div class="selection-button">
@@ -410,6 +425,9 @@ const baseUrl = 'http://localhost:8080';
       @close="hideLyric"
       @favorite="favorite"
       @show="show"
+      @mouseenter="handleVolumeButtonEnter"
+      @mouseleave="handleVolumeButtonLeave"
+      @collect="collect"
   />
 </template>
 
@@ -515,6 +533,10 @@ const baseUrl = 'http://localhost:8080';
   align-items: center;
   justify-content: center;
   margin-right: 25px;
+}
+
+.button-group .button:hover {
+  cursor: pointer;
 }
 
 .player-container {
@@ -714,7 +736,7 @@ const baseUrl = 'http://localhost:8080';
   justify-content: center;
   background: #ffffff;
   border-radius: 10px;
-  box-shadow: 0 0 10px 2px #cbcbcf;
+  box-shadow: 0 0 10px #eaeaea;
   right: 65px;
   bottom: 60px;
   z-index: 100;
@@ -745,5 +767,7 @@ const baseUrl = 'http://localhost:8080';
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
+  font-size: 10px;
+  margin-bottom: 3px
 }
 </style>
