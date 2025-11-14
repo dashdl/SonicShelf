@@ -21,4 +21,6 @@ public interface MusicMapper {
 
     @Select("select lyrics from musics where id=#{id}")
     String selectLyricById(Long id);
+
+    List<MusicResponse> selectMusicsByArtistId(Long id);
 }

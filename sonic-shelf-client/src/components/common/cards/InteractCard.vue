@@ -10,7 +10,11 @@ const route = useRoute();
 const player = usePlayerStore();
 
 const props = defineProps({
-  musicId: null
+  musicId: null,
+  showDelete:{
+    type: Boolean,
+    default: false
+  }
 })
 
 const emit = defineEmits(['collect'])
@@ -42,7 +46,7 @@ const deleteMusic = async () => {
       <img src="/icons/status/play.svg" style="width: 17px;margin-right: 10px" alt="">
       <span style="font-size: 13px">播放</span>
     </div>
-    <div class="interact-item">
+    <div @click="player.addNext(musicId)" class="interact-item">
       <img src="/icons/status/nextPlay.svg" style="width: 17px;margin-right: 10px" alt="">
       <span style="font-size: 13px">下一首播放</span>
     </div>
@@ -63,7 +67,7 @@ const deleteMusic = async () => {
       <img src="/icons/player/download.svg" style="width: 17px;margin-right: 10px" alt="">
       <span style="font-size: 13px">下载</span>
     </div>
-    <div @click="deleteMusic" class="interact-item">
+    <div @click="deleteMusic" v-if="showDelete" class="interact-item">
       <img src="/icons/status/delete.svg" style="width: 17px;margin-right: 10px" alt="">
       <span style="font-size: 13px">从歌单删除</span>
     </div>

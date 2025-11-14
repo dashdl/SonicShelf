@@ -82,6 +82,15 @@ public class MusicServiceImpl implements MusicService {
         return musicMapper.selectLyricById(id);
     }
 
+    @Override
+    public List<MusicResponse> findMusicsByArtistId(Long id) {
+
+        List<MusicResponse> musicResponseList = musicMapper.selectMusicsByArtistId(id);
+
+        for (MusicResponse music : musicResponseList) music.setFavorite(isFavorite(music.getId()));
+
+        return musicResponseList;
+    }
 
     private boolean isFavorite(Long musicId) {
         Favorite favorite = new Favorite("music", musicId);

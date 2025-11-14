@@ -25,7 +25,7 @@ public class UserProfileResponse {
         this.avatar = user.getAvatar();
         this.bio = user.getBio();
         this.gender = user.getGender();
-        this.birthday = user.getBirthday().toString();
+        this.birthday = user.getBirthday();
         this.location = user.getLocation();
         this.followers_count=user.getFollowerCount();
         this.following_count=user.getFollowingCount();

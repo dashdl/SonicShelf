@@ -10,6 +10,7 @@ public class MusicResponse {
     private String title;
     private String coverImage;
     private String artistName;
+    private String artistId;
     private String albumTitle;
     private String albumId;
     private String fileUrl;

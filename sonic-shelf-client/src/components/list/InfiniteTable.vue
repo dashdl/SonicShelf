@@ -11,7 +11,8 @@ const playerStore = usePlayerStore();
 const props = defineProps({
   items: {
     type: Array,
-    default: () => []
+    default: () => [],
+    required:true
   },
   loading: {
     type: Boolean,
@@ -28,6 +29,10 @@ const props = defineProps({
   threshold: {
     type: Number,
     default: 300
+  },
+  showDelete:{
+    type: Boolean,
+    default: false
   }
 })
 
@@ -236,7 +241,7 @@ const baseUrl = 'http://localhost:8080';
           </div>
           <div class="title">
             <span style="font-size: 16px;color: #333333;">{{ item.title }}</span>
-            <span style="">{{ item.artistName }}</span>
+            <span @click="router.push('/artist/'+item.artistId)" id="artist" style="">{{ item.artistName }}</span>
           </div>
           <div class="interact-group">
             <div class="interact-button">
@@ -250,12 +255,12 @@ const baseUrl = 'http://localhost:8080';
             </div>
             <InteractCard
                 v-if="item.showInteract"
-                @click.stop
                 :music-id="item.id"
+                :show-delete="props.showDelete"
+                @click.stop
                 @collect="collect"
             />
           </div>
-
         </div>
       </div>
       <div class="right-cell">
@@ -270,7 +275,6 @@ const baseUrl = 'http://localhost:8080';
     </div>
   </div>
 </template>
-
 
 <style scoped>
 span {
@@ -351,6 +355,10 @@ span {
 .title {
   display: flex;
   flex-direction: column;
+}
+
+#artist:hover {
+  cursor: pointer;
 }
 
 .interact-group {

@@ -97,7 +97,6 @@ public class PlaylistsController {
 
             if (musicService.findById(musicId) != null && playlistsService.findByPlaylistId(playlistId) != null)
                 playlistsService.deleteMusicByPlaylistIdAndMusicId(playlistId, musicId);
-
         } else {
             throw new CustomException("这不是您的歌单");
         }

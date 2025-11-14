@@ -67,7 +67,6 @@ const loadMore = async () => {
   loading.value = true
   try {
     await load()
-    // 加载完成后检查是否还有更多数据
     if (data.pageNum * data.pageSize >= data.total) hasMore.value = false
   } catch (error) {
     console.error('加载更多数据失败:', error)
@@ -242,6 +241,7 @@ const baseUrl = 'http://localhost:8080';
           :has-more="hasMore"
           :loading="loading"
           :load-more="loadMore"
+          :show-delete="true"
           @update-favorite="handleUpdateFavorite"
           @collect="collect"
       />

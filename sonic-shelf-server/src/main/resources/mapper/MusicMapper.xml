@@ -8,6 +8,7 @@
         <result column="title" property="title"/>
         <result column="cover_image" property="coverImage"/>
         <result column="artist_name" property="artistName"/>
+        <result column="artist_id" property="artistId"/>
         <result column="album_title" property="albumTitle"/>
         <result column="album_id" property="albumId"/>
     </resultMap>
@@ -17,6 +18,7 @@
                m.title,
                m.cover_image,
                a.name   as artist_name,
+               a.id   as artist_id,
                am.title as album_title,
                am.id    as album_id,
                m.duration,
@@ -36,6 +38,7 @@
                m.title,
                m.cover_image,
                a.name   as artist_name,
+               a.id     as artist_id,
                am.title as album_title,
                am.id    as album_id,
                m.duration,
@@ -64,4 +67,19 @@
         </foreach>
     </select>
 
+    <select id="selectMusicsByArtistId" resultType="com.zhongxin.sonicshelf.dto.response.MusicResponse">
+        SELECT m.id,
+               m.title,
+               m.cover_image,
+               a.name   as artist_name,
+               a.id     as artist_id,
+               am.title as album_title,
+               am.id    as album_id,
+               m.duration,
+               m.file_url
+        FROM musics m
+                 INNER JOIN artists a ON m.artist_id = a.id
+                 INNER JOIN albums am On am.id = m.album_id
+        WHERE a.id = #{id}
+    </select>
 </mapper>

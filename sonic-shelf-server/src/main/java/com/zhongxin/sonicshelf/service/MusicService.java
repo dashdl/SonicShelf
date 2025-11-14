@@ -18,4 +18,6 @@ public interface MusicService {
     List<MusicInfoResponse> findByIds(List<Long> musics);
 
     String findLyricsById(Long id);
+
+    List<MusicResponse> findMusicsByArtistId(Long id);
 }
