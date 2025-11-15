@@ -3,7 +3,8 @@ package com.zhongxin.sonicshelf.util;
 public enum FavoriteType {
     MUSIC("music"),
     ALBUM("album"),
-    PLAYLIST("playlist");
+    PLAYLIST("playlist"),
+    ARTIST("artist");
 
     private String value;
 
@@ -17,6 +18,7 @@ public enum FavoriteType {
             case "music" -> "音乐";
             case "album" -> "专辑";
             case "playlist" -> "歌单";
+            case "artist" -> "歌手";
             default -> targetType;
         };
     }

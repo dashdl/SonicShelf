@@ -28,8 +28,8 @@ public class FavoriteServiceImpl implements FavoriteService {
     private UserMapper userMapper;
 
     @Override
-    public FavoriteResponse addFavorite(String targetType, Long targetId) {
-        Favorite favorite = new Favorite(targetType, targetId);
+    public FavoriteResponse addFavorite(String targetType, Long id) {
+        Favorite favorite = new Favorite(targetType, id);
 
         if (isFavorite(favorite)) {
             throw new CustomException("400", "您已收藏该" + FavoriteType.toChinese(targetType));
@@ -39,8 +39,8 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public void removeFavorite(String targetType, Long playlistId) {
-        Favorite favorite = new Favorite(targetType, playlistId);
+    public void removeFavorite(String targetType, Long id) {
+        Favorite favorite = new Favorite(targetType, id);
 
         if (!isFavorite(favorite)) throw new CustomException("400", "您未收藏该" + FavoriteType.toChinese(targetType));
 

@@ -1,6 +1,7 @@
 package com.zhongxin.sonicshelf.service;
 
 import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.dto.response.AlbumResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 
@@ -20,4 +21,6 @@ public interface MusicService {
     String findLyricsById(Long id);
 
     List<MusicResponse> findMusicsByArtistId(Long id);
+
+    List<MusicResponse> findMusicsByAlbumId(Long id);
 }

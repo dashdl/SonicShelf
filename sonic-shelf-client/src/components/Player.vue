@@ -64,26 +64,26 @@ const isDragging = ref(false);
 const isVolumeDragging = ref(false);
 
 const favorite = () => {
-  if (playerStore.currentPlaylist[playerStore.currentIndex].isFavorite === false) {
+  if (playerStore.currentPlaylist[playerStore.currentIndex].favorite === false) {
     request.post('favorites/music/' + playerStore.currentPlaylist[playerStore.currentIndex].id).then(res => {
       if (res.code === '200') {
         ElMessage.success('收藏成功');
-        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite = true
+        playerStore.currentPlaylist[playerStore.currentIndex].favorite = true
         localStorage.setItem("playlist", JSON.stringify(playerStore.currentPlaylist));
       } else {
         ElMessage.error(res.message)
-        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite = true
+        playerStore.currentPlaylist[playerStore.currentIndex].favorite = true
       }
     })
   } else {
     request.delete('favorites/music/' + playerStore.currentPlaylist[playerStore.currentIndex].id).then(res => {
       if (res.code === '200') {
         ElMessage.success('取消收藏成功');
-        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite = false
+        playerStore.currentPlaylist[playerStore.currentIndex].favorite = false
         localStorage.setItem("playlist", JSON.stringify(playerStore.currentPlaylist));
       } else {
         ElMessage.error(res.message)
-        playerStore.currentPlaylist[playerStore.currentIndex].isFavorite = true
+        playerStore.currentPlaylist[playerStore.currentIndex].favorite = true
       }
     })
   }
@@ -324,7 +324,7 @@ const baseUrl = 'http://localhost:8080';
         <div class="menu-button">
           <img
               @click="favorite"
-              :src="playerStore.currentPlaylist && playerStore.currentIndex >= 0 && playerStore.currentIndex < playerStore.currentPlaylist.length && playerStore.currentPlaylist[playerStore.currentIndex].isFavorite===true ? '/icons/player/like.svg': '/icons/player/unlike.svg' "
+              :src="playerStore.currentPlaylist && playerStore.currentIndex >= 0 && playerStore.currentIndex < playerStore.currentPlaylist.length && playerStore.currentPlaylist[playerStore.currentIndex].favorite===true ? '/icons/player/like.svg': '/icons/player/unlike.svg' "
               style="height: 22px" alt="">
         </div>
         <div class="menu-button">

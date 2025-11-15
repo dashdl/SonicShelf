@@ -82,4 +82,19 @@
                  INNER JOIN albums am On am.id = m.album_id
         WHERE a.id = #{id}
     </select>
+    <select id="selectMusicsByAlbumId" resultType="com.zhongxin.sonicshelf.dto.response.MusicResponse">
+        SELECT m.id,
+               m.title,
+               m.cover_image,
+               a.name   as artist_name,
+               a.id     as artist_id,
+               am.title as album_title,
+               am.id    as album_id,
+               m.duration,
+               m.file_url
+        FROM musics m
+                 INNER JOIN artists a ON m.artist_id = a.id
+                 INNER JOIN albums am On am.id = m.album_id
+        WHERE am.id = #{id}
+    </select>
 </mapper>

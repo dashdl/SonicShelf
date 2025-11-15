@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongxin.sonicshelf.mapper.AlbumMapper">
+
+    <select id="selectAlbumsById" resultType="com.zhongxin.sonicshelf.dto.response.AlbumInfoResponse">
+        select am.id,
+               am.title,
+               am.cover_image,
+               am.music_count,
+               am.release_date,
+               am.description,
+               a.id as artist_id,
+               a.name as artist_name,
+               a.cover_image as artist_cover
+        from albums as am
+                 join artists as a on am.artist_id = a.id
+        where am.id = #{id}
+    </select>
+</mapper>

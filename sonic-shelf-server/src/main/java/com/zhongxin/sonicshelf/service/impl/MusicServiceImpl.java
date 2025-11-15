@@ -1,23 +1,20 @@
 package com.zhongxin.sonicshelf.service.impl;
 
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import com.zhongxin.sonicshelf.entity.Favorite;
-import com.zhongxin.sonicshelf.entity.Music;
 import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.mapper.CategoriesMapper;
 import com.zhongxin.sonicshelf.mapper.FavoriteMapper;
 import com.zhongxin.sonicshelf.mapper.MusicMapper;
-import com.zhongxin.sonicshelf.service.FavoriteService;
 import com.zhongxin.sonicshelf.service.MusicService;
 import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Service
@@ -50,7 +47,7 @@ public class MusicServiceImpl implements MusicService {
             music.setFavorite(isFavorite(music.getId()));
         }
 
-        return musicMapper.findAsPageByListId(id, CurrentUserUtil.getCurrentUserId());
+        return musicResponses;
     }
 
     @Override
@@ -86,6 +83,15 @@ public class MusicServiceImpl implements MusicService {
     public List<MusicResponse> findMusicsByArtistId(Long id) {
 
         List<MusicResponse> musicResponseList = musicMapper.selectMusicsByArtistId(id);
+
+        for (MusicResponse music : musicResponseList) music.setFavorite(isFavorite(music.getId()));
+
+        return musicResponseList;
+    }
+
+    @Override
+    public List<MusicResponse> findMusicsByAlbumId(Long id) {
+        List<MusicResponse> musicResponseList = musicMapper.selectMusicsByAlbumId(id);
 
         for (MusicResponse music : musicResponseList) music.setFavorite(isFavorite(music.getId()));
 

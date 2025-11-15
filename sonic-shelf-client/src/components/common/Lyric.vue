@@ -124,7 +124,7 @@ watch(() => player.currentLyricIndex, (newIndex, oldIndex) => {
         <div class="menu-button">
           <img
               @click="favorite"
-              :src="player.currentPlaylist && player.currentIndex >= 0 && player.currentIndex < player.currentPlaylist.length && player.currentPlaylist[player.currentIndex].isFavorite===true ? '/icons/player/like.svg': '/icons/player/unlike.svg' "
+              :src="player.currentPlaylist && player.currentIndex >= 0 && player.currentIndex < player.currentPlaylist.length && player.currentPlaylist[player.currentIndex].favorite===true ? '/icons/player/like.svg': '/icons/player/unlike.svg' "
               style="height: 22px" alt="">
         </div>
         <div class="menu-button">

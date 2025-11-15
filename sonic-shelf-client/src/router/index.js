@@ -22,6 +22,7 @@ import Music from "@/pages/Music.vue";
 import InteractCard from "@/components/common/cards/InteractCard.vue";
 import CurrentPlaylist from "@/components/list/CurrentPlaylist.vue";
 import Artist from "@/pages/Artist.vue";
+import AlbumCard from "@/components/common/cards/AlbumCard.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,12 +30,17 @@ const router = createRouter({
         {
             path: '/', component: Layout,
             children: [
-                {path: '', component: Artist},
+                {path: '', component: Home},
                 {path: '/profile/:userId', component: Profile, name: 'Profile'},
                 {path: '/profile-settings', component: ProfileSettings},
                 {
                     path: '/playlist/:id',
                     component: () => import("@/pages/Playlist.vue"),
+                    props: true // 启用props接收参数
+                },
+                {
+                    path: '/album/:id',
+                    component: () => import("@/pages/Album.vue"),
                     props: true // 启用props接收参数
                 },
                 {
@@ -58,7 +64,6 @@ const router = createRouter({
         {path: '/:pathMatch(.*)', redirect: '/notFound'},
         {path: '/notFound', component: import('../pages/404.vue')},
         // {path: '/login', component: import('../views/Login.vue')},
-
     ],
 })
 

@@ -6,7 +6,9 @@ import TableList from "@/components/list/TableList.vue";
 import {ElMessage} from "element-plus";
 import request from "@/utils/request.js";
 import { useRoute } from 'vue-router';
+import {useUserStore} from "@/store/userStore.js";
 const route = useRoute();
+const userStore = useUserStore()
 
 const userId = ref(null);
 
@@ -236,7 +238,7 @@ const baseUrl = 'http://localhost:8080';
       <div class="profile-content">
         <div class="nickname">
           <span style="margin-right: 8px;font-size: 24px;font-weight: bold;">{{ userInfo.nickname }}</span>
-          <img @click="router.push('/profile-settings')" src="/icons/actions/edit.svg" style="width: 20px" alt="">
+          <img v-if="userStore.getUserId==route.params.userId" @click="router.push('/profile-settings')" src="/icons/actions/edit.svg" style="width: 20px" alt="">
         </div>
         <div class="follow">
             <span style="margin-right: 12px">
@@ -270,7 +272,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
       </div>
       <GridList v-if="listSwitch.createGrid" style="max-width: 1490px; margin-bottom: 25px;"
-                :info="playlistInfo"
+                :info="playlistInfo" :type="'playlist'"
       />
       <TableList v-if="listSwitch.createTable" style="max-width: 1490px; margin-bottom: 50px;"
                  :info="playlistInfo"
@@ -307,7 +309,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
       </div>
       <GridList v-if="listSwitch.favoritesGrid" style="max-width: 1490px; margin-bottom: 50px;"
-                :info="favoritePlaylistInfo"
+                :info="favoritePlaylistInfo" :type="'playlist'"
       />
       <TableList v-if="listSwitch.favoritesTable" style="max-width: 1495px;margin-bottom: 50px;"
                  :info="favoritePlaylistInfo"

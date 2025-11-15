@@ -12,7 +12,7 @@ const props = defineProps({
   items: {
     type: Array,
     default: () => [],
-    required:true
+    required: true
   },
   loading: {
     type: Boolean,
@@ -30,7 +30,7 @@ const props = defineProps({
     type: Number,
     default: 300
   },
-  showDelete:{
+  showDelete: {
     type: Boolean,
     default: false
   }
@@ -264,7 +264,11 @@ const baseUrl = 'http://localhost:8080';
         </div>
       </div>
       <div class="right-cell">
-        <div class="total-cell"><span>{{ item.albumTitle }}</span></div>
+        <div class="total-cell">
+          <span @click="router.push(`/album/${item.albumId}`)">
+            {{ item.albumTitle }}
+          </span>
+        </div>
         <div class="like-cell">
           <img @click="favorite(item.id,item.favorite)"
                :src="item.favorite===true ? '/icons/player/like.svg':'/icons/player/unlike.svg' " style="width: 18px;"
@@ -397,6 +401,10 @@ span {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.total-cell span:hover{
+  cursor: pointer;
 }
 
 .like-cell {

@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class ArtistResponse {
     private Long id;
+    private Long userId;
     private String name;
     private String description;
     private String coverImage;

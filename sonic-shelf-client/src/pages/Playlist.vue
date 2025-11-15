@@ -97,6 +97,7 @@ const loadPlaylistData = async (playlistId) => {
         hasMore.value = res.data.hasNextPage;
       } else {
         ElMessage.error("歌单信息获取失败")
+        console.log('不是我')
       }
     }),
     request.get('playlists/' + playlistId + '/musics', {
@@ -118,6 +119,7 @@ const loadPlaylistData = async (playlistId) => {
         data.commentCount = res.data.length
       } else {
         ElMessage.error("歌单信息获取失败")
+        console.log('isMe')
       }
     }),
     request.get('favorites/collectors', {
@@ -190,10 +192,14 @@ const baseUrl = 'http://localhost:8080';
           <span style="color: #7b818f;">{{ Info.description }}</span>
         </div>
         <div class="profile">
-          <img :src="baseUrl+Info.userAvatar||'/images/default/avatar.jpg'"
+          <img id="profile" @click="router.push('/profile/'+Info.userId)"
+               :src="baseUrl+Info.userAvatar||'/images/default/avatar.jpg'"
                style="width: 25px;height: 25px;border-radius: 23px;margin-right: 8px;"
                alt="">
-          <span style="font-size: 13px;color: #7b818f;margin-right: 12px">{{ Info.nickname }}</span>
+          <span id="profile" @click="router.push('/profile/'+Info.userId)"
+                style="font-size: 13px;color: #7b818f;margin-right: 12px">{{
+              Info.nickname
+            }}</span>
           <span style="font-size: 12px;color: #b7bac4">{{ Info.createTime }}创建</span>
         </div>
         <div class="button-group">
@@ -271,6 +277,10 @@ const baseUrl = 'http://localhost:8080';
   margin-top: 12px;
   display: flex;
   flex-direction: row;
+}
+
+#profile:hover{
+  cursor: pointer;
 }
 
 .headphone {

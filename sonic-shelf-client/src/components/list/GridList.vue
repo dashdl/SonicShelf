@@ -1,46 +1,32 @@
 <script setup>
 import router from "@/router/index.js";
+import GridCard from "@/components/common/cards/GridCard.vue";
 
-defineProps({
-  info: [{
-    title: {type: String, required: false},
-    playCount: {type: String, required: false},
-    musicCount: {type: String, required: false},
-    coverImage: {type: String, required: false},
-    id: {type: String, required: false},
-    userName: {type: String, required: false},
-  }],
+const props = defineProps({
+  info: {
+    type: Array,
+    default: null
+  },
+  type: {
+    type: String,
+    required: false,
+  },
 })
 
-const goToPlaylist = (playlistId) => {
-  router.push(`/playlist/${playlistId}`);
+const goTo = (id) => {
+  router.push(`/${props.type}` + `/${id}`);
 };
 
-const baseUrl = 'http://localhost:8080';
 </script>
 
 <template>
   <div class="grid-list">
     <div class="grid-container">
-      <div v-for="item in info" @click="goToPlaylist(item.id)" class="grid-item">
-        <img :src="baseUrl + item.coverImage||'/images/default/cover.png'" style="height: 100%;object-fit: cover;"
-             alt="">
-        <div class="background"></div>
-        <div class="play-button">
-          <img src="/icons/player/play.svg" style="width: 26px" alt="">
-        </div>
-        <div class="info">
-          <span style="color: #333333;font-size: 14px;margin-bottom: -2px">{{ item.title }}</span>
-          <span style="color: #888888;font-size: 12px">{{ item.musicCount }} 首</span>
-        </div>
-        <div class="headphone">
-          <img v-if="item.playCount>=1" src="/icons/content/headphone.svg" style="width: 15px" alt="">
-          <span v-if="item.playCount>=1" style="font-size: 12px;color: #ffffff;font-weight: bold;">{{
-              item.playCount
-            }}</span>
-        </div>
-      </div>
-
+      <GridCard v-for="item in info"
+                @click="goTo(item.id)"
+                :item="item"
+                :type="type"
+      />
     </div>
   </div>
 </template>
@@ -54,71 +40,6 @@ const baseUrl = 'http://localhost:8080';
   grid-row-gap: 20px;
   grid-column-gap: 20px;
   user-select: none;
-}
-
-.grid-item {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.grid-item img {
-  border-radius: 10px;
-  z-index: 1;
-}
-
-.grid-item img:hover, .grid-item:hover img {
-  filter: brightness(0.9);
-  cursor: pointer;
-}
-
-.background {
-  margin-top: -20px;
-  height: 75px;
-  border-radius: 10px;
-  background-color: #ffffff;
-  opacity: 0;
-}
-
-.grid-item:hover .background {
-  opacity: 1;
-  transition: opacity 0.2s ease-in-out;
-  cursor: pointer;
-}
-
-.play-button {
-  position: absolute;
-  z-index: 2;
-  right: 18px;
-  bottom: 65px;
-  opacity: 0;
-}
-
-.grid-item:hover .play-button {
-  opacity: 1;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.play-button:hover {
-  transform: scale(1.2);
-  transition: scale 0.3s ease-in-out;
-  filter: brightness(1.25);
-}
-
-.info {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  bottom: 3px;
-  left: 10px;
-}
-
-.headphone {
-  position: absolute;
-  display: flex;
-  right: 8px;
-  top: 10px;
-  z-index: 1;
 }
 
 @media (min-width: 1280px) and (max-width: 1679px) {

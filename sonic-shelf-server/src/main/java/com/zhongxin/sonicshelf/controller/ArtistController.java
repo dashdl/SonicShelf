@@ -30,7 +30,7 @@ public class ArtistController {
     }
 
 
-    @GetMapping("/musics/{id}")
+    @GetMapping("/{id}/musics")
     public Result getMusicsByArtistId(@PathVariable("id") Long id,
                                       @RequestParam(required = false) Integer pageNum,
                                       @RequestParam(required = false) Integer pageSize) {
@@ -42,5 +42,18 @@ public class ArtistController {
             return Result.success(PageInfo.of(musicService.findMusicsByArtistId(id)));
         }
 
+    }
+
+    @GetMapping("/{id}/albums")
+    public Result getAlbumsByArtistId(@PathVariable("id") Long id,
+                                      @RequestParam(required = false) Integer pageNum,
+                                      @RequestParam(required = false) Integer pageSize) {
+
+        if (pageNum == null || pageSize == null) {
+            return Result.success(artistService.findAlbumsByArtistId(id));
+        } else {
+            PageHelper.startPage(pageNum, pageSize);
+            return Result.success(PageInfo.of(artistService.findAlbumsByArtistId(id)));
+        }
     }
 }

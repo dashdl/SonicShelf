@@ -7,6 +7,6 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface ArtistMapper {
 
-    @Select("select name,description,cover_image,album_count,follower_count,translated_name from artists where id=#{id}")
+    @Select("select name,description,cover_image,album_count,follower_count,translated_name,user_id from artists where id=#{id}")
     ArtistResponse selectArtistById(Long id);
 }
