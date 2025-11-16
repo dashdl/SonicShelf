@@ -1,6 +1,5 @@
 package com.zhongxin.sonicshelf.mapper;
 
-import com.zhongxin.sonicshelf.dto.response.AlbumResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import org.apache.ibatis.annotations.Mapper;
@@ -27,4 +26,6 @@ public interface MusicMapper {
 
 
     List<MusicResponse> selectMusicsByAlbumId(Long id);
+
+    List<MusicResponse> selectMusicsByIds(List<Long> ids);
 }

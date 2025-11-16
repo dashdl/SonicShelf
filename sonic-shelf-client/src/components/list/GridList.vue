@@ -11,6 +11,10 @@ const props = defineProps({
     type: String,
     required: false,
   },
+  showArtist: {
+    type: Boolean,
+    required: false,
+  },
 })
 
 const goTo = (id) => {
@@ -26,6 +30,7 @@ const goTo = (id) => {
                 @click="goTo(item.id)"
                 :item="item"
                 :type="type"
+                :show-artist="props.showArtist"
       />
     </div>
   </div>

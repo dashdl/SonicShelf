@@ -21,7 +21,8 @@ export const useUserStore = defineStore('user', {
         getFollowers_count: (state) => state.userInfo?.followers_count || 0,
         getFollowing_count: (state) => state.userInfo?.following_count || 0,
         getUserId: (state) => state.userInfo?.id || null,
-        getEmail: (state) => state.userInfo?.email || '未设置'
+        getEmail: (state) => state.userInfo?.email || '未设置',
+        getCreatedTime: (state) => state.userInfo?.createdAt || '未知时间'
     },
 
     // 动作

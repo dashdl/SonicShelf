@@ -23,6 +23,9 @@ import InteractCard from "@/components/common/cards/InteractCard.vue";
 import CurrentPlaylist from "@/components/list/CurrentPlaylist.vue";
 import Artist from "@/pages/Artist.vue";
 import AlbumCard from "@/components/common/cards/AlbumCard.vue";
+import Dynamic from "@/components/common/cards/DynamicCard.vue";
+import Favorite from "@/pages/Favorite.vue";
+import Collect from "@/pages/Collect.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,6 +36,9 @@ const router = createRouter({
                 {path: '', component: Home},
                 {path: '/profile/:userId', component: Profile, name: 'Profile'},
                 {path: '/profile-settings', component: ProfileSettings},
+                {path: '/home', component: Home},
+                {path: '/my-favorite', component: Favorite},
+                {path: '/my-collect', component: Collect},
                 {
                     path: '/playlist/:id',
                     component: () => import("@/pages/Playlist.vue"),
@@ -61,8 +67,8 @@ const router = createRouter({
                 },
             ]
         },
-        {path: '/:pathMatch(.*)', redirect: '/notFound'},
-        {path: '/notFound', component: import('../pages/404.vue')},
+        // {path: '/:pathMatch(.*)', redirect: '/notFound'},
+        // {path: '/notFound', component: import('../pages/404.vue')},
         // {path: '/login', component: import('../views/Login.vue')},
     ],
 })

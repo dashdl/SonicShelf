@@ -1,7 +1,6 @@
 package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.response.FavoriteResponse;
-import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.entity.Favorite;
 import org.apache.ibatis.annotations.*;
 
@@ -32,6 +31,9 @@ public interface FavoriteMapper {
 
     @Select("select target_id from favorites where user_id=#{currentUserId} and target_type=#{targetType} limit 100")
     List<Long> selectByUserIdAndTargetType(Long currentUserId, String targetType);
+
+    @Select("select target_id from favorites where target_type=#{targetType} and user_id = #{currentUserId}")
+    List<Long> selectIdByUserIdAndTargetType(Long currentUserId, String targetType);
 
 
 //    List<Long> selectByIds(@Param("ids") List<Long> ids);

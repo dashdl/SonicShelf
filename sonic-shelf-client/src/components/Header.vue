@@ -1,7 +1,7 @@
 <template>
   <div class="header-container">
     <div class="left-content">
-      <div class="left-button" @click="formSwitch">
+      <div class="left-button" @click="router.back()">
         <img src="/icons/navigation/back.svg" style="height: 15px;" alt="">
       </div>
       <div class="search">
@@ -22,7 +22,6 @@
         <LoginForm @close="formSwitch"/>
       </div>
     </div>
-
     <div v-if="data.userPanelVisible" class="panel-modal">
       <div class="modal-overlay" @click="data.userPanelVisible=!data.userPanelVisible"></div>
       <div class="modal-content">
@@ -77,7 +76,7 @@ const jumpToProfile = () => {
   router.push({
     name: 'Profile',
     // state: {userId: userStore.getUserId}
-    params: { userId: userStore.getUserId }
+    params: {userId: userStore.getUserId}
   })
 }
 
@@ -170,8 +169,8 @@ onUnmounted(() => {
 
 .panel-modal {
   position: absolute;
-  top: 290px;
-  right: 235px;
+  top: 60px;
+  right: 40px;
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -179,7 +178,6 @@ onUnmounted(() => {
 }
 
 .modal-content {
-  position: fixed;
   z-index: 1001;
 }
 

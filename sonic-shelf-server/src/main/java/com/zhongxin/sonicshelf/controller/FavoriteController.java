@@ -27,13 +27,34 @@ public class FavoriteController {
     @Autowired
     private FavoriteMapper favoriteMapper;
 
+    @PostMapping("/album/{id}")
+    public Result addFavoriteAlbum(@PathVariable("id") Long musicId) {
+        return Result.success("收藏成功", favoriteService.addFavorite(FavoriteType.ALBUM.getValue(), musicId));
+    }
+
+    @DeleteMapping("/album/{id}")
+    public Result removeFavoriteAlbum(@PathVariable("id") Long musicId) {
+        favoriteService.removeFavorite(FavoriteType.ALBUM.getValue(), musicId);
+        return Result.success("已取消收藏");
+    }
+
+    @GetMapping("/albums")
+    public Result getFavoriteAlbums(@RequestParam(required = false) Integer pageNum,
+                                    @RequestParam(required = false) Integer pageSize) {
+        if (pageNum == null || pageSize == null) {
+            return Result.success(favoriteService.findAlbums());
+        } else {
+            return Result.success(favoriteService.findAlbumsAsPage(pageNum, pageSize));
+        }
+    }
+
     @PostMapping("/artist/{id}")
-    public Result addFavoriteArtis(@PathVariable("id") Long musicId) {
+    public Result addFavoriteArtist(@PathVariable("id") Long musicId) {
         return Result.success("关注成功", favoriteService.addFavorite(FavoriteType.ARTIST.getValue(), musicId));
     }
 
     @DeleteMapping("/artist/{id}")
-    public Result removeFavoriteArtis(@PathVariable("id") Long musicId) {
+    public Result removeFavoriteArtist(@PathVariable("id") Long musicId) {
         favoriteService.removeFavorite(FavoriteType.ARTIST.getValue(), musicId);
         return Result.success("已取消关注");
     }
@@ -47,6 +68,16 @@ public class FavoriteController {
     public Result removeFavoriteMusic(@PathVariable("id") Long playlistId) {
         favoriteService.removeFavorite(FavoriteType.MUSIC.getValue(), playlistId);
         return Result.success("已取消收藏");
+    }
+
+    @GetMapping("/musics")
+    public Result getFavoriteMusics(@RequestParam(required = false) Integer pageNum,
+                                    @RequestParam(required = false) Integer pageSize) {
+        if (pageNum == null || pageSize == null) {
+            return Result.success(favoriteService.findMusics());
+        } else {
+            return Result.success(favoriteService.findMusicsAsPage(pageNum, pageSize));
+        }
     }
 
     @PostMapping("/playlist/{id}")

@@ -1,10 +1,7 @@
 package com.zhongxin.sonicshelf.service;
 
 import com.github.pagehelper.PageInfo;
-import com.zhongxin.sonicshelf.dto.response.CollectorResponse;
-import com.zhongxin.sonicshelf.dto.response.FavoriteResponse;
-import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
-import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
+import com.zhongxin.sonicshelf.dto.response.*;
 
 import java.util.List;
 
@@ -21,6 +18,14 @@ public interface FavoriteService {
     PageInfo<PlaylistsResponse> findAsPage(Integer pageNum, Integer pageSize, Long currentUserId);
 
     List<Long> findByUserIdAndTargetType(Long currentUserId, String targetType);
+
+    PageInfo<MusicResponse> findMusicsAsPage(Integer pageNum, Integer pageSize);
+
+    List<MusicResponse> findMusics();
+
+    List<AlbumInfoResponse> findAlbums();
+
+    PageInfo<AlbumInfoResponse> findAlbumsAsPage(Integer pageNum, Integer pageSize);
 
 //    List<Long> findByIds(List<Long> ids);
 

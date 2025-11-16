@@ -17,4 +17,21 @@
                  join artists as a on am.artist_id = a.id
         where am.id = #{id}
     </select>
+    <select id="selectAlbumByIds" resultType="com.zhongxin.sonicshelf.dto.response.AlbumInfoResponse">
+        select am.id,
+               am.title,
+               am.cover_image,
+               am.music_count,
+               am.release_date,
+               am.description,
+               a.id as artist_id,
+               a.name as artist_name,
+               a.cover_image as artist_cover
+        from albums as am
+                 join artists as a on am.artist_id = a.id
+        where am.id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

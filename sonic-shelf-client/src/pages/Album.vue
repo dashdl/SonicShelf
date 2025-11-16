@@ -24,7 +24,8 @@ const album = reactive({
 })
 
 const userSelect = reactive({
-  page: 1
+  page: 1,
+  favorite: true
 })
 
 const musics = ref([])
@@ -36,6 +37,23 @@ const replace = async () => {
   playerStore.updatePlaylist(musics.value)
   localStorage.setItem("playlist", JSON.stringify(musics.value))
   await playerStore.playSong(0)
+}
+
+const favorite = async () => {
+  let res;
+  if (userSelect.favorite === false) {
+    res = await request.post('favorites/album/' + route.params.id)
+  } else {
+    res = await request.delete('favorites/album/' + route.params.id)
+  }
+  if (res.code === '200') {
+    ElMessage.success(res.message)
+    userSelect.favorite = !userSelect.favorite
+  } else if (res.code === '400') {
+    ElMessage.warning(res.message)
+  } else {
+    ElMessage.error(res.message)
+  }
 }
 
 const initial = async () => {
@@ -70,6 +88,17 @@ const initial = async () => {
   } else {
     ElMessage.error("专辑信息获取失败")
   }
+
+  res = await request.get('favorites/isFavorite', {
+    params: {
+      targetType: 'playlist',
+      targetId: route.params.id,
+    }
+  })
+  if (res.code === '200') {
+    userSelect.favorite = res.data
+  }
+
 }
 
 onMounted(() => {
@@ -108,6 +137,12 @@ const baseUrl = 'http://localhost:8080';
                style="color: #ffffff;background: linear-gradient(to right, #fc3b5b, #fc3d49);">
             <img src="/icons/player/play.svg" style="height: 15px;margin-right: 5px" alt="">
             播放全部
+          </div>
+          <div @click="favorite" class="follow-button">
+            <img :src="userSelect.favorite ? '/icons/status/hook.svg' : '/icons/status/follow.svg'"
+                 style="height: 15px;margin-right: 5px" alt="">
+            <span v-if="userSelect.favorite">已</span>
+            <span>收藏</span>
           </div>
         </div>
       </div>
@@ -214,6 +249,7 @@ const baseUrl = 'http://localhost:8080';
 }
 
 .button-group .button {
+  margin-right: 10px;
   display: flex;
   height: 40px;
   width: 95px;
@@ -223,6 +259,19 @@ const baseUrl = 'http://localhost:8080';
 }
 
 .button-group .button:hover {
+  cursor: pointer;
+}
+
+.follow-button {
+  display: flex;
+  height: 40px;
+  width: 80px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  color: #333333;
+  background: #e9eaec;
+  border: 2px solid #e4e8ec;
   cursor: pointer;
 }
 
