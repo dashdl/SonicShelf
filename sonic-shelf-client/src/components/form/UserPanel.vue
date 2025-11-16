@@ -6,7 +6,7 @@ const userStore = useUserStore();
 
 const emit = defineEmits(['closePanel'])
 
-const handleClick=(path)=>{
+const handleClick = (path) => {
   emit('closePanel');
   router.push(path);
 }
@@ -56,13 +56,13 @@ const handleClick=(path)=>{
           个人信息设置
         </span>
       </div>
-      <div class="panel-card" @click="login">
+      <div v-if="!userStore.isLoggedIn" class="panel-card" @click="login">
         <img src="/icons/sidebar/home.png" style="width: 25px;margin-right: 10px" alt="">
         <span style="margin-top: 3px;">
           登录
         </span>
       </div>
-      <div class="panel-card">
+      <div v-if="userStore.isLoggedIn" class="panel-card">
         <img src="/icons/sidebar/home.png" style="width: 25px;margin-right: 10px" alt="">
         <span style="margin-top: 3px;">
           退出登录
@@ -78,8 +78,7 @@ const handleClick=(path)=>{
 .panel-container {
   display: flex;
   flex-direction: column;
-  width: 380px;
-  height: 440px;
+  width: 300px;
   border-radius: 15px;
   background: #fff;
   padding: 15px;
@@ -97,6 +96,7 @@ const handleClick=(path)=>{
 }
 
 .numb-container {
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-items: center;

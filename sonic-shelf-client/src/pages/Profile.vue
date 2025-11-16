@@ -1,16 +1,18 @@
 <script setup>
 import router from "@/router/index.js";
 import GridList from "@/components/list/GridList.vue";
-import {onBeforeUnmount, onMounted, onUnmounted, reactive, ref, watch} from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import TableList from "@/components/list/TableList.vue";
 import {ElMessage} from "element-plus";
 import request from "@/utils/request.js";
-import { useRoute } from 'vue-router';
+import {useRoute} from 'vue-router';
 import {useUserStore} from "@/store/userStore.js";
+
 const route = useRoute();
 const userStore = useUserStore()
 
 const userId = ref(null);
+const favorite = ref(false);
 
 const userInfo = reactive({
   avatar: '',
@@ -24,6 +26,11 @@ const userInfo = reactive({
 
 let playlistInfo = reactive([])
 let favoritePlaylistInfo = reactive([])
+const userSelect = reactive({
+  page: 1,
+  createPage: 1,
+  favoritePage: 1,
+})
 
 const page = reactive({
   pageNum: 1,
@@ -218,12 +225,22 @@ const favoritesTable = () => {
   listSwitch.favoritesTable = true;
 }
 
-onMounted(() => {
+onMounted(async () => {
   resetPageState();
   userId.value = route.params.userId
-  loadUserInfo(userId.value);
-  loadPlaylist();
-  loadFavorites();
+  await loadUserInfo(userId.value);
+  await loadPlaylist();
+  await loadFavorites();
+
+  // let res = await request.get('fa/isFollowing', {
+  //   params: {
+  //     targetType: 'artist',
+  //     targetId: route.params.artistId,
+  //   }
+  // })
+  // if (res.code === '200') {
+  //   favorite.value = res.data
+  // }
 });
 
 const baseUrl = 'http://localhost:8080';
@@ -238,7 +255,8 @@ const baseUrl = 'http://localhost:8080';
       <div class="profile-content">
         <div class="nickname">
           <span style="margin-right: 8px;font-size: 24px;font-weight: bold;">{{ userInfo.nickname }}</span>
-          <img v-if="userStore.getUserId==route.params.userId" @click="router.push('/profile-settings')" src="/icons/actions/edit.svg" style="width: 20px" alt="">
+          <img v-if="userStore.getUserId.toString()===route.params.userId" @click="router.push('/profile-settings')"
+               src="/icons/actions/edit.svg" style="width: 20px" alt="">
         </div>
         <div class="follow">
             <span style="margin-right: 12px">
@@ -253,86 +271,109 @@ const baseUrl = 'http://localhost:8080';
           <span style="color: #666666;">简介：{{ userInfo.bio }}</span>
           <span style="color: #999999;">地区：{{ userInfo.location }}</span>
         </div>
+        <div @click="favorite" class="follow-button">
+          <img :src="userSelect.favorite ? '/icons/status/hookWhite.svg' : '/icons/status/followWhite.svg'"
+               style="height: 15px;margin-right: 5px" alt="">
+          <span v-if="userSelect.favorite">已</span>
+          <span>关注</span>
+        </div>
       </div>
     </div>
-    <div class="favorites-content">
+    <div class="module-content">
       <div class="select-button">
-        <div class="button"><span>歌单</span></div>
-        <div class="button"><span>笔记</span></div>
-        <div class="button"><span>播客</span></div>
-      </div>
-      <div id="anchor1"></div>
-      <div class="separate-content">
-        <div class="left-content">
-          <span style="font-size: 20px;font-weight: bold;color: #555555;">我创建的歌单</span>
+        <div class="button">
+          <span @click="userSelect.page=1" :class="{ 'bold-text': userSelect.page === 1 }">歌单</span>
+          <div v-if="userSelect.page === 1" class="button-underline"></div>
         </div>
-        <div class="right-content">
-          <img @click="createGrid" src="/icons/view/grid.svg" style="width: 17px; margin-right: 8px" alt="">
-          <img @click="createTable" src="/icons/view/table.svg" style="width: 20px" alt="">
+        <div class="button">
+          <div class="numb">
+            <span style="font-size:12px;font-weight: bold">{{  }}</span>
+          </div>
+          <span @click="userSelect.page=2" :class="{ 'bold-text': userSelect.page === 2 }">笔记</span>
+          <div v-if="userSelect.page === 2" class="button-underline"></div>
+        </div>
+        <div class="button">
+          <div class="numb">
+            <span style="font-size:12px;font-weight: bold">{{  }}</span>
+          </div>
+          <span @click="userSelect.page=3" :class="{ 'bold-text': userSelect.page === 3 }">播客</span>
+          <div v-if="userSelect.page === 3" class="button-underline"></div>
         </div>
       </div>
-      <GridList v-if="listSwitch.createGrid" style="max-width: 1490px; margin-bottom: 25px;"
-                :info="playlistInfo" :type="'playlist'"
-      />
-      <TableList v-if="listSwitch.createTable" style="max-width: 1490px; margin-bottom: 50px;"
-                 :info="playlistInfo"
-      />
-      <div class="page-container">
-        <div class="button-group">
-          <a href="#anchor1">
-            <div class="button" @click="last">
-              <img src="/icons/status/left.svg" style="width: 14px" alt="">
-            </div>
-          </a>
-          <a v-for="n in page.pages" :key="n" @click="jump(n)" href="#anchor1">
-            <div class="button">
+      <div v-if="userSelect.page===1" class="playlist-module">
+        <div id="anchor1"></div>
+        <div class="separate-content">
+          <div class="left-content">
+            <span style="font-size: 20px;font-weight: bold;color: #555555;">我创建的歌单</span>
+          </div>
+          <div class="right-content">
+            <img @click="createGrid" src="/icons/view/grid.svg" style="width: 17px; margin-right: 8px" alt="">
+            <img @click="createTable" src="/icons/view/table.svg" style="width: 20px" alt="">
+          </div>
+        </div>
+        <GridList v-if="listSwitch.createGrid" style="max-width: 1490px; margin-bottom: 25px;"
+                  :info="playlistInfo" :type="'playlist'"
+        />
+        <TableList v-if="listSwitch.createTable" style="max-width: 1490px; margin-bottom: 50px;"
+                   :info="playlistInfo"
+        />
+        <div class="page-container">
+          <div class="button-group">
+            <a href="#anchor1">
+              <div class="button" @click="last">
+                <img src="/icons/status/left.svg" style="width: 14px" alt="">
+              </div>
+            </a>
+            <a v-for="n in page.pages" :key="n" @click="jump(n)" href="#anchor1">
+              <div :class="[{activePage: page.pageNum===n},'button']">
               <span style="padding-top: 3px">
                 {{ n }}
               </span>
-            </div>
-          </a>
-          <a href="#anchor1">
-            <div class="button" @click="next">
-              <img src="/icons/status/right.svg" style="width: 14px" alt="">
-            </div>
-          </a>
+              </div>
+            </a>
+            <a href="#anchor1">
+              <div class="button" @click="next">
+                <img src="/icons/status/right.svg" style="width: 14px" alt="">
+              </div>
+            </a>
+          </div>
         </div>
-      </div>
-      <div id="anchor2"></div>
-      <div class="separate-content">
-        <div class="left-content">
-          <span style="font-size: 20px;font-weight: bold;color: #555555;">我收藏的歌单</span>
+        <div id="anchor2"></div>
+        <div class="separate-content">
+          <div class="left-content">
+            <span style="font-size: 20px;font-weight: bold;color: #555555;">我收藏的歌单</span>
+          </div>
+          <div class="right-content">
+            <img @click="favoritesGrid" src="/icons/view/grid.svg" style="width: 17px; margin-right: 8px" alt="">
+            <img @click="favoritesTable" src="/icons/view/table.svg" style="width: 20px" alt="">
+          </div>
         </div>
-        <div class="right-content">
-          <img @click="favoritesGrid" src="/icons/view/grid.svg" style="width: 17px; margin-right: 8px" alt="">
-          <img @click="favoritesTable" src="/icons/view/table.svg" style="width: 20px" alt="">
-        </div>
-      </div>
-      <GridList v-if="listSwitch.favoritesGrid" style="max-width: 1490px; margin-bottom: 50px;"
-                :info="favoritePlaylistInfo" :type="'playlist'"
-      />
-      <TableList v-if="listSwitch.favoritesTable" style="max-width: 1495px;margin-bottom: 50px;"
-                 :info="favoritePlaylistInfo"
-      />
-      <div class="page-container">
-        <div class="button-group">
-          <a href="#anchor2">
-            <div class="button" @click="lastFavorite">
-              <img src="/icons/status/left.svg" style="width: 14px" alt="">
-            </div>
-          </a>
-          <a v-for="n in pageFavorite.pages" :key="n" @click="jumpFavorite(n)" href="#anchor2">
-            <div class="button">
+        <GridList v-if="listSwitch.favoritesGrid" style="max-width: 1490px; margin-bottom: 50px;"
+                  :info="favoritePlaylistInfo" :type="'playlist'"
+        />
+        <TableList v-if="listSwitch.favoritesTable" style="max-width: 1495px;margin-bottom: 50px;"
+                   :info="favoritePlaylistInfo"
+        />
+        <div class="page-container">
+          <div class="button-group">
+            <a href="#anchor2">
+              <div class="button" @click="lastFavorite">
+                <img src="/icons/status/left.svg" style="width: 14px" alt="">
+              </div>
+            </a>
+            <a v-for="n in pageFavorite.pages" :key="n" @click="jumpFavorite(n)" href="#anchor2">
+              <div :class="[{activePage: pageFavorite.pageNum===n},'button']">
               <span style="padding-top: 3px">
                 {{ n }}
               </span>
-            </div>
-          </a>
-          <a href="#anchor2">
-            <div class="button" @click="nextFavorite">
-              <img src="/icons/status/right.svg" style="width: 14px" alt="">
-            </div>
-          </a>
+              </div>
+            </a>
+            <a href="#anchor2">
+              <div class="button" @click="nextFavorite">
+                <img src="/icons/status/right.svg" style="width: 14px" alt="">
+              </div>
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -353,6 +394,7 @@ const baseUrl = 'http://localhost:8080';
 }
 
 .profile-content {
+  position: relative;
   display: flex;
   flex-direction: column;
 }
@@ -389,6 +431,18 @@ hr {
   flex-direction: column;
 }
 
+.follow-button {
+  margin-top: 10px;
+  display: flex;
+  height: 40px;
+  width: 80px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: linear-gradient(to right, #fc3b5b, #fc3d49);
+}
+
 .select-button {
   margin-bottom: 20px;
   width: 165px;
@@ -396,6 +450,46 @@ hr {
   flex-direction: row;
   justify-content: space-between;
   font-size: 18px;
+}
+
+.select-button {
+  margin-bottom: 20px;
+  width: 185px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 18px;
+  color: #888888;
+}
+
+.select-button .button:hover {
+  cursor: pointer;
+}
+
+.bold-text {
+  color: #333333;
+  font-weight: bold;
+}
+
+.select-button .button {
+  position: relative;
+}
+
+.numb {
+  position: absolute;
+  left: 100%;
+  top: -8px;
+}
+
+.button-underline {
+  position: absolute;
+  height: 3px;
+  width: 18px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fc3b56;
+  border-radius: 2px;
 }
 
 .separate-content {
@@ -443,11 +537,15 @@ hr {
   justify-content: center;
   color: #7b818f;
   margin: 0 5px;
-  background-color: #eaedf1;
+
   cursor: pointer;
 }
 
-.button:hover {
+.button-group .button:hover {
+  background-color: #eaedf1;
+}
+
+.activePage {
   background-color: #eaedf1;
 }
 </style>

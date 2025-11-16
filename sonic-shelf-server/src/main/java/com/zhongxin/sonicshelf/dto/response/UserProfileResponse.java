@@ -12,6 +12,7 @@ public class UserProfileResponse {
     private byte gender;
     private String birthday;
     private String location;
+    private String createdAt;
     private int followers_count;
     private int following_count;
 
@@ -27,8 +28,9 @@ public class UserProfileResponse {
         this.gender = user.getGender();
         this.birthday = user.getBirthday();
         this.location = user.getLocation();
-        this.followers_count=user.getFollowerCount();
-        this.following_count=user.getFollowingCount();
+        this.createdAt = user.getCreatedAt().toString().substring(0, 10);
+        this.followers_count = user.getFollowerCount();
+        this.following_count = user.getFollowingCount();
     }
 
     public String getGenderText() {

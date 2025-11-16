@@ -1,19 +1,17 @@
 <script setup>
-
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
 import InfiniteTable from "@/components/list/InfiniteTable.vue";
 import Comment from "@/components/list/Comment.vue";
-import {onMounted, reactive, ref, watch} from "vue";
+import {computed, onMounted, reactive, ref, watch} from "vue";
 import {usePlayerStore} from "@/store/player.js";
 import router from "@/router/index.js";
 import Collectors from "@/components/list/Collectors.vue";
 import {useUserStore} from "@/store/userStore.js";
 
-const userStore = useUserStore();
-
 const route = useRoute();
+const userStore = useUserStore();
 
 const emit = defineEmits(['collect'])
 const collect = (id) => {
@@ -21,8 +19,7 @@ const collect = (id) => {
 }
 
 const userSelect = reactive({
-  page: 1,
-  favorite: true
+  page: 1
 });
 
 let musicInfo = ref([])
@@ -37,29 +34,12 @@ const data = reactive({
 })
 
 const replace = async () => {
-  const currentId = route.params.id;
-  await request.get('playlists/' + currentId + '/musics').then(res => {
+  await request.get('favorites/musics').then(res => {
     const playerStore = usePlayerStore();
     playerStore.updatePlaylist(res.data)
     localStorage.setItem("playlist", JSON.stringify(res.data))
     playerStore.playSong(0)
   })
-}
-const favorite = async () => {
-  let res;
-  if (userSelect.favorite === false) {
-    res = await request.post('favorites/playlist/' + route.params.id)
-  } else {
-    res = await request.delete('favorites/playlist/' + route.params.id)
-  }
-  if (res.code === '200') {
-    ElMessage.success(res.message)
-    userSelect.favorite = !userSelect.favorite
-  } else if (res.code === '400') {
-    ElMessage.warning(res.message)
-  } else {
-    ElMessage.error(res.message)
-  }
 }
 
 const loading = ref(false)
@@ -93,31 +73,13 @@ const loadMore = async () => {
   }
 }
 
-const loadPlaylistData = async (playlistId) => {
+const loadPlaylistData = async () => {
   userSelect.page = 1;
   data.pageNum = 1;
   data.total = 1;
   musicInfo.value = [];
   await Promise.all([
-    request.get('playlists/' + playlistId).then(res => {
-      if (res.code === '200') {
-        Info.id = res.data.id;
-        Info.title = res.data.title;
-        Info.description = res.data.description;
-        Info.userAvatar = res.data.userAvatar;
-        Info.nickname = res.data.nickname;
-        Info.userId = res.data.userId;
-        Info.coverImage = res.data.coverImage;
-        Info.musicCount = res.data.musicCount;
-        Info.playCount = res.data.playCount;
-        Info.createTime = res.data.createTime.substring(0, 10);
-        hasMore.value = res.data.hasNextPage;
-      } else {
-        ElMessage.error("歌单信息获取失败")
-        console.log('不是我')
-      }
-    }),
-    request.get('playlists/' + playlistId + '/musics', {
+    request.get('favorites/musics', {
       params: {
         pageNum: data.pageNum,
         pageSize: data.pageSize,
@@ -126,44 +88,32 @@ const loadPlaylistData = async (playlistId) => {
       data.total = res.data.total;
       musicInfo.value = res.data.list;
     }),
-    request.get('comments', {
-      params: {
-        targetType: 'playlist',
-        targetId: playlistId
-      }
-    }).then(res => {
-      if (res.code === '200') {
-        data.commentCount = res.data.length
-      } else {
-        ElMessage.error("歌单信息获取失败")
-        console.log('isMe')
-      }
-    }),
-    request.get('favorites/collectors', {
-      params: {
-        targetType: 'playlist',
-        targetId: route.params.id
-      }
-    }).then((res) => {
-      collectorNum = res.data.length;
-    }),
-    request.get('favorites/isFavorite', {
-      params: {
-        targetType: 'playlist',
-        targetId: route.params.id,
-      }
-    }).then((res) => {
-      if (res.code === '200') {
-        userSelect.favorite = res.data
-      }
-    })
-
-  ])
+    // request.get('comments', {
+    //   params: {
+    //     targetType: 'music',
+    //     targetId: playlistId
+    //   }
+    // }).then(res => {
+    //   if (res.code === '200') {
+    //     data.commentCount = res.data.length
+    //   } else {
+    //     ElMessage.error("歌单信息获取失败")
+    //     console.log('isMe')
+    //   }
+    // }),
+    // request.get('favorites/collectors', {
+    //   params: {
+    //     targetType: 'playlist',
+    //     targetId: route.params.id
+    //   }
+    // }).then((res) => {
+    //   collectorNum = res.data.length;
+    // })
+  ]);
 }
 
 const load = async () => {
-  const currentId = route.params.id;
-  await request.get('playlists/' + currentId + '/musics', {
+  await request.get('favorites/musics', {
     params: {
       pageNum: ++data.pageNum,
       pageSize: data.pageSize,
@@ -180,20 +130,16 @@ const handleUpdateFavorite = (musicId, newFavoriteState) => {
   }
 };
 
-watch(() => route.params.id, (newId, oldId) => {
-  if (newId !== oldId) {
-    loadPlaylistData(newId);
-  }
-});
-
 onMounted(async () => {
-  await loadPlaylistData(route.params.id);
+  await loadPlaylistData();
 });
 
-const goToEditPlaylist = () => {
-  const currentId = route.params.id
-  router.push(`/Playlist-edit/${currentId}`);
-}
+const coverImage = computed(() => {
+  if (musicInfo.value.length > 0 && musicInfo.value[0].coverImage) {
+    return baseUrl + musicInfo.value[0].coverImage
+  }
+  return '/images/default/cover.png'
+})
 
 const baseUrl = 'http://localhost:8080';
 </script>
@@ -202,47 +148,30 @@ const baseUrl = 'http://localhost:8080';
   <div class="main-container">
     <div class="profile-container">
       <div class="cover" style="position: relative;">
-        <div class="headphone">
-          <img src="/icons/content/headphone.svg" style="width: 15px" alt="">
-          <span style="font-size: 12px;color: #ffffff;font-weight: bold;">{{ Info.playCount }}</span>
-        </div>
-        <img :src="baseUrl + Info.coverImage ||'/images/default/cover.png'"
+        <img :src="coverImage"
              style="width: 195px;height: 195px;border-radius: 10px;margin-right: 40px"
              alt="">
       </div>
       <div class="profile-content">
         <div class="title">
-          <span style="margin-top: -5px; margin-right: 8px;font-size: 24px;font-weight: bold;">{{ Info.title }}</span>
-          <img v-if="Info.userId===userStore.getUserId.toString()"
-               @click="goToEditPlaylist()"
-               src="/icons/actions/edit.svg"
-               style="width: 20px" alt="">
-        </div>
-        <div class="description" style="margin-bottom: 10px;">
-          <span style="color: #7b818f;">{{ Info.description }}</span>
+          <span style="margin-top: -5px; margin-right: 8px;font-size: 24px;font-weight: bold;">我喜欢的音乐</span>
         </div>
         <div class="profile">
           <img id="profile" @click="router.push('/profile/'+Info.userId)"
-               :src="baseUrl+Info.userAvatar||'/images/default/avatar.jpg'"
+               :src="baseUrl+userStore.getAvatar||'/images/default/avatar.jpg'"
                style="width: 25px;height: 25px;border-radius: 23px;margin-right: 8px;"
                alt="">
           <span id="profile" @click="router.push('/profile/'+Info.userId)"
-                style="font-size: 13px;color: #7b818f;margin-right: 12px">{{
-              Info.nickname
-            }}</span>
-          <span style="font-size: 12px;color: #b7bac4">{{ Info.createTime }}创建</span>
+                style="font-size: 13px;color: #7b818f;margin-right: 12px">
+            {{ userStore.getNickname }}
+          </span>
+          <span style="font-size: 12px;color: #b7bac4">{{ userStore.getCreatedTime }}创建</span>
         </div>
         <div class="button-group">
           <div @click="replace" class="button"
                style="color: #ffffff;background: linear-gradient(to right, #fc3b5b, #fc3d49);">
             <img src="/icons/player/play.svg" style="height: 15px;margin-right: 5px" alt="">
             播放全部
-          </div>
-          <div v-if="Info.userId!==userStore.getUserId.toString()" @click="favorite" class="follow-button">
-            <img :src="userSelect.favorite ? '/icons/status/hook.svg' : '/icons/status/follow.svg'"
-                 style="height: 15px;margin-right: 5px" alt="">
-            <span v-if="userSelect.favorite">已</span>
-            <span>收藏</span>
           </div>
         </div>
       </div>
@@ -251,25 +180,25 @@ const baseUrl = 'http://localhost:8080';
       <div class="select-button">
         <div class="button">
           <div class="numb">
-            <span style="font-size:12px;font-weight: bold">{{ Info.musicCount }}</span>
+            <span style="font-size:12px;font-weight: bold">{{ data.total }}</span>
           </div>
           <span @click="userSelect.page=1" :class="{ 'bold-text': userSelect.page === 1 }">歌曲</span>
           <div v-if="userSelect.page === 1" class="button-underline"></div>
         </div>
-        <div class="button">
-          <div class="numb">
-            <span style="font-size:12px;font-weight: bold">{{ data.commentCount }}</span>
-          </div>
-          <span @click="userSelect.page=2" :class="{ 'bold-text': userSelect.page === 2 }">评论</span>
-          <div v-if="userSelect.page === 2" class="button-underline"></div>
-        </div>
-        <div class="button">
-          <div class="numb">
-            <span style="font-size:12px;font-weight: bold">{{ collectorNum }}</span>
-          </div>
-          <span @click="userSelect.page=3" :class="{ 'bold-text': userSelect.page === 3 }">收藏者</span>
-          <div v-if="userSelect.page === 3" class="button-underline"></div>
-        </div>
+<!--        <div class="button">-->
+<!--          <div class="numb">-->
+<!--            <span style="font-size:12px;font-weight: bold">{{ data.commentCount }}</span>-->
+<!--          </div>-->
+<!--          <span @click="userSelect.page=2" :class="{ 'bold-text': userSelect.page === 2 }">评论</span>-->
+<!--          <div v-if="userSelect.page === 2" class="button-underline"></div>-->
+<!--        </div>-->
+<!--        <div class="button">-->
+<!--          <div class="numb">-->
+<!--            <span style="font-size:12px;font-weight: bold">{{ collectorNum }}</span>-->
+<!--          </div>-->
+<!--          <span @click="userSelect.page=3" :class="{ 'bold-text': userSelect.page === 3 }">收藏者</span>-->
+<!--          <div v-if="userSelect.page === 3" class="button-underline"></div>-->
+<!--        </div>-->
       </div>
       <div class="search">
         <img src="/icons/navigation/search.svg" style="height: 13px;margin-right: 3px;" alt="">
@@ -278,24 +207,13 @@ const baseUrl = 'http://localhost:8080';
     </div>
     <div class="list-container">
       <InfiniteTable
-          v-if="userSelect.page===1"
           :items="musicInfo"
           :has-more="hasMore"
           :loading="loading"
           :load-more="loadMore"
-          :show-delete="true"
+          :show-delete="false"
           @update-favorite="handleUpdateFavorite"
           @collect="collect"
-      />
-      <Comment
-          v-if="userSelect.page===2"
-          :target-id="route.params.id"
-          :target-type="'playlist'"
-      />
-      <Collectors
-          v-if="userSelect.page===3"
-          :target-id="route.params.id"
-          :target-type="'playlist'"
       />
     </div>
   </div>
@@ -319,15 +237,8 @@ const baseUrl = 'http://localhost:8080';
   cursor: pointer;
 }
 
-.headphone {
-  position: absolute;
-  display: flex;
-  right: 48px;
-  top: 8px;
-  z-index: 1;
-}
-
 .profile-content {
+  position: relative;
   display: flex;
   flex-direction: column;
 }
@@ -349,13 +260,14 @@ const baseUrl = 'http://localhost:8080';
 }
 
 .button-group {
+  position: absolute;
+  bottom: 0;
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
 .button-group .button {
-  margin-right: 10px;
   display: flex;
   height: 40px;
   width: 95px;
@@ -365,19 +277,6 @@ const baseUrl = 'http://localhost:8080';
 }
 
 .button-group .button:hover {
-  cursor: pointer;
-}
-
-.follow-button {
-  display: flex;
-  height: 40px;
-  width: 80px;
-  border-radius: 10px;
-  align-items: center;
-  justify-content: center;
-  color: #333333;
-  background: #e9eaec;
-  border: 2px solid #e4e8ec;
   cursor: pointer;
 }
 

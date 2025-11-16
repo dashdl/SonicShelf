@@ -1,6 +1,6 @@
 <script setup>
 import SidebarItem from "@/components/common/SidebarItem.vue";
-import {reactive, watch} from "vue";
+import {reactive, ref, watch} from "vue";
 import router from "@/router/index.js";
 
 const props = defineProps({
@@ -13,10 +13,15 @@ const props = defineProps({
     default: [],
   },
 })
+
+const userSelect = ref('home')
+
 watch(() => props.userPlaylist, () => {
 })
 
-const handleItemClick = () => {
+const handleClick = (item) => {
+  router.push(`/${item.key}`)
+  userSelect.value = item.key
 }
 
 const playlistShow = reactive({
@@ -28,16 +33,31 @@ const goToPlaylist = (playlistId) => {
 };
 
 const homeItems = [
-  {icon: '/icons/sidebar/home.png', label: '推荐', key: 'home'},
-  {icon: '/icons/sidebar/home-b.png', label: '精选', key: 'explore'},
-  {icon: '/icons/sidebar/home-b.png', label: '播客', key: 'explore'},
-  {icon: '/icons/sidebar/home-b.png', label: '关注', key: 'explore'},
+  {icon: '/icons/sidebar/home.svg', activeIcon: '/icons/sidebar/homeActive.svg', label: '推荐', key: 'home'},
+  {icon: '/icons/sidebar/home-b.png', label: '精选', key: 'home'},
+  {icon: '/icons/sidebar/home-b.png', label: '播客', key: 'home'},
+  {icon: '/icons/sidebar/home-b.png', label: '关注', key: 'home'},
 ]
 const userItems = [
-  {icon: '/icons/sidebar/home.png', label: '我喜欢的音乐', key: 'home'},
-  {icon: '/icons/sidebar/home-b.png', label: '最近播放', key: 'explore'},
-  {icon: '/icons/sidebar/home-b.png', label: '我的播客', key: 'explore'},
-  {icon: '/icons/sidebar/home-b.png', label: '我的收藏', key: 'explore'},
+  {
+    icon: '/icons/sidebar/like.svg',
+    activeIcon: '/icons/sidebar/likeActive.svg',
+    label: '我喜欢的音乐',
+    key: 'my-favorite'
+  },
+  {
+    icon: '/icons/sidebar/history.svg',
+    activeIcon: '/icons/sidebar/historyActive.svg',
+    label: '最近播放',
+    key: 'histories'
+  },
+  {icon: '/icons/sidebar/home-b.png', label: '我的播客', key: 'home'},
+  {
+    icon: '/icons/sidebar/favorite.svg',
+    activeIcon: '/icons/sidebar/favoriteActive.svg',
+    label: '我的收藏',
+    key: 'my-collect'
+  },
 ]
 const baseUrl = 'http://localhost:8080';
 </script>
@@ -52,19 +72,21 @@ const baseUrl = 'http://localhost:8080';
       <SidebarItem
           v-for="item in homeItems"
           :key="item.key"
-          :icon="item.icon"
+          :icon=" item.key===userSelect ? item.activeIcon : item.icon"
           :label="item.label"
           :alt-text="item.label"
-          @click="handleItemClick(item.key)"
+          @click="handleClick(item)"
+          :class="{active: item.key===userSelect}"
       />
       <hr>
       <SidebarItem
           v-for="item in userItems"
           :key="item.key"
-          :icon="item.icon"
+          :icon=" item.key===userSelect ? item.activeIcon : item.icon"
           :label="item.label"
           :alt-text="item.label"
-          @click="handleItemClick(item.key)"
+          @click="handleClick(item)"
+          :class="{active: item.key===userSelect}"
       />
       <hr>
       <div class="playlist-sidebar">
@@ -77,7 +99,8 @@ const baseUrl = 'http://localhost:8080';
           </div>
           <img id="create" src="/icons/sidebar/add.svg" style="width: 15px;margin-bottom: 3px;" alt="">
         </div>
-        <div v-if="playlistShow.creat" v-for="item in userPlaylist" @click="goToPlaylist(item.id)" class="playlist-item">
+        <div v-if="playlistShow.creat" v-for="item in userPlaylist" @click="goToPlaylist(item.id)"
+             class="playlist-item">
           <img :src="baseUrl + item.coverImage ||'/images/default/cover.png'"
                style="margin-right: 8px;width: 35px;height: 35px;border-radius: 5px"
                alt="">
@@ -95,7 +118,8 @@ const baseUrl = 'http://localhost:8080';
             <img v-if="playlistShow.favorite" src="/icons/status/up.svg" style="width: 12px;margin-bottom: 3px;" alt="">
           </div>
         </div>
-        <div v-if="playlistShow.favorite" v-for="item in favoritePlaylist" @click="goToPlaylist(item.id)" class="playlist-item">
+        <div v-if="playlistShow.favorite" v-for="item in favoritePlaylist" @click="goToPlaylist(item.id)"
+             class="playlist-item">
           <img :src="baseUrl + item.coverImage ||'/images/default/cover.png'"
                style="margin-right: 8px;width: 35px;height: 35px;border-radius: 5px"
                alt="">
@@ -173,7 +197,8 @@ hr {
   top: 50%;
   transform: translateY(-50%);
 }
-#create:hover{
+
+#create:hover {
   cursor: pointer;
 }
 
@@ -203,4 +228,13 @@ hr {
   line-height: 1.2;
 }
 
+.active {
+  background: linear-gradient(to right, #fc3b5b, #fc3d49);
+  color: #ffffff;
+}
+
+.active:hover {
+  background: linear-gradient(to right, #fc3b5b, #fc3d49);
+  color: #ffffff;
+}
 </style>

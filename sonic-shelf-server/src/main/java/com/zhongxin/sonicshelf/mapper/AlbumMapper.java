@@ -16,4 +16,7 @@ public interface AlbumMapper {
 
 
     AlbumInfoResponse selectAlbumsById(Long id);
+
+
+    List<AlbumInfoResponse> selectAlbumByIds(List<Long> ids);
 }

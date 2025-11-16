@@ -173,9 +173,9 @@ const baseUrl = 'http://localhost:8080';
             <span>{{ item.parentComment.content }}</span>
           </div>
           <div class="comment-info">
-            <span style="font-size: 11px;color: #a9adb7">{{
-                item.createdAt.substring(0, 10)
-              }}</span>
+            <span style="font-size: 11px;color: #a9adb7">
+              {{ item.createdAt.substring(0, 10) }}
+            </span>
             <div class="interact">
               <span @click="deleteComment(item.id)" v-if="user.userInfo.id === item.userId"
                     style="margin-right:30px;padding-top: 3px;line-height: 1">删除</span>

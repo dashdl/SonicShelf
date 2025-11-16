@@ -2,15 +2,12 @@ package com.zhongxin.sonicshelf.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zhongxin.sonicshelf.dto.response.CollectorResponse;
-import com.zhongxin.sonicshelf.dto.response.FavoriteResponse;
-import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
+import com.zhongxin.sonicshelf.dto.response.*;
 import com.zhongxin.sonicshelf.entity.Favorite;
 import com.zhongxin.sonicshelf.exception.CustomException;
-import com.zhongxin.sonicshelf.mapper.FavoriteMapper;
-import com.zhongxin.sonicshelf.mapper.PlaylistMapper;
-import com.zhongxin.sonicshelf.mapper.UserMapper;
+import com.zhongxin.sonicshelf.mapper.*;
 import com.zhongxin.sonicshelf.service.FavoriteService;
+import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import com.zhongxin.sonicshelf.util.FavoriteType;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +23,11 @@ public class FavoriteServiceImpl implements FavoriteService {
     private PlaylistMapper playlistMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private MusicMapper musicMapper;
+    @Resource
+    AlbumMapper albumMapper;
+
 
     @Override
     public FavoriteResponse addFavorite(String targetType, Long id) {
@@ -70,5 +72,44 @@ public class FavoriteServiceImpl implements FavoriteService {
     @Override
     public List<Long> findByUserIdAndTargetType(Long currentUserId, String targetType) {
         return favoriteMapper.selectByUserIdAndTargetType(currentUserId, targetType);
+    }
+
+    @Override
+    public PageInfo<MusicResponse> findMusicsAsPage(Integer pageNum, Integer pageSize) {
+
+        List<Long> ids = favoriteMapper.selectIdByUserIdAndTargetType(CurrentUserUtil.getCurrentUserId(), "music");
+        PageHelper.startPage(pageNum, pageSize);
+
+        List<MusicResponse> musicResponses = musicMapper.selectMusicsByIds(ids);
+        for (MusicResponse music : musicResponses) music.setFavorite(true);
+
+        return PageInfo.of(musicResponses);
+    }
+
+    @Override
+    public List<MusicResponse> findMusics() {
+
+        List<Long> ids = favoriteMapper.selectIdByUserIdAndTargetType(CurrentUserUtil.getCurrentUserId(), "music");
+        List<MusicResponse> musicResponses = musicMapper.selectMusicsByIds(ids);
+        for (MusicResponse music : musicResponses) music.setFavorite(true);
+
+        return musicResponses;
+    }
+
+    @Override
+    public List<AlbumInfoResponse> findAlbums() {
+        List<Long> ids = favoriteMapper.selectIdByUserIdAndTargetType(CurrentUserUtil.getCurrentUserId(), "album");
+        List<AlbumInfoResponse> albumResponses = albumMapper.selectAlbumByIds(ids);
+        for (AlbumInfoResponse music : albumResponses) music.setFavorite(true);
+        return albumResponses;
+    }
+
+    @Override
+    public PageInfo<AlbumInfoResponse> findAlbumsAsPage(Integer pageNum, Integer pageSize) {
+        List<Long> ids = favoriteMapper.selectIdByUserIdAndTargetType(CurrentUserUtil.getCurrentUserId(), "album");
+        PageHelper.startPage(pageNum, pageSize);
+        List<AlbumInfoResponse> albumResponses = albumMapper.selectAlbumByIds(ids);
+        for (AlbumInfoResponse music : albumResponses) music.setFavorite(true);
+        return PageInfo.of(albumResponses);
     }
 }

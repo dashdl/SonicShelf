@@ -13,4 +13,5 @@ public class AlbumInfoResponse {
     private String description;
     private int musicCount;
     private String releaseDate;
+    private boolean isFavorite;
 }

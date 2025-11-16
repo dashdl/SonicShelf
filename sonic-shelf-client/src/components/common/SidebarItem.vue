@@ -19,7 +19,7 @@ const handleClick = () => {
 
 <template>
   <div class="sidebar-card" @click="handleClick">
-    <img :src="icon" style="width: 25px">
+    <img :src="icon" style="width: 25px" alt="">
     <span style="margin-top: 3px;margin-left: 5px;">{{ label }}</span>
   </div>
 </template>
@@ -37,5 +37,6 @@ const handleClick = () => {
 }
 .sidebar-card:hover{
   background-color: vars.$item-hover;
+  color: #333333;
 }
 </style>
