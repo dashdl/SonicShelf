@@ -1,0 +1,53 @@
+/* 颜色变量 */
+$primary-color: #f83c48;
+$secondary-color: #f0f3f6;
+$success-color: #28a745;
+$danger-color: #dc3545;
+$warning-color: #faad14;
+$info-color: #13c2c2;
+
+$sidebar-color: #f0f3f6;
+$player-color: #fafafa;
+$item-hover: #e4e8ec;
+
+/* 文本颜色 */
+$text-color: #333333;
+$text-color-secondary: #666666;
+$text-color-tertiary: #999999;
+
+/* 背景颜色 */
+$background-color: #f5f5f5;
+$card-background: #ffffff;
+
+/* 边框颜色 */
+$border-color: #e8e8e8;
+
+/* 间距变量 */
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+/* 字体变量 */
+$font-family-base: 'Arial', sans-serif;
+$font-size-xs: 12px;
+$font-size-sm: 13px;
+$font-size-base: 14px;
+$font-size-lg: 16px;
+$font-size-xl: 18px;
+
+/* 圆角变量 */
+$radius-sm: 4px;
+$radius-base: 8px;
+$radius-lg: 12px;
+
+/* 阴影变量 */
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+$shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+
+/* 过渡效果 */
+$transition-base: all 0.3s ease;
+$transition-fast: all 0.15s ease;
+
