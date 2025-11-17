@@ -1,0 +1,328 @@
+// 引入所有样式文件
+@use 'reset';
+@use 'variables';
+
+// 使用变量别名
+@function color($key) {
+  @return map-get($colors, $key);
+}
+
+$colors: (
+  primary: $primary-color,
+  secondary: $secondary-color,
+  success: $success-color,
+  danger: $danger-color,
+  warning: $warning-color,
+  info: $info-color,
+  text: $text-color,
+  text-secondary: $text-color-secondary,
+  text-tertiary: $text-color-tertiary,
+  border: $border-color,
+  background: $background-color,
+  card-background: $card-background,
+  sidebar: $sidebar-color,
+  player: $player-color,
+  item-hover: $item-hover
+);
+
+/* 全局基础样式 */
+body {
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  color: #333;
+  background-color: #f5f5f5;
+  scroll-behavior: smooth;
+  width: 100%;
+  min-width: 1060px;
+  overflow-y: hidden;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+input {
+  border: none;
+  outline: none;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  /* 移除移动端点击高亮 */
+  -webkit-tap-highlight-color: transparent;
+
+  outline: none;
+  text-decoration: none;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+/* 隐藏滚动条按钮 */
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* 确保滚动条背景透明，并设置更细的宽度 */
+::-webkit-scrollbar {
+  background-color: transparent;
+  width: 7px;  /* 水平滚动条宽度 */
+  height: 7px; /* 垂直滚动条高度 */
+}
+
+/* 基础滚动条样式，设置更细的尺寸和完全圆形的圆角 */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px; /* 圆头设计，值为宽度的一半 */
+}
+
+/* 鼠标悬停时的滚动条样式 */
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+// 统一的卡片样式
+.el-card {
+  border-radius: $radius-base;
+  box-shadow: $shadow-sm;
+  transition: $transition-base;
+  margin-bottom: $spacing-lg;
+  border: none;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+
+  .el-card__header {
+    padding: $spacing-md $spacing-lg;
+    background-color: $card-background;
+    border-bottom: 1px solid $border-color;
+    border-radius: $radius-base $radius-base 0 0;
+  }
+
+  .el-card__body {
+    padding: $spacing-lg;
+  }
+}
+
+// 统一的按钮样式
+.el-button {
+  border-radius: $radius-sm;
+  font-weight: 500;
+  transition: $transition-base;
+
+  &.el-button--primary {
+    background-color: $primary-color;
+    border-color: $primary-color;
+
+    &:hover,
+    &:focus {
+      background-color: lighten($primary-color, 10%);
+      border-color: lighten($primary-color, 10%);
+    }
+  }
+
+  &.el-button--success {
+    background-color: $success-color;
+    border-color: $success-color;
+
+    &:hover,
+    &:focus {
+      background-color: lighten($success-color, 10%);
+      border-color: lighten($success-color, 10%);
+    }
+  }
+
+  &.el-button--warning {
+    background-color: $warning-color;
+    border-color: $warning-color;
+
+    &:hover,
+    &:focus {
+      background-color: lighten($warning-color, 10%);
+      border-color: lighten($warning-color, 10%);
+    }
+  }
+
+  &.el-button--danger {
+    background-color: $danger-color;
+    border-color: $danger-color;
+
+    &:hover,
+    &:focus {
+      background-color: lighten($danger-color, 10%);
+      border-color: lighten($danger-color, 10%);
+    }
+  }
+
+  &.el-button--info {
+    background-color: $info-color;
+    border-color: $info-color;
+
+    &:hover,
+    &:focus {
+      background-color: lighten($info-color, 10%);
+      border-color: lighten($info-color, 10%);
+    }
+  }
+}
+
+// 统一的表格样式
+.el-table {
+  border-radius: $radius-base;
+  overflow: hidden;
+  margin-top: $spacing-md;
+
+  .el-table__header-wrapper {
+    th {
+      background-color: #fafafa;
+      color: $text-color;
+      font-weight: 500;
+      padding: $spacing-sm;
+      border-bottom: 1px solid $border-color;
+    }
+  }
+
+  .el-table__body-wrapper {
+    td {
+      padding: $spacing-sm;
+      border-bottom: 1px solid $border-color;
+    }
+  }
+
+  .el-table__empty-text {
+    color: $text-color-tertiary;
+    font-size: $font-size-sm;
+  }
+}
+
+// 统一的表单样式
+.el-form {
+  .el-form-item {
+    margin-bottom: $spacing-lg;
+
+    .el-form-item__label {
+      font-weight: 500;
+      color: $text-color;
+    }
+
+    .el-input,
+    .el-select,
+    .el-date-editor {
+      width: 100%;
+    }
+
+    .el-input__inner,
+    .el-select__input,
+    .el-textarea__inner {
+      border-radius: $radius-sm;
+      border-color: $border-color;
+      transition: $transition-base;
+
+      &:focus {
+        border-color: $primary-color;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      }
+    }
+  }
+}
+
+// 统一的对话框样式
+.el-dialog {
+  border-radius: $radius-base;
+  overflow: hidden;
+
+  .el-dialog__header {
+    padding: $spacing-lg;
+    border-bottom: 1px solid $border-color;
+    background-color: $card-background;
+
+    .el-dialog__title {
+      font-weight: 500;
+      color: $text-color;
+    }
+  }
+
+  .el-dialog__body {
+    padding: $spacing-lg;
+  }
+
+  .el-dialog__footer {
+    padding: $spacing-md $spacing-lg;
+    border-top: 1px solid $border-color;
+    background-color: #fafafa;
+  }
+}
+
+// 统一的搜索和筛选区域样式
+.search-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+  padding: $spacing-md;
+  background-color: $card-background;
+  border-radius: $radius-base;
+  box-shadow: $shadow-sm;
+
+  .search-input,
+  .filter-select {
+    min-width: 200px;
+  }
+}
+
+// 统一的分页样式
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: $spacing-lg;
+  padding: $spacing-md;
+  background-color: $card-background;
+  border-radius: $radius-base;
+  box-shadow: $shadow-sm;
+}
+
+// 统一的页面容器样式
+.page-container {
+  width: 100%;
+  min-height: 100%;
+  padding: $spacing-lg;
+}
+
+// 统一的卡片头部样式
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  color: $text-color;
+
+  span {
+    font-size: $font-size-lg;
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .search-filter {
+    flex-direction: column;
+    align-items: stretch;
+
+    .search-input,
+    .filter-select {
+      width: 100%;
+      min-width: auto;
+    }
+  }
+
+  .pagination {
+    justify-content: center;
+  }
+}

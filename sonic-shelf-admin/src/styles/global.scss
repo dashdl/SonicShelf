@@ -1,0 +1,299 @@
+// 全局样式变量定义
+
+// 主题色
+$primary-color: #1890ff;
+$success-color: #52c41a;
+$warning-color: #faad14;
+$error-color: #f5222d;
+$info-color: #13c2c2;
+
+// 辅助色
+$text-color: #333333;
+$text-color-secondary: #666666;
+$text-color-tertiary: #999999;
+$border-color: #e8e8e8;
+$background-color: #f5f7fa;
+$card-background: #ffffff;
+
+// 间距
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// 字体大小
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-md: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+
+// 圆角
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+
+// 阴影
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+$shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+
+// 过渡效果
+$transition-base: all 0.3s ease;
+$transition-fast: all 0.15s ease;
+
+// 全局重置和基础样式
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: $background-color;
+  color: $text-color;
+  font-size: $font-size-sm;
+  line-height: 1.5;
+}
+
+// 统一的卡片样式
+.el-card {
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-sm;
+  transition: $transition-base;
+  margin-bottom: $spacing-lg;
+  border: none;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+
+  .el-card__header {
+    padding: $spacing-md $spacing-lg;
+    background-color: $card-background;
+    border-bottom: 1px solid $border-color;
+    border-radius: $border-radius-md $border-radius-md 0 0;
+  }
+
+  .el-card__body {
+    padding: $spacing-lg;
+  }
+}
+
+// 统一的按钮样式
+.el-button {
+  border-radius: $border-radius-sm;
+  font-weight: 500;
+  transition: $transition-base;
+
+  &.el-button--primary {
+    background-color: $primary-color;
+    border-color: $primary-color;
+
+    &:hover,
+    &:focus {
+      background-color: lighten($primary-color, 10%);
+      border-color: lighten($primary-color, 10%);
+    }
+  }
+
+  &.el-button--success {
+    background-color: $success-color;
+    border-color: $success-color;
+
+    &:hover,
+    &:focus {
+      background-color: lighten($success-color, 10%);
+      border-color: lighten($success-color, 10%);
+    }
+  }
+
+  &.el-button--warning {
+    background-color: $warning-color;
+    border-color: $warning-color;
+
+    &:hover,
+    &:focus {
+      background-color: lighten($warning-color, 10%);
+      border-color: lighten($warning-color, 10%);
+    }
+  }
+
+  &.el-button--danger {
+    background-color: $error-color;
+    border-color: $error-color;
+
+    &:hover,
+    &:focus {
+      background-color: lighten($error-color, 10%);
+      border-color: lighten($error-color, 10%);
+    }
+  }
+
+  &.el-button--info {
+    background-color: $info-color;
+    border-color: $info-color;
+
+    &:hover,
+    &:focus {
+      background-color: lighten($info-color, 10%);
+      border-color: lighten($info-color, 10%);
+    }
+  }
+}
+
+// 统一的表格样式
+.el-table {
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  margin-top: $spacing-md;
+
+  .el-table__header-wrapper {
+    th {
+      background-color: #fafafa;
+      color: $text-color;
+      font-weight: 500;
+      padding: $spacing-sm;
+      border-bottom: 1px solid $border-color;
+    }
+  }
+
+  .el-table__body-wrapper {
+    td {
+      padding: $spacing-sm;
+      border-bottom: 1px solid $border-color;
+    }
+  }
+
+  .el-table__empty-text {
+    color: $text-color-tertiary;
+    font-size: $font-size-sm;
+  }
+}
+
+// 统一的表单样式
+.el-form {
+  .el-form-item {
+    margin-bottom: $spacing-lg;
+
+    .el-form-item__label {
+      font-weight: 500;
+      color: $text-color;
+    }
+
+    .el-input,
+    .el-select,
+    .el-date-editor {
+      width: 100%;
+    }
+
+    .el-input__inner,
+    .el-select__input,
+    .el-textarea__inner {
+      border-radius: $border-radius-sm;
+      border-color: $border-color;
+      transition: $transition-base;
+
+      &:focus {
+        border-color: $primary-color;
+        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+      }
+    }
+  }
+}
+
+// 统一的对话框样式
+.el-dialog {
+  border-radius: $border-radius-md;
+  overflow: hidden;
+
+  .el-dialog__header {
+    padding: $spacing-lg;
+    border-bottom: 1px solid $border-color;
+    background-color: $card-background;
+
+    .el-dialog__title {
+      font-weight: 500;
+      color: $text-color;
+    }
+  }
+
+  .el-dialog__body {
+    padding: $spacing-lg;
+  }
+
+  .el-dialog__footer {
+    padding: $spacing-md $spacing-lg;
+    border-top: 1px solid $border-color;
+    background-color: #fafafa;
+  }
+}
+
+// 统一的搜索和筛选区域样式
+.search-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+  padding: $spacing-md;
+  background-color: $card-background;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-sm;
+
+  .search-input,
+  .filter-select {
+    min-width: 200px;
+  }
+}
+
+// 统一的分页样式
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: $spacing-lg;
+  padding: $spacing-md;
+  background-color: $card-background;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-sm;
+}
+
+// 统一的页面容器样式
+.page-container {
+  width: 100%;
+  min-height: 100%;
+  padding: $spacing-lg;
+}
+
+// 统一的卡片头部样式
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  color: $text-color;
+
+  span {
+    font-size: $font-size-lg;
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .search-filter {
+    flex-direction: column;
+    align-items: stretch;
+
+    .search-input,
+    .filter-select {
+      width: 100%;
+      min-width: auto;
+    }
+  }
+
+  .pagination {
+    justify-content: center;
+  }
+}
