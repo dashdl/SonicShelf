@@ -18,7 +18,7 @@
             value-style="color: #3f8600"
           >
             <template #prefix>
-              <el-icon color="#3f8600"><i-ep-user /></el-icon>
+              <el-icon color="#3f8600"><User /></el-icon>
             </template>
           </el-statistic>
         </el-card>
@@ -32,7 +32,7 @@
             value-style="color: #cf1322"
           >
             <template #prefix>
-              <el-icon color="#cf1322"><i-ep-music /></el-icon>
+              <el-icon color="#cf1322"><Headset /></el-icon>
             </template>
           </el-statistic>
         </el-card>
@@ -46,7 +46,7 @@
             value-style="color: #1890ff"
           >
             <template #prefix>
-              <el-icon color="#1890ff"><i-ep-album /></el-icon>
+              <el-icon color="#1890ff"><Collection /></el-icon>
             </template>
           </el-statistic>
         </el-card>
@@ -60,7 +60,7 @@
             value-style="color: #fa8c16"
           >
             <template #prefix>
-              <el-icon color="#fa8c16"><i-ep-singer /></el-icon>
+              <el-icon color="#fa8c16"><User /></el-icon>
             </template>
           </el-statistic>
         </el-card>
@@ -74,7 +74,7 @@
             value-style="color: #722ed1"
           >
             <template #prefix>
-              <el-icon color="#722ed1"><i-ep-collection /></el-icon>
+              <el-icon color="#722ed1"><Collection /></el-icon>
             </template>
           </el-statistic>
         </el-card>
@@ -88,7 +88,7 @@
             value-style="color: #eb2f96"
           >
             <template #prefix>
-              <el-icon color="#eb2f96"><i-ep-setting /></el-icon>
+              <el-icon color="#eb2f96"><Setting /></el-icon>
             </template>
           </el-statistic>
         </el-card>
@@ -166,7 +166,7 @@ onMounted(() => {
 
 <style scoped lang="scss">
 // 只保留页面特有的样式，其他样式使用全局样式
-@import '@/assets/styles/variables.scss';
+@use '@/assets/styles/variables.scss' as *;
 
 .statistics-cards {
   display: grid;

@@ -26,6 +26,7 @@ export default defineConfig({
   },
   // 跨域代理配置
   server: {
+    port: 5173,
     proxy: {
       // 将 /api 请求代理到后端服务
       '/api': {

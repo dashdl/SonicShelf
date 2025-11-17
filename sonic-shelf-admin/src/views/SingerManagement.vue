@@ -5,7 +5,7 @@
         <div class="card-header">
           <span>歌手管理</span>
           <el-button type="primary" @click="handleAdd">
-            <el-icon><i-ep-plus /></el-icon>
+            <el-icon><Plus /></el-icon>
             添加歌手
           </el-button>
         </div>
@@ -16,7 +16,7 @@
         <el-input
           v-model="searchQuery"
           placeholder="搜索歌手名称"
-          prefix-icon="i-ep-search"
+          prefix-icon="Search"
           clearable
           class="search-input"
           @keyup.enter="handleSearch"
@@ -32,11 +32,11 @@
           <el-option label="组合" value="group" />
         </el-select>
         <el-button type="primary" @click="handleSearch">
-          <el-icon><i-ep-search /></el-icon>
+          <el-icon><Search /></el-icon>
           搜索
         </el-button>
         <el-button @click="handleReset">
-          <el-icon><i-ep-refresh /></el-icon>
+          <el-icon><Refresh /></el-icon>
           重置
         </el-button>
       </div>
@@ -82,7 +82,7 @@
               size="small"
               @click="handleEdit(scope.row)"
             >
-              <el-icon><i-ep-edit /></el-icon>
+              <el-icon><Edit /></el-icon>
               编辑
             </el-button>
             <el-button
@@ -90,7 +90,7 @@
               size="small"
               @click="handleDelete(scope.row)"
             >
-              <el-icon><i-ep-delete /></el-icon>
+              <el-icon><Delete /></el-icon>
               删除
             </el-button>
           </template>
@@ -154,7 +154,7 @@
             >
               <template #trigger>
                 <el-button type="primary">
-                  <el-icon><i-ep-upload /></el-icon>
+                  <el-icon><Upload /></el-icon>
                   上传头像图片
                 </el-button>
               </template>

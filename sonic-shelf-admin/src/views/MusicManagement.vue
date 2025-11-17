@@ -5,7 +5,7 @@
         <div class="card-header">
           <span>音乐管理</span>
           <el-button type="primary" @click="handleAdd">
-            <el-icon><i-ep-plus /></el-icon>
+            <el-icon><Plus /></el-icon>
             添加音乐
           </el-button>
         </div>
@@ -16,7 +16,7 @@
         <el-input
           v-model="searchQuery"
           placeholder="搜索音乐名称或歌手"
-          prefix-icon="i-ep-search"
+          :prefix-icon="Search"
           clearable
           class="search-input"
           @keyup.enter="handleSearch"
@@ -50,11 +50,11 @@
           />
         </el-select>
         <el-button type="primary" @click="handleSearch">
-          <el-icon><i-ep-search /></el-icon>
+          <el-icon><Search /></el-icon>
           搜索
         </el-button>
         <el-button @click="handleReset">
-          <el-icon><i-ep-refresh /></el-icon>
+          <el-icon><Refresh /></el-icon>
           重置
         </el-button>
       </div>
@@ -97,7 +97,7 @@
               size="small"
               @click="handleEdit(scope.row)"
             >
-              <el-icon><i-ep-edit /></el-icon>
+              <el-icon><Edit /></el-icon>
               编辑
             </el-button>
             <el-button
@@ -105,7 +105,7 @@
               size="small"
               @click="handleDelete(scope.row)"
             >
-              <el-icon><i-ep-delete /></el-icon>
+              <el-icon><Delete /></el-icon>
               删除
             </el-button>
           </template>
@@ -174,7 +174,7 @@
             >
               <template #trigger>
                 <el-button type="primary">
-                  <el-icon><i-ep-upload /></el-icon>
+                  <el-icon><Upload /></el-icon>
                   上传音乐文件
                 </el-button>
               </template>
@@ -196,7 +196,7 @@
             >
               <template #trigger>
                 <el-button type="primary">
-                  <el-icon><i-ep-upload /></el-icon>
+                  <el-icon><Upload /></el-icon>
                   上传封面图片
                 </el-button>
               </template>

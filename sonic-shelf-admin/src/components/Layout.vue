@@ -13,37 +13,37 @@
         :collapse="isCollapse"
       >
         <el-menu-item index="dashboard">
-          <el-icon><i-ep-monitor /></el-icon>
+          <el-icon><Monitor /></el-icon>
           <span>仪表盘</span>
         </el-menu-item>
 
         <el-menu-item index="user">
-          <el-icon><i-ep-user /></el-icon>
+          <el-icon><User /></el-icon>
           <span>用户管理</span>
         </el-menu-item>
 
         <el-menu-item index="music">
-          <el-icon><i-ep-music /></el-icon>
+          <el-icon><Headset /></el-icon>
           <span>音乐管理</span>
         </el-menu-item>
 
         <el-menu-item index="album">
-          <el-icon><i-ep-album /></el-icon>
+          <el-icon><Collection /></el-icon>
           <span>专辑管理</span>
         </el-menu-item>
 
         <el-menu-item index="singer">
-          <el-icon><i-ep-singer /></el-icon>
+          <el-icon><User /></el-icon>
           <span>歌手管理</span>
         </el-menu-item>
 
         <el-menu-item index="playlist">
-          <el-icon><i-ep-collection /></el-icon>
+          <el-icon><Collection /></el-icon>
           <span>歌单管理</span>
         </el-menu-item>
 
         <el-menu-item index="category">
-          <el-icon><i-ep-setting /></el-icon>
+          <el-icon><Setting /></el-icon>
           <span>分类管理</span>
         </el-menu-item>
       </el-menu>
@@ -54,21 +54,21 @@
       <!-- 顶部导航栏 -->
       <el-header class="admin-header">
         <div class="header-left">
-          <el-icon @click="toggleCollapse"><i-ep-menu /></el-icon>
+          <el-icon @click="toggleCollapse"><Menu /></el-icon>
         </div>
         <div class="header-right">
           <el-dropdown>
             <span class="el-dropdown-link">
               <el-avatar :size="36">
-                <el-icon><i-ep-user-filled /></el-icon>
+                <el-icon><UserFilled /></el-icon>
               </el-avatar>
               <span>{{ username || '管理员' }}</span>
-              <el-icon class="el-icon--right"><i-ep-arrow-down /></el-icon>
+              <el-icon class="el-icon--right"><ArrowDown /></el-icon>
             </span>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item divided @click="logout">
-                  <el-icon><i-ep-switch-button /></el-icon>
+                  <el-icon><SwitchButton /></el-icon>
                   退出登录
                 </el-dropdown-item>
               </el-dropdown-menu>

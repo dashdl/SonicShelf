@@ -1,4 +1,5 @@
 // 引入所有样式文件
+@use 'sass:color';
 @use 'reset';
 @use 'variables';
 
@@ -123,8 +124,8 @@ a {
 
     &:hover,
     &:focus {
-      background-color: lighten($primary-color, 10%);
-      border-color: lighten($primary-color, 10%);
+      background-color: color.adjust($primary-color, $lightness: 10%);
+      border-color: color.adjust($primary-color, $lightness: 10%);
     }
   }
 
@@ -134,8 +135,8 @@ a {
 
     &:hover,
     &:focus {
-      background-color: lighten($success-color, 10%);
-      border-color: lighten($success-color, 10%);
+      background-color: color.adjust($success-color, $lightness: 10%);
+      border-color: color.adjust($success-color, $lightness: 10%);
     }
   }
 
@@ -145,8 +146,8 @@ a {
 
     &:hover,
     &:focus {
-      background-color: lighten($warning-color, 10%);
-      border-color: lighten($warning-color, 10%);
+      background-color: color.adjust($warning-color, $lightness: 10%);
+      border-color: color.adjust($warning-color, $lightness: 10%);
     }
   }
 
@@ -156,8 +157,8 @@ a {
 
     &:hover,
     &:focus {
-      background-color: lighten($danger-color, 10%);
-      border-color: lighten($danger-color, 10%);
+      background-color: color.adjust($danger-color, $lightness: 10%);
+      border-color: color.adjust($danger-color, $lightness: 10%);
     }
   }
 
@@ -167,8 +168,8 @@ a {
 
     &:hover,
     &:focus {
-      background-color: lighten($info-color, 10%);
-      border-color: lighten($info-color, 10%);
+      background-color: color.adjust($info-color, $lightness: 10%);
+      border-color: color.adjust($info-color, $lightness: 10%);
     }
   }
 }

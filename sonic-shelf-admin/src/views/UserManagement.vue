@@ -5,7 +5,7 @@
         <div class="card-header">
           <span>用户管理</span>
           <el-button type="primary" @click="handleAdd">
-            <el-icon><i-ep-plus /></el-icon>
+            <el-icon><Plus /></el-icon>
             添加用户
           </el-button>
         </div>
@@ -16,7 +16,7 @@
         <el-input
           v-model="searchQuery"
           placeholder="搜索用户名或邮箱"
-          prefix-icon="i-ep-search"
+          prefix-icon="Search"
           clearable
           class="search-input"
           @keyup.enter="handleSearch"
@@ -31,11 +31,11 @@
           <el-option label="禁用" value="0" />
         </el-select>
         <el-button type="primary" @click="handleSearch">
-          <el-icon><i-ep-search /></el-icon>
+          <el-icon><Search /></el-icon>
           搜索
         </el-button>
         <el-button @click="handleReset">
-          <el-icon><i-ep-refresh /></el-icon>
+          <el-icon><Refresh /></el-icon>
           重置
         </el-button>
       </div>
@@ -73,7 +73,7 @@
               @click="handleEdit(scope.row)"
               :disabled="scope.row.id === 1"
             >
-              <el-icon><i-ep-edit /></el-icon>
+              <el-icon><Edit /></el-icon>
               编辑
             </el-button>
             <el-button
@@ -82,7 +82,7 @@
               @click="handleDelete(scope.row)"
               :disabled="scope.row.id === 1"
             >
-              <el-icon><i-ep-delete /></el-icon>
+              <el-icon><Delete /></el-icon>
               删除
             </el-button>
           </template>

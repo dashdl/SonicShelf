@@ -5,7 +5,7 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
-import {ElementPlusResolver} from "unplugin-vue-components/resolvers"
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -13,10 +13,22 @@ export default defineConfig({
     vue(),
     vueDevTools(),
     AutoImport({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver({
+        importStyle: 'sass',
+        directives: true,
+        version: '^2.1.0',
+        // 添加图标自动导入
+        importIcons: true
+      })],
     }),
     Components({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver({
+        importStyle: 'sass',
+        directives: true,
+        version: '^2.1.0',
+        // 添加图标自动导入
+        importIcons: true
+      })],
     }),
   ],
   resolve: {
@@ -26,6 +38,7 @@ export default defineConfig({
   },
   // 跨域代理配置
   server: {
+    port: 5174,
     proxy: {
       // 将 /api 请求代理到后端服务
       '/api': {
