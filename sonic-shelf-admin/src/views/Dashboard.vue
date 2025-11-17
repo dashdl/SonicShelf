@@ -101,12 +101,12 @@
             <span>最近操作</span>
           </div>
         </template>
-        <el-table :data="recentOperations" stripe style="width: 100%">
-          <el-table-column prop="time" label="时间" width="180" />
-          <el-table-column prop="user" label="用户" width="120" />
-          <el-table-column prop="action" label="操作" />
-          <el-table-column prop="result" label="结果" width="100" />
-        </el-table>
+        <el-table :data="recentOperations" stripe style="width: 100%" class="flexible-table">
+        <el-table-column prop="time" label="时间" min-width="180" />
+        <el-table-column prop="user" label="用户" min-width="120" />
+        <el-table-column prop="action" label="操作" min-width="200" />
+        <el-table-column prop="result" label="结果" min-width="100" />
+      </el-table>
       </el-card>
     </el-card>
   </div>
@@ -165,7 +165,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-// 只保留页面特有的样式，其他样式使用全局样式
 @use '@/assets/styles/variables.scss' as *;
 
 .statistics-cards {

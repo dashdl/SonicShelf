@@ -14,7 +14,7 @@ export default defineConfig({
     vueDevTools(),
     AutoImport({
       resolvers: [ElementPlusResolver({
-        importStyle: 'sass',
+        importStyle: 'scss',  // 改为css模式，避免sass文件路径问题
         directives: true,
         version: '^2.1.0',
         // 添加图标自动导入
@@ -23,7 +23,7 @@ export default defineConfig({
     }),
     Components({
       resolvers: [ElementPlusResolver({
-        importStyle: 'sass',
+        importStyle: 'css',  // 改为css模式，避免sass文件路径问题
         directives: true,
         version: '^2.1.0',
         // 添加图标自动导入

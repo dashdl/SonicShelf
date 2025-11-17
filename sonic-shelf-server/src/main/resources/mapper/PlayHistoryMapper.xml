@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongxin.sonicshelf.mapper.PlayHistoryMapper">
+
+    <resultMap id="PlayHistoryResultMap" type="com.zhongxin.sonicshelf.entity.PlayHistory">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="musicId" column="music_id"/>
+        <result property="playDuration" column="play_duration"/>
+        <result property="playTime" column="play_time"/>
+    </resultMap>
+
+    <select id="findByUserId" resultMap="PlayHistoryResultMap">
+        SELECT * FROM play_histories 
+        WHERE user_id = #{userId} 
+        ORDER BY play_time DESC
+    </select>
+
+    <select id="findByUserIdAsPage" resultMap="PlayHistoryResultMap">
+        SELECT * FROM play_histories 
+        WHERE user_id = #{userId} 
+        ORDER BY play_time DESC 
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="findByUserIdAndMusicId" resultMap="PlayHistoryResultMap">
+        SELECT * FROM play_histories 
+        WHERE user_id = #{userId} AND music_id = #{musicId}
+        LIMIT 1
+    </select>
+
+    <select id="countByUserId" resultType="int">
+        SELECT COUNT(*) FROM play_histories 
+        WHERE user_id = #{userId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO play_histories(user_id, music_id, play_duration, play_time) 
+        VALUES(#{userId}, #{musicId}, #{playDuration}, #{playTime})
+    </insert>
+
+    <update id="updatePlayHistory">
+        UPDATE play_histories 
+        SET play_duration = #{playDuration}, play_time = #{playTime}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM play_histories WHERE id = #{id}
+    </delete>
+
+</mapper>

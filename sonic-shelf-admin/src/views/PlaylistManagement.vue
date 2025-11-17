@@ -1,5 +1,27 @@
+<!--
+  歌单管理页面
+  
+  数据流说明：
+  1. 页面加载时调用 getPlaylistList() 获取歌单列表
+  2. 搜索功能通过 handleSearch() 触发，支持按歌单名称、描述、分类、状态筛选
+  3. 分页功能通过 handleCurrentChange() 和 handleSizeChange() 实现
+  4. 表单提交通过 handleSubmit() 处理，支持添加和编辑歌单
+  5. 删除功能通过 handleDelete() 实现，带确认对话框
+  
+  API替换说明：
+  1. 当前使用 mockService.playlist 模拟数据
+  2. 替换为真实API时，请导入 src/api/playlist.js 中的方法
+  3. 保持相同的返回格式：{ code: '200', data: {...} }
+  
+  后端API要求：
+  - GET /admin/playlists - 获取歌单列表（支持分页、搜索）
+  - POST /admin/playlists - 添加歌单
+  - PUT /admin/playlists/{id} - 更新歌单
+  - DELETE /admin/playlists/{id} - 删除歌单
+-->
+
 <template>
-  <div class="playlist-management-container">
+  <div class="admin-management-container">
     <el-card shadow="hover" class="playlist-management-card">
       <template #header>
         <div class="card-header">
@@ -56,14 +78,15 @@
 
       <!-- 歌单列表 -->
       <el-table
-        :data="playlistList"
+        :data="playlists"
         stripe
         style="width: 100%"
         @selection-change="handleSelectionChange"
+        class="flexible-table"
       >
-        <el-table-column type="selection" width="55" />
+        <el-table-column type="selection" width="55" fixed="left" />
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="name" label="歌单名称" width="200">
+        <el-table-column prop="name" label="歌单名称" min-width="200">
           <template #default="scope">
             <div class="playlist-name">
               <el-image
@@ -76,20 +99,18 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="categoryName" label="分类" width="120" />
-        <el-table-column prop="creatorName" label="创建者" width="120" />
-        <el-table-column prop="musicCount" label="歌曲数量" width="120" />
-        <el-table-column prop="playCount" label="播放次数" width="120" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="categoryName" label="分类" min-width="120" />
+        <el-table-column prop="creatorName" label="创建者" min-width="120" />
+        <el-table-column prop="musicCount" label="歌曲数量" min-width="120" />
+        <el-table-column prop="playCount" label="播放次数" min-width="120" />
+        <el-table-column prop="status" label="状态" min-width="100">
           <template #default="scope">
-            <el-tag
-              :type="scope.row.status === 'public' ? 'success' : 'info'"
-            >
-              {{ scope.row.status === 'public' ? '公开' : '私有' }}
+            <el-tag :type="scope.row.status === '1' ? 'success' : 'danger'">
+              {{ scope.row.status === '1' ? '公开' : '私密' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="200" />
+        <el-table-column prop="createTime" label="创建时间" min-width="200" />
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
             <el-button
@@ -261,7 +282,7 @@ const formTitle = computed(() => {
 const getPlaylistList = async () => {
   try {
     const params = {
-      page: currentPage.value,
+      pageNum: currentPage.value,
       pageSize: pageSize.value,
       keyword: searchQuery.value,
       categoryId: categoryFilter.value,
@@ -281,7 +302,7 @@ const getPlaylistList = async () => {
 // 获取分类列表
 const getCategories = async () => {
   try {
-    const res = await mockService.category.getList({ pageSize: 1000 })
+    const res = await mockService.category.getList({ pageNum: 1, pageSize: 1000 })
     if (res.code === '200') {
       categories.value = res.data.list
     }

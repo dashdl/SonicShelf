@@ -1,5 +1,6 @@
 package com.zhongxin.sonicshelf.util;
 
+import com.zhongxin.sonicshelf.entity.Admin;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -32,12 +33,15 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+
+        String userType = (userDetails instanceof Admin) ? "admin" : "user";
+        claims.put("userType", userType);
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512) // 使用SecretKey而不是字符串
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512) // 使用SecretKey
                 .compact();
     }
 
@@ -65,10 +69,28 @@ public class JwtUtil {
         }
     }
 
+
+    public Boolean isAdmin(String token) {
+        return "admin".equals(getUserTypeFromToken(token));
+    }
+
+    public String getUserTypeFromToken(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("userType", String.class);
+        } catch (Exception e) {
+            return "user";
+        }
+    }
+
     private boolean isTokenExpired(String token) {
         try {
             final Date expiration = Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey()) // 这里也要修改
+                    .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody()

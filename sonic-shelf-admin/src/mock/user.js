@@ -5,7 +5,6 @@ const mockUsers = [
     username: 'admin',
     email: 'admin@example.com',
     nickname: '管理员',
-    role: 'admin',
     status: '1',
     createTime: '2024-01-01 00:00:00',
     lastLoginTime: '2024-01-10 10:00:00'
@@ -15,7 +14,6 @@ const mockUsers = [
     username: 'user1',
     email: 'user1@example.com',
     nickname: '用户1',
-    role: 'user',
     status: '1',
     createTime: '2024-01-02 10:00:00',
     lastLoginTime: '2024-01-09 15:30:00'
@@ -25,7 +23,6 @@ const mockUsers = [
     username: 'user2',
     email: 'user2@example.com',
     nickname: '用户2',
-    role: 'user',
     status: '1',
     createTime: '2024-01-03 14:20:00',
     lastLoginTime: '2024-01-08 09:15:00'
@@ -35,7 +32,6 @@ const mockUsers = [
     username: 'user3',
     email: 'user3@example.com',
     nickname: '用户3',
-    role: 'user',
     status: '0',
     createTime: '2024-01-04 09:00:00',
     lastLoginTime: '2024-01-07 18:45:00'
@@ -45,7 +41,6 @@ const mockUsers = [
     username: 'user4',
     email: 'user4@example.com',
     nickname: '用户4',
-    role: 'user',
     status: '1',
     createTime: '2024-01-05 16:30:00',
     lastLoginTime: '2024-01-06 12:20:00'
@@ -59,7 +54,6 @@ for (let i = 6; i <= 50; i++) {
     username: `user${i}`,
     email: `user${i}@example.com`,
     nickname: `用户${i}`,
-    role: 'user',
     status: i % 5 === 0 ? '0' : '1',
     createTime: `2024-01-${(i % 10 + 1).toString().padStart(2, '0')} ${(i % 24).toString().padStart(2, '0')}:00:00`,
     lastLoginTime: `2024-01-${(i % 15 + 5).toString().padStart(2, '0')} ${(i % 24).toString().padStart(2, '0')}:30:00`

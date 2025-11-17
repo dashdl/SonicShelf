@@ -1,9 +1,9 @@
 package com.zhongxin.sonicshelf.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.zhongxin.sonicshelf.dto.request.RegisterRequest;
-import com.zhongxin.sonicshelf.dto.response.LoginResponse;
-import com.zhongxin.sonicshelf.dto.response.RegisterResponse;
-import com.zhongxin.sonicshelf.dto.response.UserProfileResponse;
+import com.zhongxin.sonicshelf.dto.response.*;
 import com.zhongxin.sonicshelf.entity.User;
 import com.zhongxin.sonicshelf.exception.AuthException;
 import com.zhongxin.sonicshelf.exception.CustomException;
@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
 
     @Resource
     UserMapper userMapper;
@@ -104,8 +104,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void updateUserAvatar(String url,String token) {
-        userMapper.updateUserAvatar(url,jwtUtil.getUsernameFromToken(token));
+    public void updateUserAvatar(String url, String token) {
+        userMapper.updateUserAvatar(url, jwtUtil.getUsernameFromToken(token));
     }
 
     @Override
@@ -114,7 +114,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userMapper.findByUsername(username);
+    public PageInfo<UserManageResponse> findUsersAsPage(Integer pageNum, Integer pageSize, String keyword, Integer status) {
+        PageHelper.startPage(pageNum, pageSize);
+        return PageInfo.of(userMapper.selectUsersAsPage(keyword, status));
     }
 }

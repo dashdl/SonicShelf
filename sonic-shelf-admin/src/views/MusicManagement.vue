@@ -1,5 +1,27 @@
+<!--
+  音乐管理页面
+  
+  数据流说明：
+  1. 页面加载时调用 getMusicList() 获取音乐列表
+  2. 搜索功能通过 handleSearch() 触发，支持按音乐名称、歌手、专辑筛选
+  3. 分页功能通过 handleCurrentChange() 和 handleSizeChange() 实现
+  4. 表单提交通过 handleSubmit() 处理，支持添加和编辑音乐
+  5. 删除功能通过 handleDelete() 实现，带确认对话框
+  
+  API替换说明：
+  1. 当前使用 mockService.music 模拟数据
+  2. 替换为真实API时，请导入 src/api/music.js 中的方法
+  3. 保持相同的返回格式：{ code: '200', data: {...} }
+  
+  后端API要求：
+  - GET /admin/music - 获取音乐列表（支持分页、搜索）
+  - POST /admin/music - 添加音乐
+  - PUT /admin/music/{id} - 更新音乐
+  - DELETE /admin/music/{id} - 删除音乐
+-->
+
 <template>
-  <div class="music-management-container">
+  <div class="admin-management-container">
     <el-card shadow="hover" class="music-management-card">
       <template #header>
         <div class="card-header">
@@ -65,10 +87,11 @@
         stripe
         style="width: 100%"
         @selection-change="handleSelectionChange"
+        class="flexible-table"
       >
-        <el-table-column type="selection" width="55" />
+        <el-table-column type="selection" width="55" fixed="left" />
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="name" label="音乐名称" width="200">
+        <el-table-column prop="name" label="音乐名称" min-width="200">
           <template #default="scope">
             <div class="music-name">
               <el-image
@@ -81,15 +104,15 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="singerName" label="歌手" width="150" />
-        <el-table-column prop="albumName" label="专辑" width="150" />
-        <el-table-column prop="duration" label="时长" width="100">
+        <el-table-column prop="singerName" label="歌手" min-width="150" />
+        <el-table-column prop="albumName" label="专辑" min-width="150" />
+        <el-table-column prop="duration" label="时长" min-width="100">
           <template #default="scope">
-            {{ formatDuration(scope.row.duration) }}
+            <span>{{ formatDuration(scope.row.duration) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="playCount" label="播放次数" width="120" />
-        <el-table-column prop="createTime" label="添加时间" width="200" />
+        <el-table-column prop="playCount" label="播放次数" min-width="120" />
+        <el-table-column prop="createTime" label="添加时间" min-width="200" />
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
             <el-button
@@ -300,7 +323,7 @@ const formatDuration = (seconds) => {
 const getMusicList = async () => {
   try {
     const params = {
-      page: currentPage.value,
+      pageNum: currentPage.value,
       pageSize: pageSize.value,
       keyword: searchQuery.value,
       albumId: albumFilter.value,
@@ -320,7 +343,7 @@ const getMusicList = async () => {
 // 获取专辑列表
 const getAlbums = async () => {
   try {
-    const res = await mockService.album.getList({ pageSize: 1000 })
+    const res = await mockService.album.getList({ pageNum: 1, pageSize: 1000 })
     if (res.code === '200') {
       albums.value = res.data.list
     }
@@ -332,7 +355,7 @@ const getAlbums = async () => {
 // 获取歌手列表
 const getSingers = async () => {
   try {
-    const res = await mockService.singer.getList({ pageSize: 1000 })
+    const res = await mockService.singer.getList({ pageNum: 1, pageSize: 1000 })
     if (res.code === '200') {
       singers.value = res.data.list
     }

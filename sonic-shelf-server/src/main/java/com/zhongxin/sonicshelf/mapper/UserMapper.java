@@ -1,6 +1,8 @@
 package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.response.CollectorResponse;
+import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
+import com.zhongxin.sonicshelf.dto.response.UserManageResponse;
 import com.zhongxin.sonicshelf.dto.response.UserProfileResponse;
 import com.zhongxin.sonicshelf.entity.User;
 import org.apache.ibatis.annotations.*;
@@ -34,4 +36,6 @@ public interface UserMapper {
 
     @Select("select * from users where id=#{id}")
     User selectById(Long id);
+
+    List<UserManageResponse> selectUsersAsPage(String keyword, Integer status);
 }

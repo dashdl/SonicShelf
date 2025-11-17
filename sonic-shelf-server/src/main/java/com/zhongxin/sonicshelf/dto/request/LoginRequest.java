@@ -1,5 +1,6 @@
 package com.zhongxin.sonicshelf.dto.request;
 
+import com.zhongxin.sonicshelf.entity.Admin;
 import com.zhongxin.sonicshelf.entity.User;
 import lombok.Data;
 
@@ -14,5 +15,12 @@ public class LoginRequest {
         user.setUsername(username);
         user.setPassword(password);
         return user;
+    }
+
+    public Admin toAdmin(){
+        Admin admin = new Admin();
+        admin.setUsername(username);
+        admin.setPassword(password);
+        return admin;
     }
 }

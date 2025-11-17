@@ -78,14 +78,13 @@ const loginRules = {
 const handleLogin = async () => {
   if (!loginFormRef.value) return
   try {
-    await loginFormRef.value.validate()
     loading.value = true
+    await loginFormRef.value.validate()
     await userStore.login(loginForm)
-    ElMessage.success('登录成功')
-    router.push('/dashboard')
+    await router.push('/dashboard')
   } catch (error) {
     console.error('登录失败:', error)
-    ElMessage.error(error.msg || '登录失败，请检查用户名和密码')
+    // 错误消息已经在request拦截器中显示，这里不再重复显示
   } finally {
     loading.value = false
   }

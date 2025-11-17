@@ -1,4 +1,21 @@
-// 模拟数据服务
+/**
+ * 模拟数据服务
+ * 
+ * 这个文件提供了所有管理后台的模拟数据接口
+ * 要替换为真实API，请按照以下步骤操作：
+ * 
+ * 1. 创建对应的API文件（如：src/api/user.js, src/api/album.js等）
+ * 2. 使用真实API替换这里的mockService调用
+ * 3. 保持相同的返回格式：{ code: '200', data: {...} }
+ * 
+ * 示例真实API调用方式：
+ * import request from '@/utils/request'
+ * 
+ * export const getUserList = (params) => {
+ *   return request.get('/admin/users', { params })
+ * }
+ */
+
 import mockUsers from './user';
 import mockAlbums from './album';
 import mockSingers from './singer';
@@ -33,11 +50,34 @@ const filterByStatus = (array, status) => {
   return array.filter(item => item.status === status);
 };
 
-// 模拟API服务
+/**
+ * 模拟API服务
+ * 
+ * 注意：所有API方法都返回Promise，保持异步调用的一致性
+ * 真实API替换时，也要确保返回Promise对象
+ * 
+ * 返回格式约定：
+ * {
+ *   code: '200',     // 状态码，200表示成功
+ *   data: {...},     // 响应数据
+ *   message: ''      // 错误信息（可选）
+ * }
+ */
 const mockService = {
   // 用户管理API
   user: {
-    // 获取用户列表
+    /**
+     * 获取用户列表
+     * @param {Object} params - 查询参数
+     * @param {number} params.pageNum - 页码
+     * @param {number} params.pageSize - 每页条数
+     * @param {string} params.keyword - 搜索关键词
+     * @param {string} params.status - 状态筛选
+     * @returns {Promise} 返回用户列表数据
+     * 
+     * 真实API替换示例：
+     * getList: (params) => request.get('/admin/users', { params })
+     */
     async getList(params = {}) {
       await delay(300);
       let filteredUsers = [...mockUsers];
@@ -53,7 +93,7 @@ const mockService = {
       }
       
       // 分页
-      const page = params.page || 1;
+      const page = params.pageNum || 1;
       const pageSize = params.pageSize || 20;
       const paginatedUsers = paginate(filteredUsers, page, pageSize);
       
@@ -66,7 +106,19 @@ const mockService = {
       };
     },
     
-    // 添加用户
+    /**
+     * 添加用户
+     * @param {Object} user - 用户数据
+     * @param {string} user.username - 用户名
+     * @param {string} user.password - 密码
+     * @param {string} user.email - 邮箱
+     * @param {string} user.nickname - 昵称
+     * @param {string} user.status - 状态
+     * @returns {Promise} 返回添加的用户数据
+     * 
+     * 真实API替换示例：
+     * add: (user) => request.post('/admin/users', user)
+     */
     async add(user) {
       await delay(300);
       const newUser = {
@@ -82,7 +134,15 @@ const mockService = {
       };
     },
     
-    // 更新用户
+    /**
+     * 更新用户
+     * @param {Object} user - 用户数据
+     * @param {number} user.id - 用户ID
+     * @returns {Promise} 返回更新的用户数据
+     * 
+     * 真实API替换示例：
+     * update: (user) => request.put(`/admin/users/${user.id}`, user)
+     */
     async update(user) {
       await delay(300);
       const index = mockUsers.findIndex(u => u.id === user.id);
@@ -99,7 +159,14 @@ const mockService = {
       };
     },
     
-    // 删除用户
+    /**
+     * 删除用户
+     * @param {number} id - 用户ID
+     * @returns {Promise} 返回删除结果
+     * 
+     * 真实API替换示例：
+     * delete: (id) => request.delete(`/admin/users/${id}`)
+     */
     async delete(id) {
       await delay(300);
       const index = mockUsers.findIndex(u => u.id === id);
@@ -129,7 +196,7 @@ const mockService = {
       }
       
       // 分页
-      const page = params.page || 1;
+      const page = params.pageNum || 1;
       const pageSize = params.pageSize || 20;
       const paginatedAlbums = paginate(filteredAlbums, page, pageSize);
       
@@ -156,7 +223,7 @@ const mockService = {
       }
       
       // 分页
-      const page = params.page || 1;
+      const page = params.pageNum || 1;
       const pageSize = params.pageSize || 20;
       const paginatedSingers = paginate(filteredSingers, page, pageSize);
       
@@ -193,7 +260,7 @@ const mockService = {
       }
       
       // 分页
-      const page = params.page || 1;
+      const page = params.pageNum || 1;
       const pageSize = params.pageSize || 20;
       const paginatedMusic = paginate(filteredMusic, page, pageSize);
       
@@ -284,7 +351,7 @@ const mockService = {
       }
       
       // 分页
-      const page = params.page || 1;
+      const page = params.pageNum || 1;
       const pageSize = params.pageSize || 20;
       const paginatedCategories = paginate(filteredCategories, page, pageSize);
       
@@ -362,7 +429,7 @@ const mockService = {
       }
       
       // 分页
-      const page = params.page || 1;
+      const page = params.pageNum || 1;
       const pageSize = params.pageSize || 20;
       const paginatedPlaylists = paginate(filteredPlaylists, page, pageSize);
       
