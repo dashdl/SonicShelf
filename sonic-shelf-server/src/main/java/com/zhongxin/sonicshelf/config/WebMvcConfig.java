@@ -24,6 +24,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowCredentials(false)
                 .maxAge(3600);
+        registry.addMapping("/uploads/**")
+                .allowedOrigins("http://localhost:5174")  // 明确指定前端地址
+                .allowedMethods("GET", "OPTIONS")  // 静态资源主要是 GET 请求
+                .allowedHeaders("*")
+                .allowCredentials(false)
+                .maxAge(3600);
     }
 
     @Override

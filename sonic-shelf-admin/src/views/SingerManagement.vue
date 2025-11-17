@@ -1,5 +1,27 @@
+<!--
+  歌手管理页面
+  
+  数据流说明：
+  1. 页面加载时调用 getSingerList() 获取歌手列表
+  2. 搜索功能通过 handleSearch() 触发，支持按歌手名称和性别筛选
+  3. 分页功能通过 handleCurrentChange() 和 handleSizeChange() 实现
+  4. 表单提交通过 handleSubmit() 处理，支持添加和编辑歌手
+  5. 删除功能通过 handleDelete() 实现，带确认对话框
+  
+  API替换说明：
+  1. 当前使用 mockService.singer 模拟数据
+  2. 替换为真实API时，请导入 src/api/singer.js 中的方法
+  3. 保持相同的返回格式：{ code: '200', data: {...} }
+  
+  后端API要求：
+  - GET /admin/singers - 获取歌手列表（支持分页、搜索）
+  - POST /admin/singers - 添加歌手
+  - PUT /admin/singers/{id} - 更新歌手
+  - DELETE /admin/singers/{id} - 删除歌手
+-->
+
 <template>
-  <div class="singer-management-container">
+  <div class="admin-management-container">
     <el-card shadow="hover" class="singer-management-card">
       <template #header>
         <div class="card-header">
@@ -47,10 +69,11 @@
         stripe
         style="width: 100%"
         @selection-change="handleSelectionChange"
+        class="flexible-table"
       >
-        <el-table-column type="selection" width="55" />
+        <el-table-column type="selection" width="55" fixed="left" />
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="name" label="歌手名称" width="200">
+        <el-table-column prop="name" label="歌手名称" min-width="200">
           <template #default="scope">
             <div class="singer-name">
               <el-image
@@ -63,7 +86,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="gender" label="性别" width="100">
+        <el-table-column prop="gender" label="性别" min-width="100">
           <template #default="scope">
             <el-tag
               :type="scope.row.gender === 'male' ? 'primary' : scope.row.gender === 'female' ? 'success' : 'warning'"
@@ -72,9 +95,9 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="country" label="国家/地区" width="150" />
-        <el-table-column prop="musicCount" label="歌曲数量" width="120" />
-        <el-table-column prop="createTime" label="添加时间" width="200" />
+        <el-table-column prop="country" label="国家/地区" min-width="150" />
+        <el-table-column prop="musicCount" label="歌曲数量" min-width="120" />
+        <el-table-column prop="createTime" label="添加时间" min-width="200" />
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
             <el-button
@@ -236,7 +259,7 @@ const formTitle = computed(() => {
 const getSingerList = async () => {
   try {
     const params = {
-      page: currentPage.value,
+      pageNum: currentPage.value,
       pageSize: pageSize.value,
       keyword: searchQuery.value,
       gender: genderFilter.value

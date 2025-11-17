@@ -1,5 +1,27 @@
+<!--
+  专辑管理页面
+  
+  数据流说明：
+  1. 页面加载时调用 getAlbumList() 获取专辑列表
+  2. 搜索功能通过 handleSearch() 触发，支持按专辑名称和歌手筛选
+  3. 分页功能通过 handleCurrentChange() 和 handleSizeChange() 实现
+  4. 表单提交通过 handleSubmit() 处理，支持添加和编辑专辑
+  5. 删除功能通过 handleDelete() 实现，带确认对话框
+  
+  API替换说明：
+  1. 当前使用 mockService.album 模拟数据
+  2. 替换为真实API时，请导入 src/api/album.js 中的方法
+  3. 保持相同的返回格式：{ code: '200', data: {...} }
+  
+  后端API要求：
+  - GET /admin/albums - 获取专辑列表（支持分页、搜索）
+  - POST /admin/albums - 添加专辑
+  - PUT /admin/albums/{id} - 更新专辑
+  - DELETE /admin/albums/{id} - 删除专辑
+-->
+
 <template>
-  <div class="album-management-container">
+  <div class="admin-management-container">
     <el-card shadow="hover" class="album-management-card">
       <template #header>
         <div class="card-header">
@@ -51,10 +73,11 @@
         stripe
         style="width: 100%"
         @selection-change="handleSelectionChange"
+        class="flexible-table"
       >
-        <el-table-column type="selection" width="55" />
+        <el-table-column type="selection" width="55" fixed="left" />
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="name" label="专辑名称" width="200">
+        <el-table-column prop="name" label="专辑名称" min-width="200">
           <template #default="scope">
             <div class="album-name">
               <el-image
@@ -67,10 +90,10 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="singerName" label="歌手" width="150" />
-        <el-table-column prop="releaseDate" label="发行日期" width="150" />
-        <el-table-column prop="musicCount" label="歌曲数量" width="120" />
-        <el-table-column prop="createTime" label="添加时间" width="200" />
+        <el-table-column prop="singerName" label="歌手" min-width="150" />
+        <el-table-column prop="releaseDate" label="发行日期" min-width="150" />
+        <el-table-column prop="musicCount" label="歌曲数量" min-width="120" />
+        <el-table-column prop="createTime" label="添加时间" min-width="200" />
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
             <el-button
@@ -246,7 +269,7 @@ const formTitle = computed(() => {
 const getAlbumList = async () => {
   try {
     const params = {
-      page: currentPage.value,
+      pageNum: currentPage.value,
       pageSize: pageSize.value,
       keyword: searchQuery.value,
       singerId: singerFilter.value

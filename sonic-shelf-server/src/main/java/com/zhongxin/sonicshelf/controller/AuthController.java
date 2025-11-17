@@ -3,6 +3,7 @@ package com.zhongxin.sonicshelf.controller;
 import com.zhongxin.sonicshelf.dto.request.LoginRequest;
 import com.zhongxin.sonicshelf.dto.request.RegisterRequest;
 
+import com.zhongxin.sonicshelf.service.AdminService;
 import com.zhongxin.sonicshelf.service.UserService;
 import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
@@ -13,29 +14,34 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-
-
     @Resource
     private UserService userService;
+    @Resource
+    private AdminService adminService;
 
     @PostMapping("/register")
     public Result register(@RequestBody RegisterRequest registerRequest) {
 
-        return Result.success("注册成功",userService.register(registerRequest));
+        return Result.success("注册成功", userService.register(registerRequest));
     }
 
     @PostMapping("/login")
-    public Result login(@RequestBody LoginRequest loginRequest){
+    public Result login(@RequestBody LoginRequest loginRequest) {
 
         return Result.success("登录成功", userService.login(loginRequest.toUser()));
     }
 
     @PostMapping("/refresh")
-    public Result refresh(HttpServletRequest request){
+    public Result refresh(HttpServletRequest request) {
 
         Object obj = userService.refresh(request);
 
-        return Result.success("Token刷新成功",obj);
+        return Result.success("Token刷新成功", obj);
+    }
+
+    @PostMapping("/admin/login")
+    public Result adminLogin(@RequestBody LoginRequest loginRequest) {
+        return Result.success(adminService.login(loginRequest.toAdmin()));
     }
 }
 

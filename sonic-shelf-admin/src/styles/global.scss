@@ -66,6 +66,7 @@ body {
   transition: $transition-base;
   margin-bottom: $spacing-lg;
   border: none;
+  width: 100%;
 
   &:hover {
     box-shadow: $shadow-md;
@@ -80,6 +81,7 @@ body {
 
   .el-card__body {
     padding: $spacing-lg;
+    width: 100%;
   }
 }
 
@@ -171,6 +173,16 @@ body {
   .el-table__empty-text {
     color: $text-color-tertiary;
     font-size: $font-size-sm;
+  }
+}
+
+// 弹性表格样式 - 用于撑满容器
+.flexible-table {
+  width: 100% !important;
+  
+  .el-table__body,
+  .el-table__header {
+    width: 100% !important;
   }
 }
 
@@ -266,6 +278,30 @@ body {
   width: 100%;
   min-height: 100%;
   padding: $spacing-lg;
+}
+
+// 管理页面容器样式
+.admin-management-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  .el-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    
+    .el-card__body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      
+      .flexible-table {
+        flex: 1;
+      }
+    }
+  }
 }
 
 // 统一的卡片头部样式

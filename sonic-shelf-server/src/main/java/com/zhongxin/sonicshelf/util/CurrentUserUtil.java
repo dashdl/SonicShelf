@@ -23,7 +23,11 @@ public class CurrentUserUtil {
         } else if (principal instanceof UserDetails) {
             // 如果principal是UserDetails类型，我们需要确保它能转换为User类型
             // 这取决于UserDetailsService的实现是否返回User对象
-            return (User) principal;
+            try {
+                return (User) principal;
+            } catch (ClassCastException e) {
+                throw new IllegalStateException("当前登录用户不是User类型，请检查UserDetailsService实现");
+            }
         } else {
             throw new IllegalStateException("无法获取当前用户信息");
         }

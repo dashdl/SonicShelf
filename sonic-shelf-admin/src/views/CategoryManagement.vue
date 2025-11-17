@@ -1,5 +1,27 @@
+<!--
+  分类管理页面
+  
+  数据流说明：
+  1. 页面加载时调用 getCategoryList() 获取分类列表
+  2. 搜索功能通过 handleSearch() 触发，支持按分类名称搜索
+  3. 分页功能通过 handleCurrentChange() 和 handleSizeChange() 实现
+  4. 表单提交通过 handleSubmit() 处理，支持添加和编辑分类
+  5. 删除功能通过 handleDelete() 实现，带确认对话框
+  
+  API替换说明：
+  1. 当前使用 mockService.category 模拟数据
+  2. 替换为真实API时，请导入 src/api/category.js 中的方法
+  3. 保持相同的返回格式：{ code: '200', data: {...} }
+  
+  后端API要求：
+  - GET /admin/categories - 获取分类列表（支持分页、搜索）
+  - POST /admin/categories - 添加分类
+  - PUT /admin/categories/{id} - 更新分类
+  - DELETE /admin/categories/{id} - 删除分类
+-->
+
 <template>
-  <div class="category-management-container">
+  <div class="admin-management-container">
     <el-card shadow="hover" class="category-management-card">
       <template #header>
         <div class="card-header">
@@ -37,14 +59,15 @@
         stripe
         style="width: 100%"
         @selection-change="handleSelectionChange"
+        class="flexible-table"
       >
-        <el-table-column type="selection" width="55" />
+        <el-table-column type="selection" width="55" fixed="left" />
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="name" label="分类名称" width="200" />
-        <el-table-column prop="description" label="分类描述" width="300" />
-        <el-table-column prop="musicCount" label="音乐数量" width="120" />
-        <el-table-column prop="playlistCount" label="歌单数量" width="120" />
-        <el-table-column prop="createTime" label="创建时间" width="200" />
+        <el-table-column prop="name" label="分类名称" min-width="200" />
+        <el-table-column prop="description" label="分类描述" min-width="300" />
+        <el-table-column prop="musicCount" label="音乐数量" min-width="120" />
+        <el-table-column prop="playlistCount" label="歌单数量" min-width="120" />
+        <el-table-column prop="createTime" label="创建时间" min-width="200" />
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
             <el-button
@@ -158,7 +181,7 @@ const formTitle = computed(() => {
 const getCategoryList = async () => {
   try {
     const params = {
-      page: currentPage.value,
+      pageNum: currentPage.value,
       pageSize: pageSize.value,
       keyword: searchQuery.value
     }
