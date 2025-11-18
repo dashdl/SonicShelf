@@ -2,6 +2,7 @@ package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -28,4 +29,10 @@ public interface MusicMapper {
     List<MusicResponse> selectMusicsByAlbumId(Long id);
 
     List<MusicResponse> selectMusicsByIds(List<Long> ids);
+
+    @Select("SELECT COUNT(*) FROM musics WHERE artist_id = #{artistId}")
+    int countByArtistId(Long artistId);
+
+    @Delete("delete from musics where artist_id = #{id}")
+    void deleteByArtistId(Long id);
 }

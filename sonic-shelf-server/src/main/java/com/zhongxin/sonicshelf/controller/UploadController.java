@@ -3,11 +3,15 @@ package com.zhongxin.sonicshelf.controller;
 import cn.hutool.core.io.FileUtil;
 
 import com.zhongxin.sonicshelf.entity.Playlist;
+import com.zhongxin.sonicshelf.mapper.ArtistMapper;
 import com.zhongxin.sonicshelf.service.PlaylistService;
 import com.zhongxin.sonicshelf.service.UserService;
+import com.zhongxin.sonicshelf.util.JwtUtil;
 import com.zhongxin.sonicshelf.util.Result;
+import com.zhongxin.sonicshelf.util.TokenExtractor;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,10 +26,14 @@ public class UploadController {
     UserService userService;
     @Resource
     PlaylistService playlistService;
+    @Autowired
+    private ArtistMapper artistMapper;
+    @Autowired
+    JwtUtil jwtUtil;
 
     @PostMapping("/avatar")
     public Result uploadAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
-        String filePath = System.getProperty("user.dir") + "/files/uploads/avatars/";
+        String filePath = System.getProperty("user.dir") + "/files/uploads/userAvatars/";
 
         byte[] bytes = file.getBytes();
         // 使用时间戳前缀避免文件名冲突，直接使用原始文件名（包含中文）
@@ -36,22 +44,40 @@ public class UploadController {
         if (authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7);
         }
-        userService.updateUserAvatar("/uploads/avatars/" + fileName, token);
+        userService.updateUserAvatar("/uploads/userAvatars/" + fileName, token);
 
-        return Result.success("上传成功", "/uploads/avatars/" + fileName);
+        return Result.success("上传成功", "/uploads/userAvatars/" + fileName);
     }
 
     @PostMapping("/cover/{id}/")
-    public Result uploadCover(@RequestParam("file") MultipartFile file,@PathVariable Long id) throws IOException {
-        String filePath = System.getProperty("user.dir") + "/files/uploads/covers/";
+    public Result uploadCover(@RequestParam("file") MultipartFile file, @PathVariable Long id) throws IOException {
+        String filePath = System.getProperty("user.dir") + "/files/uploads/playlistCovers/";
 
         byte[] bytes = file.getBytes();
         // 使用时间戳前缀避免文件名冲突，直接使用原始文件名（包含中文）
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        playlistService.updatePlaylistCover("/uploads/playlistCovers/" + fileName, id);
         FileUtil.writeBytes(bytes, filePath + fileName);
-        playlistService.updatePlaylistCover("/uploads/covers/" + fileName,id);
 
-        return Result.success("上传成功", "/uploads/avatars/" + fileName);
+        return Result.success("上传成功", "/uploads/playlistCovers/" + fileName);
+    }
+
+    @PostMapping("/artistCover/{id}")
+    public Result uploadArtistCover(@RequestParam("file") MultipartFile file, @PathVariable Long id,HttpServletRequest request) throws IOException {
+        String token = TokenExtractor.extractToken(request);
+        if (!jwtUtil.isAdmin(token)) {
+            return Result.error("需要管理员权限");
+        }
+
+        String filePath = System.getProperty("user.dir") + "/files/cover/artistCover/";
+        byte[] bytes = file.getBytes();
+        // 使用时间戳前缀避免文件名冲突，直接使用原始文件名（包含中文）
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        FileUtil.writeBytes(bytes, filePath + fileName);
+
+        artistMapper.uploadArtistCover("/cover/artistCover/" + fileName, id);
+
+        return Result.success("上传成功", "/cover/artistCover/" + fileName);
     }
 
 //    @GetMapping("/download/{filName}")

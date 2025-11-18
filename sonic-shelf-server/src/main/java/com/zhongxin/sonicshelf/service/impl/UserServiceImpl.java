@@ -7,13 +7,16 @@ import com.zhongxin.sonicshelf.dto.response.*;
 import com.zhongxin.sonicshelf.entity.User;
 import com.zhongxin.sonicshelf.exception.AuthException;
 import com.zhongxin.sonicshelf.exception.CustomException;
+import com.zhongxin.sonicshelf.mapper.ArtistMapper;
 import com.zhongxin.sonicshelf.mapper.UserMapper;
+import com.zhongxin.sonicshelf.service.ArtistService;
 import com.zhongxin.sonicshelf.service.UserService;
 import com.zhongxin.sonicshelf.util.JwtUtil;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,6 +30,8 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     UserMapper userMapper;
+    @Resource
+    ArtistMapper artistMapper;
 
     @Autowired
     JwtUtil jwtUtil;
@@ -117,5 +122,51 @@ public class UserServiceImpl implements UserService {
     public PageInfo<UserManageResponse> findUsersAsPage(Integer pageNum, Integer pageSize, String keyword, Integer status) {
         PageHelper.startPage(pageNum, pageSize);
         return PageInfo.of(userMapper.selectUsersAsPage(keyword, status));
+    }
+
+    @Override
+    public UserManageResponse updateUser(RegisterRequest user) {
+        try {
+            userMapper.updateUser(user);
+            return new UserManageResponse(userMapper.selectById(user.getId()));
+        } catch (RuntimeException e) {
+            throw new CustomException("1004", "账号不存在");
+        }
+    }
+
+    @Override
+    public UserManageResponse addUser(RegisterRequest user) {
+        try {
+            userMapper.insertUser(user);
+        } catch (DuplicateKeyException e) {
+            throw new CustomException("1004", "账号已存在");
+        }
+
+        return new UserManageResponse(userMapper.findByUsername(user.getUsername()));
+    }
+
+    @Override
+    public UserManageResponse updateUserStatus(Long id, byte status) {
+
+        try {
+            userMapper.updateUserStatus(id, status);
+        } catch (DuplicateKeyException e) {
+            throw new CustomException("1004", "账号已存在");
+        }
+
+        return null;
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+
+//        try {
+//            artistMapper.deleteUser(id);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+
+        userMapper.deleteUser(id);
+
     }
 }

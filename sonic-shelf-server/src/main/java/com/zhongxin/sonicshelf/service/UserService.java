@@ -26,4 +26,12 @@ public interface UserService {
     UserProfileResponse findUserById(Long id);
 
     PageInfo<UserManageResponse> findUsersAsPage(Integer pageNum, Integer pageSize, String keyword, Integer status);
+
+    UserManageResponse updateUser(RegisterRequest user);
+
+    UserManageResponse addUser(RegisterRequest user);
+
+    UserManageResponse updateUserStatus(Long id, byte status);
+
+    void deleteUser(Long id);
 }

@@ -2,6 +2,7 @@ package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.response.AlbumInfoResponse;
 import com.zhongxin.sonicshelf.dto.response.AlbumResponse;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -19,4 +20,7 @@ public interface AlbumMapper {
 
 
     List<AlbumInfoResponse> selectAlbumByIds(List<Long> ids);
+
+    @Delete("delete from albums where artist_id = #{id}")
+    void deleteByArtistId(Long id);
 }

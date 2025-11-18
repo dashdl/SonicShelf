@@ -30,7 +30,7 @@ public class User implements UserDetails {
 
     // ========== 状态字段 ==========
     private Boolean emailVerified = false;
-    private Integer status = 1;
+    private byte status = 1;
 
     // ========== 统计字段 ==========
     private Integer followerCount = 0;

@@ -5,10 +5,12 @@ import lombok.Data;
 
 @Data
 public class RegisterRequest {
+    private Long id;
     private String username;
     private String password;
     private String email;
     private String nickname;
+    private byte status;
 
     public User toUser(){
         User user = new User();
@@ -26,6 +28,5 @@ public class RegisterRequest {
         this.password = user.getPassword();
         this.email = user.getEmail();
         this.nickname = user.getNickname();
-
     }
 }

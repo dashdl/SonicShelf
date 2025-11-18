@@ -1,5 +1,6 @@
 package com.zhongxin.sonicshelf.mapper;
 
+import com.zhongxin.sonicshelf.dto.request.RegisterRequest;
 import com.zhongxin.sonicshelf.dto.response.CollectorResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.dto.response.UserManageResponse;
@@ -38,4 +39,16 @@ public interface UserMapper {
     User selectById(Long id);
 
     List<UserManageResponse> selectUsersAsPage(String keyword, Integer status);
+
+    @Update("update users set username=#{user.username},email=#{user.email},nickname=#{user.nickname},status=#{user.status} where id=#{user.id}")
+    void updateUser(@Param("user") RegisterRequest user);
+
+    @Insert("insert into users (username,password,email,nickname) values (#{user.username},#{user.password},#{user.email},#{user.nickname})")
+    void insertUser(@Param("user") RegisterRequest user);
+
+    @Insert("update users set status=#{status} where id = #{id}")
+    void updateUserStatus(Long id, byte status);
+
+    @Delete("delete from users where id=#{id}")
+    void deleteUser(Long id);
 }

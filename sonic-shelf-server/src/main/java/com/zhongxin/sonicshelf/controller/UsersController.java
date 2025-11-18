@@ -2,6 +2,7 @@ package com.zhongxin.sonicshelf.controller;
 
 
 import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.dto.request.RegisterRequest;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.dto.response.UserManageResponse;
 import com.zhongxin.sonicshelf.dto.response.UserProfileResponse;
@@ -15,6 +16,7 @@ import com.zhongxin.sonicshelf.util.Result;
 import com.zhongxin.sonicshelf.util.TokenExtractor;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,8 +72,46 @@ public class UsersController {
         if (!jwtUtil.isAdmin(token)) {
             return Result.error("需要管理员权限");
         }
-        PageInfo<UserManageResponse> pageInfo = userService.findUsersAsPage(pageNum,pageSize,keyword,status);
+        PageInfo<UserManageResponse> pageInfo = userService.findUsersAsPage(pageNum, pageSize, keyword, status);
         return Result.success(pageInfo);
 
+    }
+
+    @PostMapping("/add")
+    public Result addUser(@RequestBody RegisterRequest user, HttpServletRequest request) {
+        String token = TokenExtractor.extractToken(request);
+        if (!jwtUtil.isAdmin(token)) {
+            return Result.error("需要管理员权限");
+        }
+        return Result.success(userService.addUser(user));
+    }
+
+    @PostMapping("/update")
+    public Result updateUser(@RequestBody RegisterRequest user, HttpServletRequest request) {
+        String token = TokenExtractor.extractToken(request);
+        if (!jwtUtil.isAdmin(token)) {
+            return Result.error("需要管理员权限");
+        }
+        return Result.success(userService.updateUser(user));
+    }
+
+    @PostMapping("/updateStatus")
+    public Result updateUser(@RequestParam Long id, @RequestParam byte status, HttpServletRequest request) {
+        String token = TokenExtractor.extractToken(request);
+        if (!jwtUtil.isAdmin(token)) {
+            return Result.error("需要管理员权限");
+        }
+        UserManageResponse user = userService.updateUserStatus(id, status);
+        return Result.success(user);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public Result deleteUser(@PathVariable Long id, HttpServletRequest request) {
+        String token = TokenExtractor.extractToken(request);
+        if (!jwtUtil.isAdmin(token)) {
+            return Result.error("需要管理员权限");
+        }
+        userService.deleteUser(id);
+        return Result.success("删除成功");
     }
 }

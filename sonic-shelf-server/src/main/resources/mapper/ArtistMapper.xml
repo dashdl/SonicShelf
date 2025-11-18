@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongxin.sonicshelf.mapper.ArtistMapper">
+
+    <select id="selectArtists" resultType="com.zhongxin.sonicshelf.dto.response.ArtistManageResponse">
+        select id, name, country,gender, description, cover_image, music_count, created_at
+        from artists
+        <where>
+            <if test="gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and name like concat('%', #{keyword}, '%')
+            </if>
+        </where>
+    </select>
+</mapper>
