@@ -3,7 +3,7 @@
   
   数据流说明：
   1. 页面加载时调用 getCategoryList() 获取分类列表
-  2. 搜索功能通过 handleSearch() 触发，支持按分类名称搜索
+  2. 搜索功能通过 handleSearch() 触发，支持按分类名称筛选
   3. 分页功能通过 handleCurrentChange() 和 handleSizeChange() 实现
   4. 表单提交通过 handleSubmit() 处理，支持添加和编辑分类
   5. 删除功能通过 handleDelete() 实现，带确认对话框

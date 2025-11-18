@@ -1,131 +1,3 @@
-<!--
-  歌手管理页面
-  
-  数据流说明：
-  1. 页面加载时调用 getSingerList() 获取歌手列表
-  2. 搜索功能通过 handleSearch() 触发，支持按歌手名称和性别筛选
-  3. 分页功能通过 handleCurrentChange() 和 handleSizeChange() 实现
-  4. 表单提交通过 handleSubmit() 处理，支持添加和编辑歌手
-  5. 删除功能通过 handleDelete() 实现，带确认对话框
-  
-  API替换说明：
-  1. 当前使用 mockService.singer 模拟数据
-  2. 替换为真实API时，请导入 src/api/singer.js 中的方法
-  3. 保持相同的返回格式：{ code: '200', data: {...} }
-  
-  后端API要求：
-  - GET /admin/singers - 获取歌手列表（支持分页、搜索）
-  - POST /admin/singers - 添加歌手
-  - PUT /admin/singers/{id} - 更新歌手
-  - DELETE /admin/singers/{id} - 删除歌手
-  
-  详细的请求/响应格式：
-  
-  1. 获取歌手列表 (getSingerList)
-     请求: GET /api/v1/artist/getAll?pageNum=1&pageSize=10&keyword=ed
-     响应: {
-       "code": "200",
-       "message": "请求成功",
-       "data": {
-         "total": 1,
-         "list": [
-           {
-             "id": 3,
-             "name": "Ed Sheeran",
-             "gender": 1,             // 0:组合, 1:男, 2:女
-             "country": "UK",
-             "description": "English singer-songwriter",
-             "coverImage": "/uploads/avatars/v2bb941bd1693eb6e012b9cacf695d57aeb.jpg",
-             "musicCount": 18,
-             "createdAt": "2025-10-22 17:01:05"
-           }
-         ],
-         "pageNum": 1,
-         "pageSize": 10,
-         "size": 1,
-         "startRow": 1,
-         "endRow": 1,
-         "pages": 1,
-         "prePage": 0,
-         "nextPage": 0,
-         "isFirstPage": true,
-         "isLastPage": true,
-         "hasPreviousPage": false,
-         "hasNextPage": false,
-         "navigatePages": 8,
-         "navigatepageNums": [1],
-         "navigateFirstPage": 1,
-         "navigateLastPage": 1
-       }
-     }
-  
-  2. 添加歌手 (handleSubmit - 添加)
-     请求: POST /api/v1/artist
-     请求体: {
-       "name": "新歌手",
-       "gender": 1,                    // 0:组合, 1:男, 2:女
-       "country": "中国",
-       "description": "歌手简介",
-       "coverImage": "/uploads/avatars/xxx.jpg"
-     }
-     响应: {
-       "code": "200",
-       "message": "请求成功",
-       "data": {
-         "id": 123,
-         "name": "新歌手",
-         "gender": 1,
-         "country": "中国",
-         "description": "歌手简介",
-         "coverImage": "/uploads/avatars/xxx.jpg",
-         "musicCount": 0,
-         "createdAt": "2024-01-20 15:30:00"
-       }
-     }
-  
-  3. 更新歌手 (handleSubmit - 编辑)
-     请求: PUT /api/v1/artist/123
-     请求体: {
-       "id": 123,
-       "name": "更新的歌手名",
-       "gender": 2,                    // 0:组合, 1:男, 2:女
-       "country": "中国香港",
-       "description": "更新后的简介",
-       "coverImage": "/uploads/avatars/new-avatar.jpg"
-     }
-     响应: {
-       "code": "200",
-       "message": "请求成功",
-       "data": {
-         "id": 123,
-         "name": "更新的歌手名",
-         "gender": 2,
-         "country": "中国香港",
-         "description": "更新后的简介",
-         "coverImage": "/uploads/avatars/new-avatar.jpg",
-         "musicCount": 150,
-         "createdAt": "2024-01-15 10:30:00"
-       }
-     }
-  
-  4. 删除歌手 (handleDelete)
-     请求: DELETE /api/v1/artist/123
-     响应: {
-       "code": "200",
-       "message": "请求成功"
-     }
-  
-  替换步骤：
-  1. 将 baseURL 改为实际后端地址
-  2. 修改请求路径从 /admin/singers 改为 /api/v1/artist
-  3. 根据实际响应结构调整字段映射 (avatarUrl -> coverImage, createTime -> createdAt)
-  4. 更新分页参数名从 page/pageSize 改为 pageNum/pageSize
-  5. 性别字段已改为数字格式 (0:组合, 1:男, 2:女)
-  6. 更新头像上传API路径为 /api/v1/artistCover/{id}/
-  7. coverImage相对路径需要拼接后端地址 (如: `http://localhost:8080${coverImage}`)
-  8. 根据后端要求调整请求头
--->
-
 <template>
   <div class="admin-management-container">
     <el-card shadow="hover" class="singer-management-card">
@@ -303,7 +175,7 @@
               </template>
               <template #tip>
                 <div class="el-upload__tip">
-                  支持上传JPG、PNG格式的图片，建议尺寸300x300
+                  请上传JPG、PNG格式的图片
                 </div>
               </template>
             </el-upload>
@@ -332,40 +204,16 @@ import mockService from '@/mock/mockService'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import request from "@/utils/request.js";
 
-// TODO: API替换指南
-// 1. 创建 src/api/singer.js 文件，导出以下方法：
-//    - getSingerList(params) - 获取歌手列表
-//    - addSinger(data) - 添加歌手  
-//    - updateSinger(data) - 更新歌手
-//    - deleteSinger(id) - 删除歌手
-// 2. 替换导入语句：
-//    import { getSingerList, addSinger, updateSinger, deleteSinger } from '@/api/singer'
-// 3. 替换方法调用：
-//    - mockService.singer.getList(params) → getSingerList(params)
-//    - mockService.singer.add(data) → addSinger(data)
-//    - mockService.singer.update(data) → updateSinger(data)  
-//    - mockService.singer.delete(id) → deleteSinger(id)
-
-// 歌手列表数据
-// 数据结构说明:
-// singerList: [{ id, name, gender, country, description, coverImage, musicCount, createdAt }]
 const singerList = ref([])
 const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(20)
 
-// 搜索和筛选
-// searchQuery: 歌手名称关键词
-// genderFilter: 性别筛选 (0/1/2)
 const searchQuery = ref('')
 const genderFilter = ref('')
 
-// 对话框
 const dialogVisible = ref(false)
 const singerFormRef = ref()
-// 歌手表单数据
-// 添加时: { name, gender, country, description, coverImage } (id为空)
-// 编辑时: { id, name, gender, country, description, coverImage }
 const singerForm = reactive({
   id: '',
   name: '',
@@ -375,13 +223,6 @@ const singerForm = reactive({
   coverImage: ''
 })
 
-// 表单验证规则
-// TODO: 后端数据验证要求
-// 歌手名称: 必填, 长度1-100字符
-// 性别: 必填, 可选值: 0(组合), 1(男), 2(女)
-// 国家/地区: 可选, 建议长度2-50字符
-// 歌手简介: 可选, 建议长度不超过500字符
-// 头像URL: 可选, 必须是有效的图片URL地址
 const singerRules = {
   name: [
     {required: true, message: '请输入歌手名称', trigger: 'blur'},
@@ -406,19 +247,6 @@ const formTitle = computed(() => {
   return singerForm.id ? '编辑歌手' : '添加歌手'
 })
 
-// 获取歌手列表
-// TODO: 替换为真实API - GET /api/v1/artist/getAll?pageNum=1&pageSize=10&keyword=xxx
-// 期望响应: { code: '200', message: '请求成功', data: { total: 1, list: [...] } }
-// list数组项结构: {
-//   id: 3,                    // 歌手ID
-//   name: 'Ed Sheeran',       // 歌手名称
-//   country: 'UK',            // 国家/地区
-//   gender: 1,                // 性别: 0(组合), 1(男), 2(女)
-//   description: 'English singer-songwriter', // 歌手简介
-//   coverImage: '/uploads/avatars/xxx.jpg', // 头像URL
-//   musicCount: 18,           // 歌曲数量
-//   createdAt: '2025-10-22 17:01:05'  // 创建时间
-// }
 const getSingerList = async () => {
   try {
     const params = {
@@ -481,9 +309,6 @@ const handleEdit = (row) => {
   dialogVisible.value = true
 }
 
-// 删除歌手
-// TODO: 替换为真实API - DELETE /admin/singers/{id}
-// 期望响应: { code: '200', message: '删除成功' }
 const handleDelete = (row) => {
   ElMessageBox.confirm('确定要删除该歌手吗？', '提示', {
     confirmButtonText: '确定',
@@ -505,16 +330,6 @@ const handleDelete = (row) => {
   })
 }
 
-// 提交表单
-// TODO: 替换为真实API
-// 添加歌手: POST /api/v1/artist
-// 请求体: { name, gender, country, description, coverImage }
-// 期望响应: { code: '200', data: { id, name, gender, country, description, coverImage, musicCount, createdAt } }
-//
-// 更新歌手: PUT /api/v1/artist/{id}  
-// 请求体: { id, name, gender, country, description }
-// 注意: 编辑时如果有新头像，先上传头像再更新歌手信息
-// 期望响应: { code: '200', data: { id, name, gender, country, description, coverImage, musicCount, createdAt } }
 const handleSubmit = async () => {
   if (!singerFormRef.value) return
   try {
@@ -612,10 +427,6 @@ const resetForm = () => {
   }
 }
 
-// 头像上传前处理
-// 支持的文件格式: JPG, PNG
-// 最大文件大小: 5MB
-// 建议图片尺寸: 300x300 像素
 const beforeAvatarUpload = (file) => {
   const isJPG = file.type === 'image/jpeg'
   const isPNG = file.type === 'image/png'
@@ -630,15 +441,6 @@ const beforeAvatarUpload = (file) => {
   return isJPG || isPNG && isLt5M
 }
 
-// 头像上传成功处理
-// 实际API: POST /api/v1/artistCover/{id}
-// 请求头: Content-Type: multipart/form-data  
-// 请求体: FormData 包含 file 文件
-// 期望响应: {
-//   "code": "200",
-//   "message": "上传成功",
-//   "data": "/cover/artistCover/文件名"
-// }
 const handleAvatarUpload = (response) => {
   if (response.code === '200') {
     singerForm.coverImage = response.data

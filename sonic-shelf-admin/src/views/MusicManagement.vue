@@ -14,10 +14,10 @@
   3. 保持相同的返回格式：{ code: '200', data: {...} }
   
   后端API要求：
-  - GET /admin/music - 获取音乐列表（支持分页、搜索）
-  - POST /admin/music - 添加音乐
-  - PUT /admin/music/{id} - 更新音乐
-  - DELETE /admin/music/{id} - 删除音乐
+  - GET /admin/musics - 获取音乐列表（支持分页、搜索）
+  - POST /admin/musics - 添加音乐
+  - PUT /admin/musics/{id} - 更新音乐
+  - DELETE /admin/musics/{id} - 删除音乐
 -->
 
 <template>

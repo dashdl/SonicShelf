@@ -3,7 +3,7 @@
   
   数据流说明：
   1. 页面加载时调用 getPlaylistList() 获取歌单列表
-  2. 搜索功能通过 handleSearch() 触发，支持按歌单名称、描述、分类、状态筛选
+  2. 搜索功能通过 handleSearch() 触发，支持按歌单名称和创建者筛选
   3. 分页功能通过 handleCurrentChange() 和 handleSizeChange() 实现
   4. 表单提交通过 handleSubmit() 处理，支持添加和编辑歌单
   5. 删除功能通过 handleDelete() 实现，带确认对话框
