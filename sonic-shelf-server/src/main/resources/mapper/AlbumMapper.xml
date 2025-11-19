@@ -34,4 +34,42 @@
             #{id}
         </foreach>
     </select>
+    <select id="selectAlbums" resultType="com.zhongxin.sonicshelf.dto.response.AlbumManageResponse">
+        select am.id,
+        am.title,
+        am.artist_id,
+        a.name as artist_name,
+        am.release_date,
+        am.description,
+        am.cover_image,
+        am.music_count,
+        am.created_at,
+        am.updated_at
+        from albums as am
+        join artists as a on am.artist_id = a.id
+        <where>
+            <if test="artistId != null">
+                a.id = #{artistId}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and am.title like concat('%', #{keyword}, '%')
+            </if>
+        </where>
+#         String keyword, Long artistId
+    </select>
+    <select id="selectAlbumManageResponseById" resultType="com.zhongxin.sonicshelf.dto.response.AlbumManageResponse">
+        select am.id,
+        am.title,
+        am.artist_id,
+        a.name as artist_name,
+        am.release_date,
+        am.description,
+        am.cover_image,
+        am.music_count,
+        am.created_at,
+        am.updated_at
+        from albums as am
+        join artists as a on am.artist_id = a.id
+        where am.id = #{id}
+    </select>
 </mapper>

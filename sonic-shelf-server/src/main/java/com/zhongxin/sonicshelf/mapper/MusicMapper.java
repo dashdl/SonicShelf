@@ -1,6 +1,7 @@
 package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
+import com.zhongxin.sonicshelf.dto.response.MusicManageResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
@@ -35,4 +36,6 @@ public interface MusicMapper {
 
     @Delete("delete from musics where artist_id = #{id}")
     void deleteByArtistId(Long id);
+
+    List<MusicManageResponse> selectMusics(String keyword, Long artistId, Long albumId);
 }

@@ -1,6 +1,7 @@
 // src/store/userStore.js
 import {defineStore} from 'pinia'
 import request from "@/utils/request.js";
+import router from "@/router/index.js";
 
 export const useUserStore = defineStore('user', {
     // 状态
@@ -33,6 +34,7 @@ export const useUserStore = defineStore('user', {
             this.isLoggedIn = false
             this.token = null
             localStorage.removeItem('token')
+            router.push('/home')
         },
 
         // 从 localStorage 恢复用户状态

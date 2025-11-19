@@ -1,12 +1,13 @@
 package com.zhongxin.sonicshelf.controller;
 
+import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.annotation.AdminAuth;
+import com.zhongxin.sonicshelf.dto.response.AlbumManageResponse;
+import com.zhongxin.sonicshelf.dto.response.MusicManageResponse;
 import com.zhongxin.sonicshelf.service.MusicService;
 import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/musics")
@@ -22,6 +23,18 @@ public class MusicsController {
 
     @GetMapping("/lyrics/{id}")
     public Result findLyrics(@PathVariable Long id) {
-        return Result.success("获取成功",musicService.findLyricsById(id));
+        return Result.success("获取成功", musicService.findLyricsById(id));
+    }
+
+    @AdminAuth
+    @GetMapping("/getAll")
+    public Result getAllAlbum(@RequestParam Integer pageNum,
+                              @RequestParam Integer pageSize,
+                              @RequestParam(required = false) String keyword,
+                              @RequestParam(required = false) Long artistId,
+                              @RequestParam(required = false) Long albumId) {
+
+        PageInfo<MusicManageResponse> pageInfo = musicService.findAlbumsAsPage(pageNum, pageSize, keyword, artistId, albumId);
+        return Result.success(pageInfo);
     }
 }

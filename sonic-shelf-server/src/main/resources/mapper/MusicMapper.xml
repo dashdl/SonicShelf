@@ -115,4 +115,33 @@
             #{id}
         </foreach>
     </select>
+    <select id="selectMusics" resultType="com.zhongxin.sonicshelf.dto.response.MusicManageResponse">
+        SELECT m.id,
+        m.title,
+        a.id as artist_id,
+        a.name as artist_name,
+        am.id as album_id,
+        am.title as album_title,
+        m.duration,
+        m.file_url,
+        m.cover_image,
+        m.play_count,
+        a.created_at,
+        a.updated_at
+        FROM musics m
+        INNER JOIN artists a ON m.artist_id = a.id
+        INNER JOIN albums am On am.id = m.album_id
+        <where>
+            <if test="artistId != null">
+                a.id = #{artistId}
+            </if>
+            <if test="albumId != null">
+                and am.id = #{albumId}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and (m.title like concat('%', #{keyword}, '%')
+                or a.name like concat('%', #{keyword}, '%') )
+            </if>
+        </where>
+    </select>
 </mapper>

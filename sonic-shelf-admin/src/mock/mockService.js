@@ -246,7 +246,7 @@ const mockService = {
       
       // 搜索过滤
       if (params.keyword) {
-        filteredMusic = filterByKeyword(filteredMusic, params.keyword, ['name', 'singerName', 'albumName']);
+        filteredMusic = filterByKeyword(filteredMusic, params.keyword, ['title', 'artistName', 'albumTitle']);
       }
       
       // 专辑过滤
@@ -255,8 +255,8 @@ const mockService = {
       }
       
       // 歌手过滤
-      if (params.singerId) {
-        filteredMusic = filteredMusic.filter(item => item.singerId === parseInt(params.singerId));
+      if (params.artistId) {
+        filteredMusic = filteredMusic.filter(item => item.artistId === parseInt(params.artistId));
       }
       
       // 分页
@@ -276,16 +276,16 @@ const mockService = {
     // 添加音乐
     async add(music) {
       await delay(300);
-      const singer = mockSingers.find(s => s.id === music.singerId);
+      const singer = mockSingers.find(s => s.id === music.artistId);
       const album = mockAlbums.find(a => a.id === music.albumId);
       
       const newMusic = {
         ...music,
         id: mockMusic.length + 1,
-        singerName: singer?.name || '',
-        albumName: album?.name || '',
+        artistName: singer?.name || '',
+        albumTitle: album?.name || '',
         playCount: 0,
-        createTime: new Date().toISOString().replace('T', ' ').substring(0, 19)
+        createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
       };
       
       mockMusic.push(newMusic);
@@ -300,14 +300,14 @@ const mockService = {
       await delay(300);
       const index = mockMusic.findIndex(m => m.id === music.id);
       if (index !== -1) {
-        const singer = mockSingers.find(s => s.id === music.singerId);
+        const singer = mockSingers.find(s => s.id === music.artistId);
         const album = mockAlbums.find(a => a.id === music.albumId);
         
         mockMusic[index] = {
           ...mockMusic[index],
           ...music,
-          singerName: singer?.name || mockMusic[index].singerName,
-          albumName: album?.name || mockMusic[index].albumName
+          artistName: singer?.name || mockMusic[index].artistName,
+          albumTitle: album?.name || mockMusic[index].albumTitle
         };
         
         return {

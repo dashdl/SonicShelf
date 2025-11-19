@@ -12,7 +12,7 @@
     <div class="right-content">
       <img id="avatar" @click="jumpToProfile" :src="avatarUrl"
            style="height: 30px;border-radius: 15px; margin-right: 5px;cursor: pointer;" alt="">
-      <span>{{ userStore.getNickname }}</span>
+      <span @click="jumpToProfile" style="cursor: pointer">{{ userStore.getNickname }}</span>
       <img src="" alt="">
       <img @click="data.userPanelVisible=!data.userPanelVisible" src="/icons/status/down.svg"
            style="width: 13px;cursor: pointer" alt="">
@@ -25,7 +25,7 @@
     <div v-if="data.userPanelVisible" class="panel-modal">
       <div class="modal-overlay" @click="data.userPanelVisible=!data.userPanelVisible"></div>
       <div class="modal-content">
-        <UserPanel @closePanel="data.userPanelVisible=false"/>
+        <UserPanel @closePanel="data.userPanelVisible=false" @login="formSwitch"/>
       </div>
     </div>
   </div>
@@ -73,11 +73,16 @@ const handleClickOutside = (event) => {
 };
 
 const jumpToProfile = () => {
-  router.push({
-    name: 'Profile',
-    // state: {userId: userStore.getUserId}
-    params: {userId: userStore.getUserId}
-  })
+  data.userPanelVisible=false
+  if (userStore.isLoggedIn) {
+    router.push({
+      name: 'Profile',
+      // state: {userId: userStore.getUserId}
+      params: {userId: userStore.getUserId}
+    })
+  } else {
+    formSwitch()
+  }
 }
 
 onMounted(() => {

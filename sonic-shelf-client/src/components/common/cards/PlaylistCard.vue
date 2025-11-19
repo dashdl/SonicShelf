@@ -38,7 +38,7 @@ function getDominantColor(image) {
       if (a < 200) continue
 
       const colorKey = `${Math.round(r / 10) * 10},${Math.round(g / 10) * 10},${Math.round(b / 10) * 10}`
-      
+
       if (!colorGroups[colorKey]) {
         colorGroups[colorKey] = {
           count: 0,
@@ -47,7 +47,7 @@ function getDominantColor(image) {
           bSum: 0
         }
       }
-      
+
       colorGroups[colorKey].count++
       colorGroups[colorKey].rSum += r
       colorGroups[colorKey].gSum += g
@@ -58,7 +58,7 @@ function getDominantColor(image) {
         const avgR = Math.round(colorGroups[colorKey].rSum / colorGroups[colorKey].count)
         const avgG = Math.round(colorGroups[colorKey].gSum / colorGroups[colorKey].count)
         const avgB = Math.round(colorGroups[colorKey].bSum / colorGroups[colorKey].count)
-        
+
         dominantColor = `#${avgR.toString(16).padStart(2, '0')}${avgG.toString(16).padStart(2, '0')}${avgB.toString(16).padStart(2, '0')}`
       }
     }

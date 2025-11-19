@@ -1,7 +1,10 @@
 package com.zhongxin.sonicshelf.service.impl;
 
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.dto.response.AlbumManageResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
+import com.zhongxin.sonicshelf.dto.response.MusicManageResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import com.zhongxin.sonicshelf.entity.Favorite;
 import com.zhongxin.sonicshelf.exception.CustomException;
@@ -96,6 +99,15 @@ public class MusicServiceImpl implements MusicService {
         for (MusicResponse music : musicResponseList) music.setFavorite(isFavorite(music.getId()));
 
         return musicResponseList;
+    }
+
+    @Override
+    public PageInfo<MusicManageResponse> findAlbumsAsPage(Integer pageNum, Integer pageSize, String keyword, Long artistId, Long albumId) {
+
+        PageHelper.startPage(pageNum, pageSize);
+
+
+        return PageInfo.of(musicMapper.selectMusics(keyword, artistId, albumId));
     }
 
     private boolean isFavorite(Long musicId) {

@@ -4,11 +4,21 @@ import router from "@/router/index.js";
 
 const userStore = useUserStore();
 
-const emit = defineEmits(['closePanel'])
+const emit = defineEmits(['closePanel', 'login'])
 
 const handleClick = (path) => {
   emit('closePanel');
   router.push(path);
+}
+
+const login = () => {
+  emit('login')
+  emit('closePanel')
+}
+
+const logout=()=>{
+  userStore.logout()
+  emit('closePanel')
 }
 
 </script>
@@ -62,7 +72,7 @@ const handleClick = (path) => {
           登录
         </span>
       </div>
-      <div v-if="userStore.isLoggedIn" class="panel-card">
+      <div v-if="userStore.isLoggedIn" @click="logout" class="panel-card">
         <img src="/icons/sidebar/home.png" style="width: 25px;margin-right: 10px" alt="">
         <span style="margin-top: 3px;">
           退出登录

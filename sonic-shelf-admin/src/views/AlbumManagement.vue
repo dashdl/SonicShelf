@@ -31,14 +31,14 @@
            list: Array<{       // 专辑列表
              id: String,       // 专辑ID
              name: String,     // 专辑名称
-             singerId: String, // 歌手ID
-             singerName: String, // 歌手名称
+             artistId: String, // 歌手ID
+             artistName: String, // 歌手名称
              releaseDate: String, // 发行日期（YYYY-MM-DD）
              description: String, // 专辑简介
-             coverUrl: String, // 封面图片URL
+             coverImage: String, // 封面图片URL
              musicCount: Number, // 歌曲数量
-             createTime: String, // 创建时间（YYYY-MM-DD HH:mm:ss）
-             updateTime: String  // 更新时间（YYYY-MM-DD HH:mm:ss）
+             createdAt: String, // 创建时间（YYYY-MM-DD HH:mm:ss）
+             updatedAt: String  // 更新时间（YYYY-MM-DD HH:mm:ss）
            }>,
            total: Number       // 总记录数
          }
@@ -67,10 +67,10 @@
      - 请求体：
        { 
          name: String,         // 专辑名称
-         singerId: String,     // 歌手ID
+         artistId: String,     // 歌手ID
          releaseDate: String,  // 发行日期（YYYY-MM-DD）
          description: String,  // 专辑简介
-         coverUrl: String      // 封面图片URL
+         coverImage: String      // 封面图片URL
        }
      - 返回格式：
        { 
@@ -78,14 +78,14 @@
          data: {               // 新增的专辑信息
            id: String,         // 专辑ID
            name: String,       // 专辑名称
-           singerId: String,   // 歌手ID
-           singerName: String, // 歌手名称
+           artistId: String,   // 歌手ID
+           artistName: String, // 歌手名称
            releaseDate: String, // 发行日期
            description: String, // 专辑简介
-           coverUrl: String,   // 封面图片URL
-           musicCount: Number, // 歌曲数量（初始为0）
-           createTime: String, // 创建时间
-           updateTime: String  // 更新时间
+           coverImage: String,   // 封面图片URL
+           musicCount: Number, // 歌曲数量
+           createdAt: String, // 创建时间
+           updatedAt: String  // 更新时间
          }
        }
   
@@ -95,10 +95,10 @@
        { 
          id: String,           // 专辑ID
          name: String,         // 专辑名称
-         singerId: String,     // 歌手ID
+         artistId: String,     // 歌手ID
          releaseDate: String,  // 发行日期
          description: String,  // 专辑简介
-         coverUrl: String      // 封面图片URL
+         coverImage: String      // 封面图片URL
        }
      - 返回格式：
        { 
@@ -106,14 +106,14 @@
          data: {               // 更新后的专辑信息
            id: String,         // 专辑ID
            name: String,       // 专辑名称
-           singerId: String,   // 歌手ID
-           singerName: String, // 歌手名称
+           artistId: String,   // 歌手ID
+           artistName: String, // 歌手名称
            releaseDate: String, // 发行日期
            description: String, // 专辑简介
-           coverUrl: String,   // 封面图片URL
+           coverImage: String,   // 封面图片URL
            musicCount: Number, // 歌曲数量
-           createTime: String, // 创建时间
-           updateTime: String  // 更新时间
+           createdAt: String, // 创建时间
+           updatedAt: String  // 更新时间
          }
        }
   
@@ -166,17 +166,17 @@
           @keyup.enter="handleSearch"
         />
         <el-select
-          v-model="singerFilter"
+          v-model="artistFilter"
           placeholder="筛选歌手"
           clearable
           filterable
           class="filter-select"
         >
           <el-option
-            v-for="singer in singers"
-            :key="singer.id"
-            :label="singer.name"
-            :value="singer.id"
+            v-for="artist in artists"
+            :key="artist.id"
+            :label="artist.name"
+            :value="artist.id"
           />
         </el-select>
         <el-button type="primary" @click="handleSearch">
@@ -199,23 +199,23 @@
       >
         <el-table-column type="selection" width="55" fixed="left" />
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="name" label="专辑名称" min-width="200">
+        <el-table-column prop="title" label="专辑名称" min-width="200">
           <template #default="scope">
             <div class="album-name">
               <el-image
-                v-if="scope.row.coverUrl"
-                :src="scope.row.coverUrl"
+                v-if="scope.row.coverImage"
+                :src="`http://localhost:8080${scope.row.coverImage}`"
                 :fit="'cover'"
                 class="album-cover"
               />
-              <span>{{ scope.row.name }}</span>
+              <span>{{ scope.row.title }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="singerName" label="歌手" min-width="150" />
+        <el-table-column prop="artistName" label="歌手" min-width="150" />
         <el-table-column prop="releaseDate" label="发行日期" min-width="150" />
         <el-table-column prop="musicCount" label="歌曲数量" min-width="120" />
-        <el-table-column prop="createTime" label="添加时间" min-width="200" />
+        <el-table-column prop="createdAt" label="添加时间" min-width="200" />
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
             <el-button
@@ -263,16 +263,16 @@
           :rules="albumRules"
           label-position="top"
         >
-          <el-form-item label="专辑名称" prop="name">
-            <el-input v-model="albumForm.name" placeholder="请输入专辑名称" />
-          </el-form-item>
-          <el-form-item label="歌手" prop="singerId">
-            <el-select v-model="albumForm.singerId" placeholder="请选择歌手" filterable clearable style="width: 100%;">
+          <el-form-item label="专辑名称" prop="title">
+          <el-input v-model="albumForm.title" placeholder="请输入专辑名称" />
+        </el-form-item>
+          <el-form-item label="歌手" prop="artistId">
+            <el-select v-model="albumForm.artistId" placeholder="请选择歌手" filterable clearable style="width: 100%;">
               <el-option
-                v-for="singer in singers"
-                :key="singer.id"
-                :label="singer.name"
-                :value="singer.id"
+                v-for="artist in artists"
+                :key="artist.id"
+                :label="artist.name"
+                :value="artist.id"
               />
             </el-select>
           </el-form-item>
@@ -292,12 +292,12 @@
               placeholder="请输入专辑简介"
             />
           </el-form-item>
-          <el-form-item label="封面图片" prop="coverUrl">
+          <el-form-item label="封面图片" prop="coverImage">
             <el-upload
               class="upload-demo"
               action=""
-              :on-success="handleCoverUpload"
               :before-upload="beforeCoverUpload"
+              :on-change="handleCoverChange"
               :auto-upload="false"
               ref="coverUploadRef"
             >
@@ -314,8 +314,8 @@
               </template>
             </el-upload>
             <el-image
-              v-if="albumForm.coverUrl"
-              :src="albumForm.coverUrl"
+              v-if="albumForm.coverImage"
+              :src="`http://localhost:8080${albumForm.coverImage}`"
               :fit="'cover'"
               style="width: 100px; height: 100px; margin-top: 10px"
             />
@@ -346,30 +346,30 @@ const pageSize = ref(20)
 
 // 搜索和筛选
 const searchQuery = ref('')
-const singerFilter = ref('')
+const artistFilter = ref('')
 
 // 下拉选择数据
-const singers = ref([])
+const artists = ref([])
 
 // 对话框
 const dialogVisible = ref(false)
 const albumFormRef = ref()
 const albumForm = reactive({
   id: '',
-  name: '',
-  singerId: '',
+  title: '',
+  artistId: '',
   releaseDate: '',
   description: '',
-  coverUrl: ''
+  coverImage: ''
 })
 
 // 表单验证规则
 const albumRules = {
-  name: [
+  title: [
     { required: true, message: '请输入专辑名称', trigger: 'blur' },
     { min: 1, max: 100, message: '专辑名称长度在 1 到 100 个字符', trigger: 'blur' }
   ],
-  singerId: [
+  artistId: [
     { required: true, message: '请选择歌手', trigger: 'change' }
   ],
   releaseDate: [
@@ -379,6 +379,9 @@ const albumRules = {
 
 // 上传组件引用
 const coverUploadRef = ref()
+
+// 待上传的封面文件
+const pendingCoverFile = ref(null)
 
 // 选中的专辑
 const selectedAlbums = ref([])
@@ -390,28 +393,28 @@ const formTitle = computed(() => {
 
 // 获取专辑列表
 // API: GET /admin/albums
-// 请求参数: { pageNum, pageSize, keyword, singerId }
+// 请求参数: { pageNum, pageSize, keyword, artistId }
 // 返回格式: { code: '200', data: { list: Array<Album>, total: Number } }
 // Album字段详细说明:
 // id: String - 专辑唯一标识符
 // name: String - 专辑名称
-// singerId: String - 歌手ID
-// singerName: String - 歌手名称
+// artistId: String - 歌手ID
+// artistName: String - 歌手名称
 // releaseDate: String - 发行日期 (YYYY-MM-DD)
 // description: String - 专辑简介
-// coverUrl: String - 封面图片URL
+// coverImage: String - 封面图片URL
 // musicCount: Number - 歌曲数量
-// createTime: String - 创建时间 (YYYY-MM-DD HH:mm:ss)
-// updateTime: String - 更新时间 (YYYY-MM-DD HH:mm:ss)
+// createdAt: String - 创建时间 (YYYY-MM-DD HH:mm:ss)
+// updatedAt: String - 更新时间 (YYYY-MM-DD HH:mm:ss)
 const getAlbumList = async () => {
   try {
     const params = {
       pageNum: currentPage.value,     // 当前页码
       pageSize: pageSize.value,       // 每页条数
       keyword: searchQuery.value,     // 搜索关键词（专辑名称）
-      singerId: singerFilter.value    // 歌手ID筛选
+      artistId: artistFilter.value    // 歌手ID筛选
     }
-    const res = await mockService.album.getList(params)
+    const res = await request.get('album/getAll', {params})
     if (res.code === '200') {
       albumList.value = res.data.list  // 专辑列表数据
       total.value = res.data.total     // 总记录数
@@ -423,10 +426,10 @@ const getAlbumList = async () => {
 }
 
 // 获取歌手列表
-// API: GET /admin/singers
+// API: GET /admin/artists
 // 请求参数: { pageSize } - 设置较大值以获取所有歌手用于下拉选择
-// 返回格式: { code: '200', data: { list: Array<Singer>, total: Number } }
-const getSingers = async () => {
+// 返回格式: { code: '200', data: { list: Array<Artist>, total: Number } }
+const getArtists = async () => {
   try {
     const res = await request.get('artist/getAll',{
       params: {
@@ -435,7 +438,7 @@ const getSingers = async () => {
       }
     })  // 每页1000条，确保获取所有歌手
     if (res.code === '200') {
-      singers.value = res.data.list  // 歌手列表数据，用于下拉选择
+      artists.value = res.data.list  // 歌手列表数据，用于下拉选择
     }
   } catch (error) {
     console.error('获取歌手列表失败:', error)
@@ -451,7 +454,7 @@ const handleSearch = () => {
 // 重置
 const handleReset = () => {
   searchQuery.value = ''
-  singerFilter.value = ''
+  artistFilter.value = ''
   currentPage.value = 1
   getAlbumList()
 }
@@ -481,7 +484,14 @@ const handleAdd = () => {
 
 // 编辑专辑
 const handleEdit = (row) => {
-  Object.assign(albumForm, row)
+  Object.assign(albumForm, {
+    id: row.id,
+    title: row.title,
+    artistId: row.artistId,
+    description: row.description,
+    releaseDate: row.releaseDate,
+    coverImage: row.coverImage
+  })
   dialogVisible.value = true
 }
 
@@ -513,34 +523,91 @@ const handleDelete = (row) => {
 // 提交表单（添加/编辑专辑）
 // 添加API: POST /admin/albums
 // 编辑API: PUT /admin/albums/{id}
-// 请求体: { id, name, singerId, releaseDate, description, coverUrl }
+// 请求体: { id, name, artistId, releaseDate, description }
 // 返回格式: { code: '200', data: Album }
 // Album字段详细说明:
 // id: String - 专辑唯一标识符
 // name: String - 专辑名称
-// singerId: String - 歌手ID
-// singerName: String - 歌手名称
+// artistId: String - 歌手ID
+// artistName: String - 歌手名称
 // releaseDate: String - 发行日期 (YYYY-MM-DD)
 // description: String - 专辑简介
-// coverUrl: String - 封面图片URL
+// coverImage: String - 封面图片URL
 // musicCount: Number - 歌曲数量
-// createTime: String - 创建时间 (YYYY-MM-DD HH:mm:ss)
-// updateTime: String - 更新时间 (YYYY-MM-DD HH:mm:ss)
+// createdAt: String - 创建时间 (YYYY-MM-DD HH:mm:ss)
+// updatedAt: String - 更新时间 (YYYY-MM-DD HH:mm:ss)
 const handleSubmit = async () => {
   if (!albumFormRef.value) return
   try {
     await albumFormRef.value.validate()  // 表单验证
+    
     let res
+    let newAlbumId = null
+
     if (albumForm.id) {
-      // 编辑专辑
-      res = await mockService.album.update(albumForm)  // 传入完整专辑信息更新
+      // 编辑模式
+      // 如果是编辑模式且有待上传的封面文件，先上传封面
+      if (pendingCoverFile.value) {
+        const formData = new FormData()
+        formData.append('file', pendingCoverFile.value)
+
+        const uploadRes = await request.post(`upload/albumCover/${albumForm.id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+
+        if (uploadRes.code === '200') {
+          // 上传成功后更新专辑表单中的封面路径
+          albumForm.coverImage = uploadRes.data
+          ElMessage.success('封面上传成功')
+        } else {
+          ElMessage.error('封面上传失败')
+          return // 封面上传失败，不继续更新专辑信息
+        }
+      }
+
+      const {coverImage, ...editData} = albumForm
+      res = await request.put('album/update',editData)
     } else {
-      // 添加专辑
-      res = await mockService.album.add(albumForm)     // 传入专辑信息添加新专辑
+      // 添加模式 - 先创建专辑
+      const {coverImage, ...editData} = albumForm
+      res = await request.post('album/add',editData)
+      
+      if (res.code === '200' && res.data && res.data.id) {
+        newAlbumId = res.data.id
+        albumForm.id = newAlbumId
+      }
     }
+
     if (res.code === '200') {
+      // 如果是添加模式且有待上传封面，上传封面
+      if (newAlbumId && pendingCoverFile.value) {
+        try {
+          const formData = new FormData()
+          formData.append('file', pendingCoverFile.value)
+
+          const uploadRes = await request.post(`upload/albumCover/${newAlbumId}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+
+          if (uploadRes.code === '200') {
+            ElMessage.success('封面上传成功')
+          } else {
+            ElMessage.warning('专辑创建成功，但封面上传失败')
+          }
+        } catch (uploadError) {
+          console.error('封面上传失败:', uploadError)
+          ElMessage.warning('专辑创建成功，但封面上传失败')
+        }
+      }
+
       ElMessage.success(albumForm.id ? '编辑成功' : '添加成功')
       dialogVisible.value = false  // 关闭对话框
+      // 清空待上传文件
+      pendingCoverFile.value = null
       getAlbumList()  // 重新获取专辑列表
     }
   } catch (error) {
@@ -553,15 +620,17 @@ const handleSubmit = async () => {
 const resetForm = () => {
   Object.assign(albumForm, {
     id: '',
-    name: '',
-    singerId: '',
+    title: '',
+    artistId: '',
     releaseDate: '',
     description: '',
-    coverUrl: ''
+    coverImage: ''
   })
   if (albumFormRef.value) {
     albumFormRef.value.resetFields()
   }
+  coverUploadRef.value?.clearFiles()
+  pendingCoverFile.value = null
 }
 
 // 封面上传前处理
@@ -572,11 +641,22 @@ const beforeCoverUpload = (file) => {
   
   if (!isJPG && !isPNG) {
     ElMessage.error('只能上传JPG或PNG格式的图片')
+    return false
   }
   if (!isLt5M) {
     ElMessage.error('图片大小不能超过5MB')
+    return false
   }
-  return isJPG || isPNG && isLt5M
+  return true
+}
+
+// 处理封面文件变化
+const handleCoverChange = (file, fileList) => {
+  if (fileList.length > 0) {
+    pendingCoverFile.value = fileList[0].raw
+  } else {
+    pendingCoverFile.value = null
+  }
 }
 
 // 封面上传成功处理
@@ -585,14 +665,14 @@ const beforeCoverUpload = (file) => {
 // 返回格式: { code: '200', data: { url: String } }
 const handleCoverUpload = (response) => {
   if (response.code === '200') {
-    albumForm.coverUrl = response.data.url  // 保存上传后的图片URL
+    albumForm.coverImage = response.data.url  // 保存上传后的图片URL
     ElMessage.success('封面上传成功')
   }
 }
 
 onMounted(() => {
   getAlbumList()
-  getSingers()
+  getArtists()
 })
 </script>
 

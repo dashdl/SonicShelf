@@ -175,7 +175,7 @@
  *         audioUrl: '/files/songs/七里香.mp3',  // 音频文件路径
  *         coverUrl: '/files/cover/七里香.jpg',  // 封面图片路径
  *         singerId: 1,                // 歌手ID
- *         singerName: '周杰伦',       // 歌手名
+ *         artistName: '周杰伦',       // 歌手名
  *         albumId: 1,                 // 专辑ID
  *         albumName: '七里香',         // 专辑名
  *         status: '1',                // 状态
@@ -210,7 +210,7 @@
  *     audioUrl: '/files/songs/新歌.mp3',
  *     coverUrl: '/files/cover/新歌.jpg',
  *     singerId: 1,
- *     singerName: '周杰伦',
+ *     artistName: '周杰伦',
  *     albumId: 1,
  *     albumName: '新专辑',
  *     status: '1',
@@ -237,7 +237,7 @@
  *         description: '周杰伦专辑', // 描述
  *         coverUrl: '/files/cover/七里香.jpg',  // 封面路径
  *         singerId: 1,                // 歌手ID
- *         singerName: '周杰伦',       // 歌手名
+ *         artistName: '周杰伦',       // 歌手名
  *         releaseDate: '2004-08-03',   // 发行日期
  *         songCount: 10,               // 歌曲数量
  *         status: '1',                 // 状态

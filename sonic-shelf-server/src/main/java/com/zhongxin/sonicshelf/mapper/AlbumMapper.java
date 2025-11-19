@@ -1,10 +1,10 @@
 package com.zhongxin.sonicshelf.mapper;
 
+import com.zhongxin.sonicshelf.dto.request.AlbumManageRequest;
 import com.zhongxin.sonicshelf.dto.response.AlbumInfoResponse;
+import com.zhongxin.sonicshelf.dto.response.AlbumManageResponse;
 import com.zhongxin.sonicshelf.dto.response.AlbumResponse;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -23,4 +23,18 @@ public interface AlbumMapper {
 
     @Delete("delete from albums where artist_id = #{id}")
     void deleteByArtistId(Long id);
+
+    List<AlbumManageResponse> selectAlbums(String keyword, Long artistId);
+
+    @Update("update albums set title = #{album.title}, albums.artist_id=#{album.artistId},release_date = #{album.releaseDate},description = #{album.description} where id = #{album.id}")
+    void updateAlbum(@Param("album") AlbumManageRequest album);
+
+    AlbumManageResponse selectAlbumManageResponseById(Long id);
+
+    @Insert("insert into albums (title, artist_id, description, release_date) values (#{album.title},#{album.artistId},#{album.description},#{album.releaseDate})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void insertAlbum(@Param("album") AlbumManageRequest album);
+
+    @Update("update albums set cover_image = #{coverImage} where id = #{id}")
+    void uploadArtistCover(String coverImage, Long id);
 }

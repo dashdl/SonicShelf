@@ -13,11 +13,174 @@
   2. 替换为真实API时，请导入 src/api/music.js 中的方法
   3. 保持相同的返回格式：{ code: '200', data: {...} }
   
-  后端API要求：
-  - GET /admin/musics - 获取音乐列表（支持分页、搜索）
-  - POST /admin/musics - 添加音乐
-  - PUT /admin/musics/{id} - 更新音乐
-  - DELETE /admin/musics/{id} - 删除音乐
+  后端API详细文档：
+  
+  1. 获取音乐列表
+     - URL: GET /admin/musics
+     - 请求参数（查询参数）：
+       { 
+         pageNum: Number,      // 当前页码，从1开始
+         pageSize: Number,     // 每页条数
+         keyword: String,      // 搜索关键词（音乐名称或歌手名称）
+         albumId: String,      // 专辑ID（筛选条件）
+         artistId: String      // 歌手ID（筛选条件）
+       }
+     - 返回格式：
+       { 
+         code: '200',          // 状态码
+         data: { 
+           list: Array<{       // 音乐列表
+             id: String,       // 音乐ID
+             title: String,       // 音乐标题
+             artistId: String, // 歌手ID
+             artistName: String, // 歌手名称
+             albumId: String,  // 专辑ID
+             albumTitle: String, // 专辑标题
+             duration: Number, // 时长（秒）
+             fileUrl: String,  // 音乐文件URL
+             coverImage: String, // 封面图片URL
+             playCount: Number, // 播放次数
+             createdAt: String, // 创建时间（YYYY-MM-DD HH:mm:ss）
+             updateAt: String  // 更新时间（YYYY-MM-DD HH:mm:ss）
+           }>,
+           total: Number       // 总记录数
+         }
+       }
+  
+  2. 获取专辑列表（下拉选择）
+     - URL: GET /admin/albums
+     - 请求参数（查询参数）：
+       { 
+         pageSize: Number      // 每页条数（设置较大值获取所有专辑）
+       }
+     - 返回格式：
+       { 
+         code: '200',          // 状态码
+         data: { 
+           list: Array<{       // 专辑列表
+             id: String,       // 专辑ID
+             name: String      // 专辑名称
+           }>,
+           total: Number       // 总记录数
+         }
+       }
+  
+  3. 获取歌手列表（下拉选择）
+     - URL: GET /admin/singers
+     - 请求参数（查询参数）：
+       { 
+         pageSize: Number      // 每页条数（设置较大值获取所有歌手）
+       }
+     - 返回格式：
+       { 
+         code: '200',          // 状态码
+         data: { 
+           list: Array<{       // 歌手列表
+             id: String,       // 歌手ID
+             name: String      // 歌手名称
+           }>,
+           total: Number       // 总记录数
+         }
+       }
+  
+  4. 添加音乐
+     - URL: POST /admin/musics
+     - 请求体：
+       { 
+         title: String,       // 音乐标题
+         artistId: String,     // 歌手ID
+         albumId: String,      // 专辑ID
+         duration: Number,     // 时长（秒）
+         fileUrl: String,      // 音乐文件URL
+         coverImage: String    // 封面图片URL
+       }
+     - 返回格式：
+       { 
+         code: '200',          // 状态码
+         data: {               // 新增的音乐信息
+           id: String,         // 音乐ID
+           title: String,       // 音乐标题
+           artistId: String, // 歌手ID
+           artistName: String, // 歌手名称
+             albumId: String,  // 专辑ID
+             albumTitle: String, // 专辑标题
+             duration: Number, // 时长（秒）
+             fileUrl: String,  // 音乐文件URL
+             coverImage: String, // 封面图片URL
+             playCount: Number, // 播放次数
+             createdAt: String, // 创建时间
+             updateAt: String  // 更新时间
+         }
+       }
+  
+  5. 更新音乐
+     - URL: PUT /admin/musics/{id}
+     - 请求体：
+       { 
+         id: String,           // 音乐ID
+         title: String,       // 音乐标题
+         artistId: String,     // 歌手ID
+         albumId: String,      // 专辑ID
+         duration: Number,     // 时长（秒）
+         fileUrl: String,      // 音乐文件URL
+         coverImage: String    // 封面图片URL
+       }
+     - 返回格式：
+       { 
+         code: '200',          // 状态码
+         data: {               // 更新后的音乐信息
+           id: String,         // 音乐ID
+           title: String,       // 音乐标题
+           artistId: String, // 歌手ID
+           artistName: String, // 歌手名称
+             albumId: String,  // 专辑ID
+             albumTitle: String, // 专辑标题
+             duration: Number, // 时长（秒）
+             fileUrl: String,  // 音乐文件URL
+             coverImage: String, // 封面图片URL
+             playCount: Number, // 播放次数
+             createdAt: String, // 创建时间
+             updateAt: String  // 更新时间
+         }
+       }
+  
+  6. 删除音乐
+     - URL: DELETE /admin/musics/{id}
+     - 请求参数（路径参数）：
+       id: String             // 音乐ID
+     - 返回格式：
+       { 
+         code: '200',          // 状态码
+         data: null            // 无数据返回
+       }
+  
+  7. 上传音乐文件（预留接口）
+     - URL: POST /admin/upload/music
+     - 请求体：FormData
+       { 
+         file: File            // 音乐文件
+       }
+     - 返回格式：
+       { 
+         code: '200',          // 状态码
+         data: { 
+           url: String         // 上传后的文件URL
+         }
+       }
+  
+  8. 上传封面图片（预留接口）
+     - URL: POST /admin/upload/cover
+     - 请求体：FormData
+       { 
+         file: File            // 图片文件
+       }
+     - 返回格式：
+       { 
+         code: '200',          // 状态码
+         data: { 
+           url: String         // 上传后的图片URL
+         }
+       }
 -->
 
 <template>
@@ -27,108 +190,118 @@
         <div class="card-header">
           <span>音乐管理</span>
           <el-button type="primary" @click="handleAdd">
-            <el-icon><Plus /></el-icon>
+            <el-icon>
+              <Plus/>
+            </el-icon>
             添加音乐
           </el-button>
         </div>
       </template>
-      
+
       <!-- 搜索和筛选 -->
       <div class="search-filter">
         <el-input
-          v-model="searchQuery"
-          placeholder="搜索音乐名称或歌手"
-          :prefix-icon="Search"
-          clearable
-          class="search-input"
-          @keyup.enter="handleSearch"
+            v-model="searchQuery"
+            placeholder="搜索音乐名称或歌手"
+            :prefix-icon="Search"
+            clearable
+            class="search-input"
+            @keyup.enter="handleSearch"
         />
         <el-select
-          v-model="albumFilter"
-          placeholder="筛选专辑"
-          clearable
-          filterable
-          class="filter-select"
+            v-model="albumFilter"
+            placeholder="筛选专辑"
+            clearable
+            filterable
+            class="filter-select"
         >
           <el-option
-            v-for="album in albums"
-            :key="album.id"
-            :label="album.name"
-            :value="album.id"
+              v-for="album in albums"
+              :key="album.id"
+              :label="album.title"
+              :value="album.id"
           />
         </el-select>
         <el-select
-          v-model="singerFilter"
-          placeholder="筛选歌手"
-          clearable
-          filterable
-          class="filter-select"
+            v-model="artistFilter"
+            placeholder="筛选歌手"
+            clearable
+            filterable
+            class="filter-select"
         >
           <el-option
-            v-for="singer in singers"
-            :key="singer.id"
-            :label="singer.name"
-            :value="singer.id"
+              v-for="artist in artists"
+              :key="artist.id"
+              :label="artist.name"
+              :value="artist.id"
           />
         </el-select>
         <el-button type="primary" @click="handleSearch">
-          <el-icon><Search /></el-icon>
+          <el-icon>
+            <Search/>
+          </el-icon>
           搜索
         </el-button>
         <el-button @click="handleReset">
-          <el-icon><Refresh /></el-icon>
+          <el-icon>
+            <Refresh/>
+          </el-icon>
           重置
         </el-button>
       </div>
 
       <!-- 音乐列表 -->
       <el-table
-        :data="musicList"
-        stripe
-        style="width: 100%"
-        @selection-change="handleSelectionChange"
-        class="flexible-table"
+          :data="musicList"
+          stripe
+          style="width: 100%"
+          @selection-change="handleSelectionChange"
+          class="flexible-table"
       >
-        <el-table-column type="selection" width="55" fixed="left" />
-        <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column type="selection" width="55" fixed="left"/>
+        <el-table-column prop="id" label="ID" width="80"/>
         <el-table-column prop="name" label="音乐名称" min-width="200">
           <template #default="scope">
             <div class="music-name">
               <el-image
-                v-if="scope.row.coverUrl"
-                :src="scope.row.coverUrl"
-                :fit="'cover'"
-                class="music-cover"
+                  v-if="scope.row.coverImage"
+                  :src="`http://localhost:8080${scope.row.coverImage}`"
+                  :fit="'cover'"
+                  class="music-cover"
               />
-              <span>{{ scope.row.name }}</span>
+              <span>{{ scope.row.title }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="singerName" label="歌手" min-width="150" />
-        <el-table-column prop="albumName" label="专辑" min-width="150" />
+        <el-table-column prop="artistName" label="歌手" min-width="150"/>
+        <el-table-column prop="albumTitle" label="专辑" min-width="150"/>
         <el-table-column prop="duration" label="时长" min-width="100">
           <template #default="scope">
             <span>{{ formatDuration(scope.row.duration) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="playCount" label="播放次数" min-width="120" />
-        <el-table-column prop="createTime" label="添加时间" min-width="200" />
+        <el-table-column prop="playCount" label="播放次数" min-width="120"/>
+        <el-table-column prop="createdAt" label="添加时间" min-width="200"/>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
             <el-button
-              type="primary"
-              size="small"
-              @click="handleEdit(scope.row)"
+                type="primary"
+                size="small"
+                @click="handleEdit(scope.row)"
             >
-              <el-icon><Edit /></el-icon>
+              <el-icon>
+                <Edit/>
+              </el-icon>
               编辑
             </el-button>
             <el-button
-              type="danger"
-              size="small"
-              @click="handleDelete(scope.row)"
+                type="danger"
+                size="small"
+                @click="handleDelete(scope.row)"
             >
-              <el-icon><Delete /></el-icon>
+              <el-icon>
+                <Delete/>
+              </el-icon>
               删除
             </el-button>
           </template>
@@ -138,102 +311,109 @@
       <!-- 分页 -->
       <div class="pagination">
         <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
         />
       </div>
 
       <!-- 音乐表单对话框 -->
       <el-dialog
-        v-model="dialogVisible"
-        :title="formTitle"
-        width="600px"
+          v-model="dialogVisible"
+          :title="formTitle"
+          width="600px"
       >
         <el-form
-          ref="musicFormRef"
-          :model="musicForm"
-          :rules="musicRules"
-          label-position="top"
+            ref="musicFormRef"
+            :model="musicForm"
+            :rules="musicRules"
+            label-position="top"
         >
-          <el-form-item label="音乐名称" prop="name">
-            <el-input v-model="musicForm.name" placeholder="请输入音乐名称" />
+          <el-form-item label="音乐标题" prop="title">
+            <el-input v-model="musicForm.title" placeholder="请输入音乐标题"/>
           </el-form-item>
-          <el-form-item label="歌手" prop="singerId">
-            <el-select v-model="musicForm.singerId" placeholder="请选择歌手" filterable clearable style="width: 100%">
+          <el-form-item label="歌手" prop="artistId">
+            <el-select v-model="musicForm.artistId" placeholder="请选择歌手" filterable clearable style="width: 100%">
               <el-option
-                v-for="singer in singers"
-                :key="singer.id"
-                :label="singer.name"
-                :value="singer.id"
+                  v-for="artist in artists"
+                  :key="artist.id"
+                  :label="artist.name"
+                  :value="artist.id"
               />
             </el-select>
           </el-form-item>
           <el-form-item label="专辑" prop="albumId">
             <el-select v-model="musicForm.albumId" placeholder="请选择专辑" filterable clearable style="width: 100%">
               <el-option
-                v-for="album in albums"
-                :key="album.id"
-                :label="album.name"
-                :value="album.id"
+                  v-for="album in albums"
+                  :key="album.id"
+                  :label="album.title"
+                  :value="album.id"
               />
             </el-select>
           </el-form-item>
           <el-form-item label="时长(秒)" prop="duration">
-            <el-input-number v-model="musicForm.duration" :min="0" placeholder="请输入时长" />
+            <el-input-number v-model="musicForm.duration" :min="0" placeholder="请输入时长"/>
           </el-form-item>
-          <el-form-item label="音乐文件" prop="fileUrl" v-if="!musicForm.id">
+          <el-form-item label="音乐文件" prop="fileUrl">
             <el-upload
-              class="upload-demo"
-              action=""
-              :on-success="handleFileUpload"
-              :before-upload="beforeFileUpload"
-              :auto-upload="false"
-              ref="fileUploadRef"
+                class="upload-demo"
+                action=""
+                :before-upload="beforeFileUpload"
+                :auto-upload="false"
+                ref="fileUploadRef"
+                :on-change="handleMusicFileChange"
             >
               <template #trigger>
                 <el-button type="primary">
-                  <el-icon><Upload /></el-icon>
-                  上传音乐文件
+                  <el-icon>
+                    <Upload/>
+                  </el-icon>
+                  {{ musicForm.id ? '更换音乐文件' : '上传音乐文件' }}
                 </el-button>
               </template>
               <template #tip>
                 <div class="el-upload__tip">
-                  支持上传MP3、WAV等格式的音乐文件
+                  支持上传MP3、WAV等格式的音乐文件，文件大小不超过50MB
                 </div>
               </template>
             </el-upload>
+            <div v-if="musicForm.fileUrl" style="margin-top: 10px;">
+              <el-tag type="info">当前文件: {{ getFileNameFromUrl(musicForm.fileUrl) }}</el-tag>
+            </div>
           </el-form-item>
-          <el-form-item label="封面图片" prop="coverUrl">
+          <el-form-item label="封面图片" prop="coverImage">
             <el-upload
-              class="upload-demo"
-              action=""
-              :on-success="handleCoverUpload"
-              :before-upload="beforeCoverUpload"
-              :auto-upload="false"
-              ref="coverUploadRef"
+                class="upload-demo"
+                action=""
+                :before-upload="beforeCoverUpload"
+                :auto-upload="false"
+                ref="coverUploadRef"
+                :on-change="handleCoverFileChange"
             >
               <template #trigger>
                 <el-button type="primary">
-                  <el-icon><Upload /></el-icon>
-                  上传封面图片
+                  <el-icon>
+                    <Upload/>
+                  </el-icon>
+                  {{ musicForm.coverImage ? '更换封面图片' : '上传封面图片' }}
                 </el-button>
               </template>
               <template #tip>
                 <div class="el-upload__tip">
-                  支持上传JPG、PNG格式的图片，建议尺寸300x300
+                  支持上传JPG、PNG格式的图片，建议尺寸300x300，文件大小不超过5MB
                 </div>
               </template>
             </el-upload>
             <el-image
-              v-if="musicForm.coverUrl"
-              :src="musicForm.coverUrl"
-              :fit="'cover'"
-              style="width: 100px; height: 100px; margin-top: 10px"
+                v-if="musicForm.coverImage"
+                :src="`http://localhost:8080${musicForm.coverImage}`"
+                :fit="'cover'"
+                style="width: 100px; height: 100px; margin-top: 10px"
             />
           </el-form-item>
         </el-form>
@@ -249,9 +429,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import {ref, reactive, onMounted, computed} from 'vue'
 import mockService from '@/mock/mockService'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import {ElMessage, ElMessageBox} from 'element-plus'
+import request from "@/utils/request.js";
 
 // 音乐列表数据
 const musicList = ref([])
@@ -262,46 +443,51 @@ const pageSize = ref(20)
 // 搜索和筛选
 const searchQuery = ref('')
 const albumFilter = ref('')
-const singerFilter = ref('')
+const artistFilter = ref('')
 
 // 下拉选择数据
 const albums = ref([])
-const singers = ref([])
+const artists = ref([])
 
 // 对话框
 const dialogVisible = ref(false)
 const musicFormRef = ref()
+// 音乐列表数据
 const musicForm = reactive({
   id: '',
-  name: '',
-  singerId: '',
+  title: '',
+  artistId: '',
   albumId: '',
   duration: 0,
   fileUrl: '',
-  coverUrl: ''
+  coverImage: ''
 })
 
 // 表单验证规则
 const musicRules = {
-  name: [
-    { required: true, message: '请输入音乐名称', trigger: 'blur' },
-    { min: 1, max: 100, message: '音乐名称长度在 1 到 100 个字符', trigger: 'blur' }
+  title: [
+    {required: true, message: '请输入音乐标题', trigger: 'blur'},
+    {min: 1, max: 100, message: '音乐标题长度在 1 到 100 个字符', trigger: 'blur'}
   ],
-  singerId: [
-    { required: true, message: '请选择歌手', trigger: 'change' }
+  artistId: [
+    {required: true, message: '请选择歌手', trigger: 'change'}
   ],
   albumId: [
-    { required: true, message: '请选择专辑', trigger: 'change' }
+    {required: true, message: '请选择专辑', trigger: 'change'}
   ],
   duration: [
-    { required: true, message: '请输入时长', trigger: 'blur' },
-    { type: 'number', min: 1, message: '时长必须大于0', trigger: 'blur' }
+    {required: true, message: '请输入时长', trigger: 'blur'},
+    {type: 'number', min: 1, message: '时长必须大于0', trigger: 'blur'}
   ]
 }
 
 // 上传组件引用
 const fileUploadRef = ref()
 const coverUploadRef = ref()
+
+// 待上传的文件
+const pendingMusicFile = ref(null)
+const pendingCoverFile = ref(null)
 
 // 选中的音乐
 const selectedMusic = ref([])
@@ -319,6 +505,13 @@ const formatDuration = (seconds) => {
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
+// 从URL获取文件名
+const getFileNameFromUrl = (url) => {
+  if (!url) return ''
+  const parts = url.split('/')
+  return parts[parts.length - 1] || '未知文件'
+}
+
 // 获取音乐列表
 const getMusicList = async () => {
   try {
@@ -327,9 +520,9 @@ const getMusicList = async () => {
       pageSize: pageSize.value,
       keyword: searchQuery.value,
       albumId: albumFilter.value,
-      singerId: singerFilter.value
+      artistId: artistFilter.value
     }
-    const res = await mockService.music.getList(params)
+    const res = await request.get('musics/getAll', {params})
     if (res.code === '200') {
       musicList.value = res.data.list
       total.value = res.data.total
@@ -343,7 +536,7 @@ const getMusicList = async () => {
 // 获取专辑列表
 const getAlbums = async () => {
   try {
-    const res = await mockService.album.getList({ pageNum: 1, pageSize: 1000 })
+    const res = await request.get('album/getAll', {params: {pageNum: 1, pageSize: 1000}})
     if (res.code === '200') {
       albums.value = res.data.list
     }
@@ -353,11 +546,11 @@ const getAlbums = async () => {
 }
 
 // 获取歌手列表
-const getSingers = async () => {
+const getArtists = async () => {
   try {
-    const res = await mockService.singer.getList({ pageNum: 1, pageSize: 1000 })
+    const res = await request.get('artist/getAll', {params: {pageNum: 1, pageSize: 1000}})
     if (res.code === '200') {
-      singers.value = res.data.list
+      artists.value = res.data.list
     }
   } catch (error) {
     console.error('获取歌手列表失败:', error)
@@ -374,7 +567,7 @@ const handleSearch = () => {
 const handleReset = () => {
   searchQuery.value = ''
   albumFilter.value = ''
-  singerFilter.value = ''
+  artistFilter.value = ''
   currentPage.value = 1
   getMusicList()
 }
@@ -435,17 +628,122 @@ const handleSubmit = async () => {
   if (!musicFormRef.value) return
   try {
     await musicFormRef.value.validate()
+    
     let res
+    let newMusicId = null
+
     if (musicForm.id) {
-      // 编辑音乐
-      res = await mockService.music.update(musicForm)
+      // 编辑模式
+      // 如果有待上传的音乐文件，先上传音乐文件
+      if (pendingMusicFile.value) {
+        const formData = new FormData()
+        formData.append('file', pendingMusicFile.value)
+
+        const uploadRes = await request.post(`upload/music/${musicForm.id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+
+        if (uploadRes.code === '200') {
+          // 上传成功后更新音乐表单中的文件路径
+          musicForm.fileUrl = uploadRes.data
+          ElMessage.success('音乐文件上传成功')
+        } else {
+          ElMessage.error('音乐文件上传失败')
+          return // 音乐文件上传失败，不继续更新音乐信息
+        }
+      }
+
+      // 如果有待上传的封面文件，先上传封面
+      if (pendingCoverFile.value) {
+        const formData = new FormData()
+        formData.append('file', pendingCoverFile.value)
+
+        const uploadRes = await request.post(`upload/musicCover/${musicForm.id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+
+        if (uploadRes.code === '200') {
+          // 上传成功后更新音乐表单中的封面路径
+          musicForm.coverImage = uploadRes.data
+          ElMessage.success('封面图片上传成功')
+        } else {
+          ElMessage.error('封面图片上传失败')
+          return // 封面图片上传失败，不继续更新音乐信息
+        }
+      }
+
+      const {fileUrl, coverImage, ...editData} = musicForm
+      res = await request.put('musics/update', editData)
     } else {
-      // 添加音乐
-      res = await mockService.music.add(musicForm)
+      // 添加模式 - 先创建音乐
+      const {fileUrl, coverImage, ...editData} = musicForm
+      res = await request.post('musics/add', editData)
+      
+      if (res.code === '200' && res.data && res.data.id) {
+        newMusicId = res.data.id
+        musicForm.id = newMusicId
+      }
     }
+
     if (res.code === '200') {
+      // 如果是添加模式且有文件需要上传
+      if (newMusicId) {
+        // 上传音乐文件
+        if (pendingMusicFile.value) {
+          try {
+            const formData = new FormData()
+            formData.append('file', pendingMusicFile.value)
+
+            const uploadRes = await request.post(`upload/music/${newMusicId}`, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            })
+
+            if (uploadRes.code === '200') {
+              ElMessage.success('音乐文件上传成功')
+            } else {
+              ElMessage.warning('音乐创建成功，但音乐文件上传失败')
+            }
+          } catch (uploadError) {
+            console.error('音乐文件上传失败:', uploadError)
+            ElMessage.warning('音乐创建成功，但音乐文件上传失败')
+          }
+        }
+
+        // 上传封面图片
+        if (pendingCoverFile.value) {
+          try {
+            const formData = new FormData()
+            formData.append('file', pendingCoverFile.value)
+
+            const uploadRes = await request.post(`upload/musicCover/${newMusicId}`, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            })
+
+            if (uploadRes.code === '200') {
+              ElMessage.success('封面图片上传成功')
+            } else {
+              ElMessage.warning('音乐创建成功，但封面图片上传失败')
+            }
+          } catch (uploadError) {
+            console.error('封面图片上传失败:', uploadError)
+            ElMessage.warning('音乐创建成功，但封面图片上传失败')
+          }
+        }
+      }
+
       ElMessage.success(musicForm.id ? '编辑成功' : '添加成功')
       dialogVisible.value = false
+      // 清空待上传文件
+      pendingMusicFile.value = null
+      pendingCoverFile.value = null
       getMusicList()
     }
   } catch (error) {
@@ -458,12 +756,12 @@ const handleSubmit = async () => {
 const resetForm = () => {
   Object.assign(musicForm, {
     id: '',
-    name: '',
-    singerId: '',
+    title: '',
+    artistId: '',
     albumId: '',
     duration: 0,
     fileUrl: '',
-    coverUrl: ''
+    coverImage: ''
   })
   if (musicFormRef.value) {
     musicFormRef.value.resetFields()
@@ -475,7 +773,7 @@ const beforeFileUpload = (file) => {
   const isMP3 = file.type === 'audio/mpeg'
   const isWAV = file.type === 'audio/wav'
   const isLt50M = file.size / 1024 / 1024 < 50
-  
+
   if (!isMP3 && !isWAV) {
     ElMessage.error('只能上传MP3或WAV格式的音乐文件')
   }
@@ -490,7 +788,7 @@ const beforeCoverUpload = (file) => {
   const isJPG = file.type === 'image/jpeg'
   const isPNG = file.type === 'image/png'
   const isLt5M = file.size / 1024 / 1024 < 5
-  
+
   if (!isJPG && !isPNG) {
     ElMessage.error('只能上传JPG或PNG格式的图片')
   }
@@ -500,26 +798,20 @@ const beforeCoverUpload = (file) => {
   return isJPG || isPNG && isLt5M
 }
 
-// 文件上传成功处理
-const handleFileUpload = (response) => {
-  if (response.code === '200') {
-    musicForm.fileUrl = response.data.url
-    ElMessage.success('文件上传成功')
-  }
+// 音乐文件变化处理
+const handleMusicFileChange = (uploadFile) => {
+  pendingMusicFile.value = uploadFile.raw
 }
 
-// 封面上传成功处理
-const handleCoverUpload = (response) => {
-  if (response.code === '200') {
-    musicForm.coverUrl = response.data.url
-    ElMessage.success('封面上传成功')
-  }
+// 封面文件变化处理
+const handleCoverFileChange = (uploadFile) => {
+  pendingCoverFile.value = uploadFile.raw
 }
 
 onMounted(() => {
   getMusicList()
   getAlbums()
-  getSingers()
+  getArtists()
 })
 </script>
 

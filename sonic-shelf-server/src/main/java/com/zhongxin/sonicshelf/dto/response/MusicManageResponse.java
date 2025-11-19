@@ -3,15 +3,17 @@ package com.zhongxin.sonicshelf.dto.response;
 import lombok.Data;
 
 @Data
-public class AlbumManageResponse {
+public class MusicManageResponse {
     private Long id;
     private String title;
     private Long artistId;
     private String artistName;
-    private String releaseDate;
-    private String description;
+    private Long albumId;
+    private String albumTitle;
+    private Integer duration;
+    private String fileUrl;
     private String coverImage;
-    private String musicCount;
+    private Integer playCount;
     private String createdAt;
-    private String updatedAt;
+    private String updateAt;
 }

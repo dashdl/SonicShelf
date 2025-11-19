@@ -2,7 +2,8 @@ package com.zhongxin.sonicshelf.controller;
 
 import cn.hutool.core.io.FileUtil;
 
-import com.zhongxin.sonicshelf.entity.Playlist;
+import com.zhongxin.sonicshelf.annotation.AdminAuth;
+import com.zhongxin.sonicshelf.mapper.AlbumMapper;
 import com.zhongxin.sonicshelf.mapper.ArtistMapper;
 import com.zhongxin.sonicshelf.service.PlaylistService;
 import com.zhongxin.sonicshelf.service.UserService;
@@ -28,6 +29,8 @@ public class UploadController {
     PlaylistService playlistService;
     @Autowired
     private ArtistMapper artistMapper;
+    @Autowired
+    private AlbumMapper albumMapper;
     @Autowired
     JwtUtil jwtUtil;
 
@@ -63,7 +66,7 @@ public class UploadController {
     }
 
     @PostMapping("/artistCover/{id}")
-    public Result uploadArtistCover(@RequestParam("file") MultipartFile file, @PathVariable Long id,HttpServletRequest request) throws IOException {
+    public Result uploadArtistCover(@RequestParam("file") MultipartFile file, @PathVariable Long id, HttpServletRequest request) throws IOException {
         String token = TokenExtractor.extractToken(request);
         if (!jwtUtil.isAdmin(token)) {
             return Result.error("需要管理员权限");
@@ -78,6 +81,21 @@ public class UploadController {
         artistMapper.uploadArtistCover("/cover/artistCover/" + fileName, id);
 
         return Result.success("上传成功", "/cover/artistCover/" + fileName);
+    }
+
+    @AdminAuth
+    @PostMapping("/albumCover/{id}")
+    public Result uploadAlbumCover(@RequestParam("file") MultipartFile file, @PathVariable Long id) throws IOException {
+
+        String filePath = System.getProperty("user.dir") + "/files/cover/albumCover/";
+        byte[] bytes = file.getBytes();
+        // 使用时间戳前缀避免文件名冲突，直接使用原始文件名（包含中文）
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        FileUtil.writeBytes(bytes, filePath + fileName);
+
+        albumMapper.uploadArtistCover("/cover/albumCover/" + fileName, id);
+
+        return Result.success("上传成功", "/cover/albumCover/" + fileName);
     }
 
 //    @GetMapping("/download/{filName}")
