@@ -336,6 +336,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import mockService from '@/mock/mockService'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import request from "@/utils/request.js";
 
 // 专辑列表数据
 const albumList = ref([])
@@ -391,6 +392,17 @@ const formTitle = computed(() => {
 // API: GET /admin/albums
 // 请求参数: { pageNum, pageSize, keyword, singerId }
 // 返回格式: { code: '200', data: { list: Array<Album>, total: Number } }
+// Album字段详细说明:
+// id: String - 专辑唯一标识符
+// name: String - 专辑名称
+// singerId: String - 歌手ID
+// singerName: String - 歌手名称
+// releaseDate: String - 发行日期 (YYYY-MM-DD)
+// description: String - 专辑简介
+// coverUrl: String - 封面图片URL
+// musicCount: Number - 歌曲数量
+// createTime: String - 创建时间 (YYYY-MM-DD HH:mm:ss)
+// updateTime: String - 更新时间 (YYYY-MM-DD HH:mm:ss)
 const getAlbumList = async () => {
   try {
     const params = {
@@ -416,7 +428,12 @@ const getAlbumList = async () => {
 // 返回格式: { code: '200', data: { list: Array<Singer>, total: Number } }
 const getSingers = async () => {
   try {
-    const res = await mockService.singer.getList({ pageSize: 1000 })  // 每页1000条，确保获取所有歌手
+    const res = await request.get('artist/getAll',{
+      params: {
+        pageNum: 1,
+        pageSize: 1000,
+      }
+    })  // 每页1000条，确保获取所有歌手
     if (res.code === '200') {
       singers.value = res.data.list  // 歌手列表数据，用于下拉选择
     }
@@ -498,6 +515,17 @@ const handleDelete = (row) => {
 // 编辑API: PUT /admin/albums/{id}
 // 请求体: { id, name, singerId, releaseDate, description, coverUrl }
 // 返回格式: { code: '200', data: Album }
+// Album字段详细说明:
+// id: String - 专辑唯一标识符
+// name: String - 专辑名称
+// singerId: String - 歌手ID
+// singerName: String - 歌手名称
+// releaseDate: String - 发行日期 (YYYY-MM-DD)
+// description: String - 专辑简介
+// coverUrl: String - 封面图片URL
+// musicCount: Number - 歌曲数量
+// createTime: String - 创建时间 (YYYY-MM-DD HH:mm:ss)
+// updateTime: String - 更新时间 (YYYY-MM-DD HH:mm:ss)
 const handleSubmit = async () => {
   if (!albumFormRef.value) return
   try {

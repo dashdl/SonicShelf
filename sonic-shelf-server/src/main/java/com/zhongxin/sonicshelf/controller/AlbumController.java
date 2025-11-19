@@ -1,7 +1,11 @@
 package com.zhongxin.sonicshelf.controller;
 
+import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.annotation.AdminAuth;
+import com.zhongxin.sonicshelf.dto.response.AlbumManageResponse;
 import com.zhongxin.sonicshelf.dto.response.AlbumResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
+import com.zhongxin.sonicshelf.dto.response.UserManageResponse;
 import com.zhongxin.sonicshelf.mapper.AlbumMapper;
 import com.zhongxin.sonicshelf.mapper.MusicMapper;
 import com.zhongxin.sonicshelf.service.AlbumService;
@@ -29,5 +33,16 @@ public class AlbumController {
     @GetMapping("/{id}/musics")
     public Result getMusicsById(@PathVariable Long id) {
         return Result.success(musicService.findMusicsByAlbumId(id));
+    }
+
+    @AdminAuth
+    @GetMapping("/getAll")
+    public Result getAllAlbum(@RequestParam Integer pageNum,
+                              @RequestParam Integer pageSize,
+                              @RequestParam(required = false) String keyword,
+                              @RequestParam(required = false) Long singerId) {
+
+        PageInfo<AlbumManageResponse> pageInfo = albumService.findAlbumsAsPage(pageNum, pageSize, keyword, singerId);
+        return Result.success(pageInfo);
     }
 }
