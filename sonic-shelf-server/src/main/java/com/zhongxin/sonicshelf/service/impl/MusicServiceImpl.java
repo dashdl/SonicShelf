@@ -2,6 +2,7 @@ package com.zhongxin.sonicshelf.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.dto.request.MusicManageRequest;
 import com.zhongxin.sonicshelf.dto.response.AlbumManageResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicManageResponse;
@@ -108,6 +109,21 @@ public class MusicServiceImpl implements MusicService {
 
 
         return PageInfo.of(musicMapper.selectMusics(keyword, artistId, albumId));
+    }
+
+    @Override
+    public MusicManageResponse updateMusic(MusicManageRequest music) {
+
+        musicMapper.updateMusic(music);
+
+        return musicMapper.selectMusicManageResponseById(music.getId());
+    }
+
+    @Override
+    public MusicManageResponse addMusic(MusicManageRequest music) {
+        musicMapper.addMusic(music);
+
+        return musicMapper.selectMusicManageResponseById(music.getId());
     }
 
     private boolean isFavorite(Long musicId) {

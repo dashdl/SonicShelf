@@ -126,8 +126,8 @@
         m.file_url,
         m.cover_image,
         m.play_count,
-        a.created_at,
-        a.updated_at
+        m.created_at,
+        m.updated_at
         FROM musics m
         INNER JOIN artists a ON m.artist_id = a.id
         INNER JOIN albums am On am.id = m.album_id
@@ -143,5 +143,23 @@
                 or a.name like concat('%', #{keyword}, '%') )
             </if>
         </where>
+    </select>
+    <select id="selectMusicManageResponseById" resultType="com.zhongxin.sonicshelf.dto.response.MusicManageResponse">
+        SELECT m.id,
+               m.title,
+               a.id     as artist_id,
+               a.name   as artist_name,
+               am.id    as album_id,
+               am.title as album_title,
+               m.duration,
+               m.file_url,
+               m.cover_image,
+               m.play_count,
+               m.created_at,
+               m.updated_at
+        FROM musics m
+                 INNER JOIN artists a ON m.artist_id = a.id
+                 INNER JOIN albums am On am.id = m.album_id
+        WHERE m.id = #{id}
     </select>
 </mapper>

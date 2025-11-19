@@ -367,6 +367,7 @@
                 :auto-upload="false"
                 ref="fileUploadRef"
                 :on-change="handleMusicFileChange"
+                accept=".mp3,.wav,.flac"
             >
               <template #trigger>
                 <el-button type="primary">
@@ -378,7 +379,8 @@
               </template>
               <template #tip>
                 <div class="el-upload__tip">
-                  支持上传MP3、WAV等格式的音乐文件，文件大小不超过50MB
+                  支持上传MP3、WAV、FLAC等格式的音乐文件，文件大小不超过50MB<br>
+                  <span style="color: #67C23A;">* 系统会自动从音乐文件中提取标题、歌手、专辑和封面信息</span>
                 </div>
               </template>
             </el-upload>
@@ -639,7 +641,7 @@ const handleSubmit = async () => {
         const formData = new FormData()
         formData.append('file', pendingMusicFile.value)
 
-        const uploadRes = await request.post(`upload/music/${musicForm.id}`, formData, {
+        const uploadRes = await request.post(`upload/musicFile/${musicForm.id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -763,6 +765,9 @@ const resetForm = () => {
     fileUrl: '',
     coverImage: ''
   })
+  // 清空待上传文件
+  pendingMusicFile.value = null
+  pendingCoverFile.value = null
   if (musicFormRef.value) {
     musicFormRef.value.resetFields()
   }
@@ -772,36 +777,150 @@ const resetForm = () => {
 const beforeFileUpload = (file) => {
   const isMP3 = file.type === 'audio/mpeg'
   const isWAV = file.type === 'audio/wav'
+  const isFLAC = file.type === 'audio/flac'
   const isLt50M = file.size / 1024 / 1024 < 50
 
-  if (!isMP3 && !isWAV) {
-    ElMessage.error('只能上传MP3或WAV格式的音乐文件')
+  if (!isMP3 && !isWAV && !isFLAC) {
+    ElMessage.error('只能上传MP3、WAV或FLAC格式的音乐文件')
   }
   if (!isLt50M) {
     ElMessage.error('音乐文件大小不能超过50MB')
   }
-  return isMP3 || isWAV && isLt50M
+  return (isMP3 || isWAV || isFLAC) && isLt50M
 }
 
 // 封面上传前处理
 const beforeCoverUpload = (file) => {
-  const isJPG = file.type === 'image/jpeg'
-  const isPNG = file.type === 'image/png'
-  const isLt5M = file.size / 1024 / 1024 < 5
+  // 如果是从音乐文件中提取的封面，允许通过
+  if (file.name && file.name.startsWith('cover_')) {
+    return true;
+  }
+  
+  const isJPG = file.type === 'image/jpeg';
+  const isPNG = file.type === 'image/png';
+  const isLt5M = file.size / 1024 / 1024 < 5;
 
   if (!isJPG && !isPNG) {
-    ElMessage.error('只能上传JPG或PNG格式的图片')
+    ElMessage.error('只能上传JPG或PNG格式的图片');
   }
   if (!isLt5M) {
-    ElMessage.error('图片大小不能超过5MB')
+    ElMessage.error('图片大小不能超过5MB');
   }
-  return isJPG || isPNG && isLt5M
+  return (isJPG || isPNG) && isLt5M;
 }
 
 // 音乐文件变化处理
 const handleMusicFileChange = (uploadFile) => {
-  pendingMusicFile.value = uploadFile.raw
+  const file = uploadFile.raw
+  pendingMusicFile.value = file
+  
+  // 动态加载jsmediatags库
+  if (typeof jsmediatags === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js';
+    script.onload = () => {
+      extractMusicMetadata(file);
+    };
+    document.body.appendChild(script);
+  } else {
+    extractMusicMetadata(file);
+  }
 }
+
+// 提取音乐元数据的函数
+const extractMusicMetadata = (file) => {
+  // 提取音频文件的元数据和封面
+  if (file && (file.type === 'audio/mpeg' || file.type === 'audio/wav' || file.type === 'audio/flac')) {
+    jsmediatags.read(file, {
+      onSuccess: function(tag) {
+        // 提取标题
+        if (tag.tags.title && !musicForm.title) {
+          musicForm.title = tag.tags.title;
+        }
+        
+        // 尝试从文件名获取标题（如果标签中没有）
+        if (!musicForm.title) {
+          const fileName = file.name;
+          musicForm.title = fileName.substring(0, fileName.lastIndexOf('.'));
+        }
+        
+        // 提取歌手信息（尝试匹配现有歌手）
+        if (tag.tags.artist && artists.value.length > 0) {
+          const artistName = tag.tags.artist;
+          const matchedArtist = artists.value.find(artist => 
+            artist.name.toLowerCase() === artistName.toLowerCase()
+          );
+          if (matchedArtist && !musicForm.artistId) {
+            musicForm.artistId = matchedArtist.id;
+          }
+        }
+        
+        // 提取专辑信息（尝试匹配现有专辑）
+        if (tag.tags.album && albums.value.length > 0) {
+          const albumName = tag.tags.album;
+          const matchedAlbum = albums.value.find(album => 
+            album.title.toLowerCase() === albumName.toLowerCase()
+          );
+          if (matchedAlbum && !musicForm.albumId) {
+            musicForm.albumId = matchedAlbum.id;
+          }
+        }
+        
+        // 提取封面图片
+        if (tag.tags.picture) {
+          const { data, format } = tag.tags.picture;
+          let base64String = '';
+          for (let i = 0; i < data.length; i++) {
+            base64String += String.fromCharCode(data[i]);
+          }
+          const coverBase64 = `data:${format};base64,${window.btoa(base64String)}`;
+          
+          // 将封面图片转换为Blob对象并设置为待上传文件
+          fetch(coverBase64)
+            .then(res => res.blob())
+            .then(blob => {
+              // 创建一个临时文件名
+              const coverFileName = `cover_${Date.now()}.${format.split('/')[1]}`;
+              const coverFile = new File([blob], coverFileName, { type: format });
+              pendingCoverFile.value = coverFile;
+              
+              // 更新表单中的封面图片预览
+              // 注意：这里只是预览，实际上传需要等待表单提交时处理
+              musicForm.coverImage = coverBase64;
+            });
+        }
+        
+        ElMessage.success('已从音乐文件中提取元数据');
+      },
+      onError: function(error) {
+        console.log('提取音乐元数据失败:', error);
+        // 提取失败不影响继续上传
+      }
+    });
+    
+    // 使用Audio API获取音频时长
+    const audio = new Audio();
+    const fileURL = URL.createObjectURL(file);
+    
+    audio.onloadedmetadata = function() {
+      // 获取时长（秒）并取整
+      const duration = Math.floor(audio.duration);
+      if (duration > 0 && !musicForm.duration) {
+        musicForm.duration = duration;
+      }
+      // 释放URL对象
+      URL.revokeObjectURL(fileURL);
+    };
+    
+    audio.onerror = function() {
+      console.log('获取音频时长失败');
+      // 释放URL对象
+      URL.revokeObjectURL(fileURL);
+    };
+    
+    audio.src = fileURL;
+  }
+};
 
 // 封面文件变化处理
 const handleCoverFileChange = (uploadFile) => {
@@ -809,10 +928,10 @@ const handleCoverFileChange = (uploadFile) => {
 }
 
 onMounted(() => {
-  getMusicList()
-  getAlbums()
-  getArtists()
-})
+  getMusicList();
+  getAlbums();
+  getArtists();
+});
 </script>
 
 <style scoped lang="scss">

@@ -15,5 +15,5 @@ public class MusicManageResponse {
     private String coverImage;
     private Integer playCount;
     private String createdAt;
-    private String updateAt;
+    private String updatedAt;
 }

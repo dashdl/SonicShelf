@@ -1,6 +1,7 @@
 package com.zhongxin.sonicshelf.service;
 
 import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.dto.request.MusicManageRequest;
 import com.zhongxin.sonicshelf.dto.response.*;
 
 import java.util.List;
@@ -23,4 +24,8 @@ public interface MusicService {
     List<MusicResponse> findMusicsByAlbumId(Long id);
 
     PageInfo<MusicManageResponse> findAlbumsAsPage(Integer pageNum, Integer pageSize, String keyword, Long artistId, Long albumId);
+
+    MusicManageResponse updateMusic(MusicManageRequest music);
+
+    MusicManageResponse addMusic(MusicManageRequest music);
 }

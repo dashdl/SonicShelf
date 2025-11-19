@@ -281,6 +281,8 @@
               v-model="albumForm.releaseDate"
               type="date"
               placeholder="选择发行日期"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
               style="width: 100%"
             />
           </el-form-item>
@@ -484,12 +486,19 @@ const handleAdd = () => {
 
 // 编辑专辑
 const handleEdit = (row) => {
+  // 确保日期格式为YYYY-MM-DD
+  let releaseDate = row.releaseDate
+  if (releaseDate) {
+    // 如果日期包含时间部分，只保留日期部分
+    releaseDate = releaseDate.split('T')[0] || releaseDate
+  }
+  
   Object.assign(albumForm, {
     id: row.id,
     title: row.title,
     artistId: row.artistId,
     description: row.description,
-    releaseDate: row.releaseDate,
+    releaseDate: releaseDate,
     coverImage: row.coverImage
   })
   dialogVisible.value = true
