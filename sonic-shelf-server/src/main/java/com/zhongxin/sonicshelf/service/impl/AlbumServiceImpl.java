@@ -6,8 +6,11 @@ import com.zhongxin.sonicshelf.dto.request.AlbumManageRequest;
 import com.zhongxin.sonicshelf.dto.response.AlbumInfoResponse;
 import com.zhongxin.sonicshelf.dto.response.AlbumManageResponse;
 import com.zhongxin.sonicshelf.mapper.AlbumMapper;
+import com.zhongxin.sonicshelf.mapper.ArtistMapper;
+import com.zhongxin.sonicshelf.mapper.MusicMapper;
 import com.zhongxin.sonicshelf.service.AlbumService;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +19,10 @@ import java.util.List;
 public class AlbumServiceImpl implements AlbumService {
     @Resource
     private AlbumMapper albumMapper;
+    @Autowired
+    private MusicMapper musicMapper;
+    @Autowired
+    private ArtistMapper artistMapper;
 
     @Override
     public AlbumInfoResponse findAlbumInfoById(Long id) {
@@ -33,6 +40,8 @@ public class AlbumServiceImpl implements AlbumService {
 
         albumMapper.updateAlbum(album);
 
+        albumMapper.updateMusicCountByAlbumId(musicMapper.countByAlbumId(album.getId()), album.getId());
+
         return albumMapper.selectAlbumManageResponseById(album.getId());
     }
 
@@ -41,7 +50,15 @@ public class AlbumServiceImpl implements AlbumService {
 
         albumMapper.insertAlbum(album);
 
+        artistMapper.updateAlbumCountByArtistId(artistMapper.countAlbumCountById(album.getArtistId()),album.getArtistId());
+
         return albumMapper.selectAlbumManageResponseById(album.getId());
+    }
+
+    @Override
+    public void deleteAlbumById(Long id) {
+        musicMapper.deleteByAlbumId(id);
+        albumMapper.deleteById(id);
     }
 
 }

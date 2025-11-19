@@ -36,4 +36,10 @@ public interface ArtistMapper {
     @Insert("insert into artists (name,gender,country,description) values (#{artist.name},#{artist.gender},#{artist.country},#{artist.description})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addArtist(@Param("artist") ArtistManageRequest artist);
+
+    @Select("select count(*) from albums where artist_id = #{artistId}")
+    int countAlbumCountById(Long artistId);
+
+    @Update("update artists set album_count = #{count} where id = #{artistId}")
+    void updateAlbumCountByArtistId(int count, Long artistId);
 }

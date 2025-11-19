@@ -49,5 +49,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
         String songsPath = basePath + "/files/songs/";
         registry.addResourceHandler("/songs/**")
                 .addResourceLocations("file:" + songsPath);
+
+        String musicPath = basePath + "/files/music/";
+        registry.addResourceHandler("/music/**")
+                .addResourceLocations("file:" + musicPath);
     }
 }

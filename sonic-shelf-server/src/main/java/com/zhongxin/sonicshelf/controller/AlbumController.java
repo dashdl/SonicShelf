@@ -52,4 +52,13 @@ public class AlbumController {
         return Result.success(albumService.addAlbum(album));
     }
 
+    @AdminAuth
+    @DeleteMapping("/delete/{id}")
+    public Result deleteAlbum(@PathVariable Long id) {
+
+        albumService.deleteAlbumById(id);
+
+        return Result.success("删除成功");
+    }
+
 }

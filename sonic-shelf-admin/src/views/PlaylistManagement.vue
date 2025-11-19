@@ -95,7 +95,7 @@
                 :fit="'cover'"
                 class="playlist-cover"
               />
-              <span>{{ scope.row.name }}</span>
+              <span class="playlist-title">{{ scope.row.name }}</span>
             </div>
           </template>
         </el-table-column>
@@ -191,6 +191,7 @@
               action=""
               :on-success="handleCoverUpload"
               :before-upload="beforeCoverUpload"
+              :on-remove="handleCoverRemove"
               :auto-upload="false"
               ref="coverUploadRef"
             >
@@ -302,9 +303,9 @@ const getPlaylistList = async () => {
 // 获取分类列表
 const getCategories = async () => {
   try {
-    const res = await mockService.category.getList({ pageNum: 1, pageSize: 1000 })
+    const res = await request.get('categories')
     if (res.code === '200') {
-      categories.value = res.data.list
+      categories.value = res.data
     }
   } catch (error) {
     console.error('获取分类列表失败:', error)
@@ -439,6 +440,11 @@ const handleCoverUpload = (response) => {
   }
 }
 
+// 封面文件移除处理
+const handleCoverRemove = () => {
+  playlistForm.coverUrl = ''
+}
+
 onMounted(() => {
   getPlaylistList()
   getCategories()
@@ -460,5 +466,16 @@ onMounted(() => {
   height: 40px;
   border-radius: $radius-sm;
   object-fit: cover;
+  flex-shrink: 0;
+}
+
+.playlist-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+  max-height: 2.8em;
 }
 </style>

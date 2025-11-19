@@ -66,7 +66,7 @@
                   :fit="'cover'"
                   class="singer-avatar"
               />
-              <span>{{ scope.row.name }}</span>
+              <span class="singer-title">{{ scope.row.name }}</span>
             </div>
           </template>
         </el-table-column>
@@ -160,6 +160,7 @@
                 action=""
                 :on-success="handleAvatarUpload"
                 :before-upload="beforeAvatarUpload"
+                :on-remove="handleAvatarRemove"
                 :auto-upload="false"
                 ref="avatarUploadRef"
                 :http-request="uploadAvatar"
@@ -200,7 +201,6 @@
 
 <script setup>
 import {ref, reactive, onMounted, computed} from 'vue'
-import mockService from '@/mock/mockService'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import request from "@/utils/request.js";
 
@@ -453,6 +453,11 @@ const handleAvatarChange = (uploadFile) => {
   pendingAvatarFile.value = uploadFile.raw
 }
 
+// 头像文件移除处理
+const handleAvatarRemove = () => {
+  pendingAvatarFile.value = null
+}
+
 const uploadAvatar = async (options) => {
   const {file, onSuccess, onError} = options
   try {
@@ -522,6 +527,17 @@ onMounted(() => {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.singer-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+  max-height: 2.8em;
 }
 
 .pagination {

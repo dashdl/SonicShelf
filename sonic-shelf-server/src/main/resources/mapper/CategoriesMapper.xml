@@ -19,5 +19,4 @@
             #{id}
         </foreach>
     </select>
-
 </mapper>

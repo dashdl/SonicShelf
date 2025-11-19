@@ -1,6 +1,7 @@
 package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.response.CategoriesResponse;
+import com.zhongxin.sonicshelf.dto.response.MusicManageResponse;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface CategoriesMapper {
             @Result(column = "description", property = "description")
     })
 
-    @Select("select  * from categories where id = #{id}")
+    @Select("select * from categories where id = #{id}")
     CategoriesResponse selectById(int id);
 
     @Select("select * from categories where parent_id = #{parentId}")
@@ -37,4 +38,16 @@ public interface CategoriesMapper {
     List<Long> selectMusicIdByCategoryId(List<Long> ids);
 
     List<Long> selectCategoryIdsFromMusicCategories(List<Long> ids);
+
+    @Select("select c.id,name from categories as c left join music_categories as mc on c.id = mc.category_id where mc.music_id = #{id}")
+    List<MusicManageResponse.Category> selectByMusicId(Long id);
+
+    @Select("SELECT category_id FROM music_categories WHERE music_id = #{id}")
+    List<Long> findByMusicId(Long id);
+
+    @Insert("insert into music_categories (music_id,category_id) values (#{id},#{tag})")
+    void addMusicTags(@Param("id") Long id, @Param("tag") Long tag);
+
+    @Delete("delete from music_categories where music_id=#{id} and category_id=#{tag}")
+    void removeMusicTags(@Param("id") Long id, @Param("tag") Long tag);
 }

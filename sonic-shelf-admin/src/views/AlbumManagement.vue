@@ -149,89 +149,99 @@
         <div class="card-header">
           <span>专辑管理</span>
           <el-button type="primary" @click="handleAdd">
-            <el-icon><Plus /></el-icon>
+            <el-icon>
+              <Plus/>
+            </el-icon>
             添加专辑
           </el-button>
         </div>
       </template>
-      
+
       <!-- 搜索和筛选 -->
       <div class="search-filter">
         <el-input
-          v-model="searchQuery"
-          placeholder="搜索专辑名称"
-          :prefix-icon="Search"
-          clearable
-          class="search-input"
-          @keyup.enter="handleSearch"
+            v-model="searchQuery"
+            placeholder="搜索专辑名称"
+            :prefix-icon="Search"
+            clearable
+            class="search-input"
+            @keyup.enter="handleSearch"
         />
         <el-select
-          v-model="artistFilter"
-          placeholder="筛选歌手"
-          clearable
-          filterable
-          class="filter-select"
+            v-model="artistFilter"
+            placeholder="筛选歌手"
+            clearable
+            filterable
+            class="filter-select"
         >
           <el-option
-            v-for="artist in artists"
-            :key="artist.id"
-            :label="artist.name"
-            :value="artist.id"
+              v-for="artist in artists"
+              :key="artist.id"
+              :label="artist.name"
+              :value="artist.id"
           />
         </el-select>
         <el-button type="primary" @click="handleSearch">
-          <el-icon><Search /></el-icon>
+          <el-icon>
+            <Search/>
+          </el-icon>
           搜索
         </el-button>
         <el-button @click="handleReset">
-          <el-icon><Refresh /></el-icon>
+          <el-icon>
+            <Refresh/>
+          </el-icon>
           重置
         </el-button>
       </div>
 
       <!-- 专辑列表 -->
       <el-table
-        :data="albumList"
-        stripe
-        style="width: 100%"
-        @selection-change="handleSelectionChange"
-        class="flexible-table"
+          :data="albumList"
+          stripe
+          style="width: 100%"
+          @selection-change="handleSelectionChange"
+          class="flexible-table"
       >
-        <el-table-column type="selection" width="55" fixed="left" />
-        <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column type="selection" width="55" fixed="left"/>
+        <el-table-column prop="id" label="ID" width="80"/>
         <el-table-column prop="title" label="专辑名称" min-width="200">
           <template #default="scope">
             <div class="album-name">
               <el-image
-                v-if="scope.row.coverImage"
-                :src="`http://localhost:8080${scope.row.coverImage}`"
-                :fit="'cover'"
-                class="album-cover"
+                  v-if="scope.row.coverImage"
+                  :src="`http://localhost:8080${scope.row.coverImage}`"
+                  :fit="'cover'"
+                  class="album-cover"
               />
-              <span>{{ scope.row.title }}</span>
+              <span class="album-title">{{ scope.row.title }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="artistName" label="歌手" min-width="150" />
-        <el-table-column prop="releaseDate" label="发行日期" min-width="150" />
-        <el-table-column prop="musicCount" label="歌曲数量" min-width="120" />
-        <el-table-column prop="createdAt" label="添加时间" min-width="200" />
+        <el-table-column prop="artistName" label="歌手" min-width="150"/>
+        <el-table-column prop="releaseDate" label="发行日期" min-width="150"/>
+        <el-table-column prop="musicCount" label="歌曲数量" min-width="120"/>
+        <el-table-column prop="createdAt" label="添加时间" min-width="200"/>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
             <el-button
-              type="primary"
-              size="small"
-              @click="handleEdit(scope.row)"
+                type="primary"
+                size="small"
+                @click="handleEdit(scope.row)"
             >
-              <el-icon><Edit /></el-icon>
+              <el-icon>
+                <Edit/>
+              </el-icon>
               编辑
             </el-button>
             <el-button
-              type="danger"
-              size="small"
-              @click="handleDelete(scope.row)"
+                type="danger"
+                size="small"
+                @click="handleDelete(scope.row)"
             >
-              <el-icon><Delete /></el-icon>
+              <el-icon>
+                <Delete/>
+              </el-icon>
               删除
             </el-button>
           </template>
@@ -241,73 +251,76 @@
       <!-- 分页 -->
       <div class="pagination">
         <el-pagination
-          v-model:current-page="currentPage"
-          v-model:page-size="pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
         />
       </div>
 
       <!-- 专辑表单对话框 -->
       <el-dialog
-        v-model="dialogVisible"
-        :title="formTitle"
-        width="600px"
+          v-model="dialogVisible"
+          :title="formTitle"
+          width="600px"
       >
         <el-form
-          ref="albumFormRef"
-          :model="albumForm"
-          :rules="albumRules"
-          label-position="top"
+            ref="albumFormRef"
+            :model="albumForm"
+            :rules="albumRules"
+            label-position="top"
         >
           <el-form-item label="专辑名称" prop="title">
-          <el-input v-model="albumForm.title" placeholder="请输入专辑名称" />
-        </el-form-item>
+            <el-input v-model="albumForm.title" placeholder="请输入专辑名称"/>
+          </el-form-item>
           <el-form-item label="歌手" prop="artistId">
             <el-select v-model="albumForm.artistId" placeholder="请选择歌手" filterable clearable style="width: 100%;">
               <el-option
-                v-for="artist in artists"
-                :key="artist.id"
-                :label="artist.name"
-                :value="artist.id"
+                  v-for="artist in artists"
+                  :key="artist.id"
+                  :label="artist.name"
+                  :value="artist.id"
               />
             </el-select>
           </el-form-item>
           <el-form-item label="发行日期" prop="releaseDate">
             <el-date-picker
-              v-model="albumForm.releaseDate"
-              type="date"
-              placeholder="选择发行日期"
-              format="YYYY-MM-DD"
-              value-format="YYYY-MM-DD"
-              style="width: 100%"
+                v-model="albumForm.releaseDate"
+                type="date"
+                placeholder="选择发行日期"
+                format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD"
+                style="width: 100%"
             />
           </el-form-item>
           <el-form-item label="专辑简介" prop="description">
             <el-input
-              v-model="albumForm.description"
-              type="textarea"
-              :rows="3"
-              placeholder="请输入专辑简介"
+                v-model="albumForm.description"
+                type="textarea"
+                :rows="3"
+                placeholder="请输入专辑简介"
             />
           </el-form-item>
           <el-form-item label="封面图片" prop="coverImage">
             <el-upload
-              class="upload-demo"
-              action=""
-              :before-upload="beforeCoverUpload"
-              :on-change="handleCoverChange"
-              :auto-upload="false"
-              ref="coverUploadRef"
+                class="upload-demo"
+                action=""
+                :before-upload="beforeCoverUpload"
+                :on-change="handleCoverChange"
+                :on-remove="handleCoverRemove"
+                :auto-upload="false"
+                ref="coverUploadRef"
             >
               <template #trigger>
                 <el-button type="primary">
-                    <el-icon><Upload /></el-icon>
-                    上传封面图片
-                  </el-button>
+                  <el-icon>
+                    <Upload/>
+                  </el-icon>
+                  上传封面图片
+                </el-button>
               </template>
               <template #tip>
                 <div class="el-upload__tip">
@@ -316,10 +329,10 @@
               </template>
             </el-upload>
             <el-image
-              v-if="albumForm.coverImage"
-              :src="`http://localhost:8080${albumForm.coverImage}`"
-              :fit="'cover'"
-              style="width: 100px; height: 100px; margin-top: 10px"
+                v-if="albumForm.coverImage"
+                :src="`http://localhost:8080${albumForm.coverImage}`"
+                :fit="'cover'"
+                style="width: 100px; height: 100px; margin-top: 10px"
             />
           </el-form-item>
         </el-form>
@@ -335,10 +348,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
-import mockService from '@/mock/mockService'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import {ref, reactive, onMounted, computed} from 'vue'
+import {ElMessage, ElMessageBox} from 'element-plus'
 import request from "@/utils/request.js";
+
 
 // 专辑列表数据
 const albumList = ref([])
@@ -368,14 +381,14 @@ const albumForm = reactive({
 // 表单验证规则
 const albumRules = {
   title: [
-    { required: true, message: '请输入专辑名称', trigger: 'blur' },
-    { min: 1, max: 100, message: '专辑名称长度在 1 到 100 个字符', trigger: 'blur' }
+    {required: true, message: '请输入专辑名称', trigger: 'blur'},
+    {min: 1, max: 100, message: '专辑名称长度在 1 到 100 个字符', trigger: 'blur'}
   ],
   artistId: [
-    { required: true, message: '请选择歌手', trigger: 'change' }
+    {required: true, message: '请选择歌手', trigger: 'change'}
   ],
   releaseDate: [
-    { required: true, message: '请选择发行日期', trigger: 'change' }
+    {required: true, message: '请选择发行日期', trigger: 'change'}
   ]
 }
 
@@ -433,7 +446,7 @@ const getAlbumList = async () => {
 // 返回格式: { code: '200', data: { list: Array<Artist>, total: Number } }
 const getArtists = async () => {
   try {
-    const res = await request.get('artist/getAll',{
+    const res = await request.get('artist/getAll', {
       params: {
         pageNum: 1,
         pageSize: 1000,
@@ -492,7 +505,7 @@ const handleEdit = (row) => {
     // 如果日期包含时间部分，只保留日期部分
     releaseDate = releaseDate.split('T')[0] || releaseDate
   }
-  
+
   Object.assign(albumForm, {
     id: row.id,
     title: row.title,
@@ -515,7 +528,7 @@ const handleDelete = (row) => {
     type: 'warning'
   }).then(async () => {
     try {
-      const res = await mockService.album.delete(row.id)  // 传入专辑ID删除指定专辑
+      const res = await request.delete('album/delete/' + row.id)  // 传入专辑ID删除指定专辑
       if (res.code === '200') {
         ElMessage.success('删除成功')
         getAlbumList()  // 删除成功后重新获取列表
@@ -549,7 +562,7 @@ const handleSubmit = async () => {
   if (!albumFormRef.value) return
   try {
     await albumFormRef.value.validate()  // 表单验证
-    
+
     let res
     let newAlbumId = null
 
@@ -577,12 +590,12 @@ const handleSubmit = async () => {
       }
 
       const {coverImage, ...editData} = albumForm
-      res = await request.put('album/update',editData)
+      res = await request.put('album/update', editData)
     } else {
       // 添加模式 - 先创建专辑
       const {coverImage, ...editData} = albumForm
-      res = await request.post('album/add',editData)
-      
+      res = await request.post('album/add', editData)
+
       if (res.code === '200' && res.data && res.data.id) {
         newAlbumId = res.data.id
         albumForm.id = newAlbumId
@@ -647,7 +660,7 @@ const beforeCoverUpload = (file) => {
   const isJPG = file.type === 'image/jpeg'
   const isPNG = file.type === 'image/png'
   const isLt5M = file.size / 1024 / 1024 < 5
-  
+
   if (!isJPG && !isPNG) {
     ElMessage.error('只能上传JPG或PNG格式的图片')
     return false
@@ -666,6 +679,11 @@ const handleCoverChange = (file, fileList) => {
   } else {
     pendingCoverFile.value = null
   }
+}
+
+// 处理封面文件移除
+const handleCoverRemove = () => {
+  pendingCoverFile.value = null
 }
 
 // 封面上传成功处理
@@ -725,6 +743,17 @@ onMounted(() => {
   width: 40px;
   height: 40px;
   border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.album-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+  max-height: 2.8em;
 }
 
 .pagination {

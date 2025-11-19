@@ -37,4 +37,16 @@ public interface AlbumMapper {
 
     @Update("update albums set cover_image = #{coverImage} where id = #{id}")
     void uploadArtistCover(String coverImage, Long id);
+
+    @Select("select count(*) from musics where album_id=#{id}")
+    int countMusicCountById(Long id);
+
+    @Update("update albums set music_count = #{count} where id = #{albumId}")
+    void updateMusicCountByAlbumId(int count, Long albumId);
+
+    @Select("select count(*) from albums where artist_id = #{id}")
+    int countByArtistId(Long id);
+
+    @Delete("delete from albums where id = #{id}")
+    void deleteById(Long id);
 }

@@ -19,7 +19,7 @@
 import mockUsers from './user';
 import mockAlbums from './album';
 import mockSingers from './singer';
-import mockMusic from './music';
+import mockMusic from './music.js'
 import mockCategories from './category';
 import mockPlaylists from './playlist';
 

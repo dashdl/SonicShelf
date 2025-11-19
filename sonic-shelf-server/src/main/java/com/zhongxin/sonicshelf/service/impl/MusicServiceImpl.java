@@ -3,15 +3,12 @@ package com.zhongxin.sonicshelf.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhongxin.sonicshelf.dto.request.MusicManageRequest;
-import com.zhongxin.sonicshelf.dto.response.AlbumManageResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicManageResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import com.zhongxin.sonicshelf.entity.Favorite;
 import com.zhongxin.sonicshelf.exception.CustomException;
-import com.zhongxin.sonicshelf.mapper.CategoriesMapper;
-import com.zhongxin.sonicshelf.mapper.FavoriteMapper;
-import com.zhongxin.sonicshelf.mapper.MusicMapper;
+import com.zhongxin.sonicshelf.mapper.*;
 import com.zhongxin.sonicshelf.service.MusicService;
 import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import jakarta.annotation.Resource;
@@ -29,6 +26,10 @@ public class MusicServiceImpl implements MusicService {
     private CategoriesMapper categoriesMapper;
     @Resource
     private FavoriteMapper favoriteMapper;
+    @Autowired
+    private AlbumMapper albumMapper;
+    @Autowired
+    private ArtistMapper artistMapper;
 
     @Override
     public PageInfo<MusicResponse> findAsPageByListId(Integer pageNum, Integer pageSize, Long id) {
@@ -107,8 +108,13 @@ public class MusicServiceImpl implements MusicService {
 
         PageHelper.startPage(pageNum, pageSize);
 
+        List<MusicManageResponse> musicManageResponseList = musicMapper.selectMusics(keyword, artistId, albumId);
 
-        return PageInfo.of(musicMapper.selectMusics(keyword, artistId, albumId));
+        for (MusicManageResponse music : musicManageResponseList) {
+            music.setCategories(categoriesMapper.selectByMusicId(music.getId()));
+        }
+
+        return PageInfo.of(musicManageResponseList);
     }
 
     @Override
@@ -123,7 +129,30 @@ public class MusicServiceImpl implements MusicService {
     public MusicManageResponse addMusic(MusicManageRequest music) {
         musicMapper.addMusic(music);
 
+        artistMapper.updateMusicCountByArtistId(musicMapper.countByArtistId(music.getArtistId()), music.getArtistId());
+        albumMapper.updateMusicCountByAlbumId(musicMapper.countByAlbumId(music.getAlbumId()), music.getAlbumId());
+
         return musicMapper.selectMusicManageResponseById(music.getId());
+    }
+
+    @Override
+    public void updateMusicTags(Long[] categoryIds, Long id) {
+        List<Long> oldTags = categoriesMapper.findByMusicId(id);
+        for (Long tag : categoryIds) {
+            if (oldTags.contains(tag)) {
+                oldTags.remove(tag);
+            } else {
+                categoriesMapper.addMusicTags(id, tag);
+            }
+        }
+        for (Long tag : oldTags) {
+            categoriesMapper.removeMusicTags(id, tag);
+        }
+    }
+
+    @Override
+    public void deleteMusicById(Long id) {
+        musicMapper.deleteById(id);
     }
 
     private boolean isFavorite(Long musicId) {

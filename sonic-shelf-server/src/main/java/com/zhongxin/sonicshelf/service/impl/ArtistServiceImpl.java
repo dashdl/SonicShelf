@@ -49,6 +49,7 @@ public class ArtistServiceImpl implements ArtistService {
 
         artistMapper.updateArtist(artist);
         artistMapper.updateMusicCountByArtistId(musicMapper.countByArtistId(artist.getId()), artist.getId());
+        artistMapper.updateAlbumCountByArtistId(albumMapper.countByArtistId(artist.getId()), artist.getId());
 
         return artistMapper.selectArtistByIdReturn(artist.getId());
     }
@@ -60,7 +61,6 @@ public class ArtistServiceImpl implements ArtistService {
             musicMapper.deleteByArtistId(id);
             albumMapper.deleteByArtistId(id);
             artistMapper.deleteById(id);
-
         } catch (Exception e) {
             throw new CustomException("删除歌手失败");
         }

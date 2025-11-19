@@ -28,4 +28,8 @@ public interface MusicService {
     MusicManageResponse updateMusic(MusicManageRequest music);
 
     MusicManageResponse addMusic(MusicManageRequest music);
+
+    void updateMusicTags(Long[] categoryIds, Long id);
+
+    void deleteMusicById(Long id);
 }

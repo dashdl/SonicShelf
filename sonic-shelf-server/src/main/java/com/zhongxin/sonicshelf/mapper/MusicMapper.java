@@ -51,4 +51,13 @@ public interface MusicMapper {
 
     @Update("update musics set file_url=#{path} where id=#{id}")
     void uploadMusicFile(String path, Long id);
+
+    @Select("select count(*) from musics where album_id=#{albumId}")
+    int countByAlbumId(Long albumId);
+
+    @Delete("delete from musics where id = #{id}")
+    void deleteById(Long id);
+
+    @Delete("delete from musics where album_id = #{id}")
+    void deleteByAlbumId(Long id);
 }

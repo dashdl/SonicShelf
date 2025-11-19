@@ -10,5 +10,5 @@ public class MusicManageRequest {
     private Long albumId;
     private Integer duration;
     private String fileUrl;
-    private String coverImage;
+    private Long[] categoryIds;
 }
