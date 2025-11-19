@@ -84,8 +84,6 @@ public class TokenExtractor {
         try {
             return extractToken(request);
         } catch (Exception e) {
-            // 记录日志（如果有日志框架）
-            // log.warn("提取token失败", e);
             return null;
         }
     }

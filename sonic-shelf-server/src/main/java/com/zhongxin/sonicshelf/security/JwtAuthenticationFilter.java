@@ -1,6 +1,7 @@
 package com.zhongxin.sonicshelf.security;
 
 import com.zhongxin.sonicshelf.util.JwtUtil;
+import com.zhongxin.sonicshelf.util.TokenExtractor;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,13 +28,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, java.io.IOException {
 
-        final String authorizationHeader = request.getHeader("Authorization");
-
+        // 统一使用TokenExtractor提取token
+        String jwt = TokenExtractor.extractToken(request);
         String username = null;
-        String jwt = null;
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
+        if (jwt != null) {
             username = jwtUtil.getUsernameFromToken(jwt);
         }
 

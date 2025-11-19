@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * 获取当前用户的工具类
- * 提供便捷的方法来从Spring Security上下文获取当前登录用户的信息
+ * 从Spring Security上下文获取当前登录用户的信息
  */
 public class CurrentUserUtil {
 
@@ -26,7 +26,7 @@ public class CurrentUserUtil {
             try {
                 return (User) principal;
             } catch (ClassCastException e) {
-                throw new IllegalStateException("当前登录用户不是User类型，请检查UserDetailsService实现");
+                throw new IllegalStateException("当前登录用户不是User");
             }
         } else {
             throw new IllegalStateException("无法获取当前用户信息");

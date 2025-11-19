@@ -74,6 +74,33 @@ public class JwtUtil {
         return "admin".equals(getUserTypeFromToken(token));
     }
 
+    /**
+     * 根据UserDetails检查用户是否为管理员
+     * 此方法用于在已经认证的情况下快速检查用户类型
+     *
+     * @param userDetails 用户详情
+     * @return 如果是管理员返回true，否则返回false
+     */
+    public Boolean isAdminUser(UserDetails userDetails) {
+        // 根据UserDetails的实际类型判断是否为管理员
+        return userDetails instanceof Admin;
+    }
+
+    /**
+     * 根据用户名检查用户是否为管理员（重载方法，用于向后兼容）
+     * 注意：此方法可能需要从数据库查询用户信息，性能较差
+     * 建议优先使用isAdminUser(UserDetails)方法
+     *
+     * @param username 用户名
+     * @return 如果是管理员返回true，否则返回false
+     */
+    public Boolean isAdminUser(String username) {
+        // 这里可以根据实际需求实现，例如从数据库查询用户类型
+        // 由于UserDetailsService可能返回不同类型的UserDetails
+        // 这里暂时返回false，实际应用中应根据业务逻辑实现
+        return false;
+    }
+
     public String getUserTypeFromToken(String token) {
         try {
             return Jwts.parserBuilder()
