@@ -19,7 +19,7 @@
 import mockUsers from './user';
 import mockAlbums from './album';
 import mockSingers from './singer';
-import mockMusic from './music.js'
+import mockMusic from './mockMusic.js'
 import mockCategories from './category';
 import mockPlaylists from './playlist';
 
@@ -420,7 +420,9 @@ const mockService = {
       
       // 分类过滤
       if (params.categoryId) {
-        filteredPlaylists = filteredPlaylists.filter(item => item.categoryId === params.categoryId);
+        filteredPlaylists = filteredPlaylists.filter(item => 
+          item.categoryIds && item.categoryIds.includes(params.categoryId)
+        );
       }
       
       // 状态过滤
@@ -445,13 +447,11 @@ const mockService = {
     // 添加歌单
     async add(data) {
       await delay(300);
-      // 获取分类名称
-      const category = mockCategories.find(c => c.id === data.categoryId);
+      // 获取第一个分类ID和名称
       const newPlaylist = {
         id: Date.now().toString(),
         name: data.name,
-        categoryId: data.categoryId,
-        categoryName: category ? category.name : '',
+        categoryIds: data.categoryIds || [], // 保存完整的分类ID数组
         creatorId: '1',
         creatorName: '管理员',
         description: data.description || '',
@@ -470,13 +470,10 @@ const mockService = {
       await delay(300);
       const index = mockPlaylists.findIndex(item => item.id === data.id);
       if (index !== -1) {
-        // 获取分类名称
-        const category = mockCategories.find(c => c.id === data.categoryId);
         mockPlaylists[index] = {
           ...mockPlaylists[index],
           name: data.name,
-          categoryId: data.categoryId,
-          categoryName: category ? category.name : '',
+          categoryIds: data.categoryIds || [], // 保存完整的分类ID数组
           description: data.description || '',
           status: data.status || 'public',
           coverUrl: data.coverUrl || ''

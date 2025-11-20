@@ -1,7 +1,9 @@
 package com.zhongxin.sonicshelf.service;
 
 import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.dto.request.PlaylistManageRequest;
 import com.zhongxin.sonicshelf.dto.response.PlaylistCardResponse;
+import com.zhongxin.sonicshelf.dto.response.PlaylistManageResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.entity.Playlist;
 
@@ -27,4 +29,14 @@ public interface PlaylistService {
     void deleteMusicByPlaylistIdAndMusicId(Long playlistId, Long musicId);
 
     Long findUserIdByPlaylistId(Long playlistId);
+
+    PageInfo<PlaylistManageResponse> findPlaylistAsPage(Integer pageNum, Integer pageSize, String keyword, Integer[] categoryId, Byte status);
+
+    void addPlaylist(PlaylistManageRequest playlist);
+
+    void updateOfficialPlaylistCover(String s, Long id);
+
+    void updateOfficialPlaylist(PlaylistManageRequest playlist);
+
+    void deleteOfficialPlaylist(Long playlistId);
 }

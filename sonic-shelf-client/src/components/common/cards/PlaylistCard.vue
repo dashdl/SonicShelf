@@ -63,10 +63,10 @@ function getDominantColor(image) {
       }
     }
 
-    return dominantColor || '#fc3d49'
+    return dominantColor || '#e4e7ed'
   } catch (error) {
     console.error('提取颜色失败:', error)
-    return '#fc3d49'
+    return '#e4e7ed'
   }
 }
 
@@ -218,7 +218,7 @@ const baseUrl = 'http://localhost:8080';
   width: 100%;
   height: 50px;
   z-index: 1;
-  background-color: #fc3d49;
+  background-color: #e4e7ed;
   transition: background-color 0.2s ease;
 }
 

@@ -350,6 +350,7 @@
 <script setup>
 import {ref, reactive, onMounted, computed} from 'vue'
 import {ElMessage, ElMessageBox} from 'element-plus'
+import {Search, Plus, Edit, Delete, Refresh, Upload} from '@element-plus/icons-vue'
 import request from "@/utils/request.js";
 
 

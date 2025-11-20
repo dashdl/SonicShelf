@@ -356,4 +356,18 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+.search-filter {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+
+  .search-input {
+    width: 300px;
+  }
+
+  .filter-select {
+    width: 150px;
+  }
+}
 </style>

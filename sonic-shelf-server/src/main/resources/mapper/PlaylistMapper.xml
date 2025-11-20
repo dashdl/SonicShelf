@@ -78,5 +78,36 @@
         WHERE pm.playlist_id = #{i}
         LIMIT 3
     </select>
+    <select id="selectPlaylist" resultType="com.zhongxin.sonicshelf.dto.response.PlaylistManageResponse">
+        SELECT p.id,
+        p.title,
+        u.nickname as user_nickname,
+        p.description,
+        p.music_count,
+        p.play_count,
+        p.is_public,
+        p.cover_image,
+        p.created_at
+        FROM playlists p
+        LEFT JOIN users u ON p.user_id = u.id
+        <where>
+            <if test="isPublic != null">
+                p.is_public = #{isPublic}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and (p.title like concat('%', #{keyword}, '%')
+                or p.description like concat('%', #{keyword}, '%') )
+            </if>
+            <if test="categoryIds != null and categoryIds != '' and categoryIds.length > 0">
+                AND EXISTS (
+                SELECT 1 FROM playlist_categories pc
+                WHERE pc.playlist_id = p.id AND pc.category_id in
+                <foreach collection="categoryIds" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+                )
+            </if>
+        </where>
+    </select>
 
 </mapper>

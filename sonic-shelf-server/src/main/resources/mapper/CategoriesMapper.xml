@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhongxin.sonicshelf.mapper.CategoriesMapper">
+    <insert id="addOfficialPlaylistTags">
+        insert into playlist_categories (playlist_id, category_id) values
+        <foreach collection="categoryIds" item="categoryId" separator=",">
+            (#{id}, #{categoryId})
+        </foreach>
+    </insert>
 
     <select id="selectMusicIdByCategoryId" resultType="java.lang.Long">
         SELECT music_id FROM music_categories

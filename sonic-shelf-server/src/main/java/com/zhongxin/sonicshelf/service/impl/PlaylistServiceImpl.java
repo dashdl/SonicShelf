@@ -2,7 +2,9 @@ package com.zhongxin.sonicshelf.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.dto.request.PlaylistManageRequest;
 import com.zhongxin.sonicshelf.dto.response.PlaylistCardResponse;
+import com.zhongxin.sonicshelf.dto.response.PlaylistManageResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.entity.Playlist;
 import com.zhongxin.sonicshelf.exception.CustomException;
@@ -114,5 +116,45 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     public Long findUserIdByPlaylistId(Long playlistId) {
         return playlistMapper.selectUserIdByPlaylistId(playlistId);
+    }
+
+    @Override
+    public PageInfo<PlaylistManageResponse> findPlaylistAsPage(Integer pageNum, Integer pageSize, String keyword, Integer[] categoryIds, Byte isPublic) {
+
+        PageHelper.startPage(pageNum, pageSize);
+
+        List<PlaylistManageResponse> playlists = playlistMapper.selectPlaylist(keyword, isPublic, categoryIds);
+
+        if (!playlists.isEmpty()) {
+            for (PlaylistManageResponse playlist : playlists) {
+                playlist.setCategories(categoriesMapper.selectByPlaylistId(playlist.getId()));
+            }
+        }
+
+        return PageInfo.of(playlists);
+    }
+
+    @Override
+    public void addPlaylist(PlaylistManageRequest playlist) {
+
+        playlistMapper.addPlaylist(playlist);
+
+        categoriesMapper.addOfficialPlaylistTags(playlist.getCategoryIds(), playlist.getId());
+
+    }
+
+    @Override
+    public void updateOfficialPlaylistCover(String url, Long id) {
+        playlistMapper.updatePlaylistCover(url, id);
+    }
+
+    @Override
+    public void updateOfficialPlaylist(PlaylistManageRequest playlist) {
+        playlistMapper.updatePlaylist(playlist.toPlaylist());
+    }
+
+    @Override
+    public void deleteOfficialPlaylist(Long playlistId) {
+        playlistMapper.deleteOfficialPlaylist(playlistId);
     }
 }
