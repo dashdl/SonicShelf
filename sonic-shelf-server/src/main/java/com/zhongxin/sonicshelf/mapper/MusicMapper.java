@@ -35,7 +35,7 @@ public interface MusicMapper {
     @Delete("delete from musics where artist_id = #{id}")
     void deleteByArtistId(Long id);
 
-    List<MusicManageResponse> selectMusics(String keyword, Long artistId, Long albumId);
+    List<MusicManageResponse> selectMusics(String keyword, Long artistId, Long albumId, Integer[] categoryIds);
 
     @Update("update musics set title=#{music.title},artist_id=#{music.artistId},album_id=#{music.albumId},duration=#{music.duration} where id=#{music.id}")
     void updateMusic(@Param("music") MusicManageRequest music);
@@ -60,4 +60,7 @@ public interface MusicMapper {
 
     @Delete("delete from musics where album_id = #{id}")
     void deleteByAlbumId(Long id);
+
+    @Select("select count(*) from musics")
+    int countMusicCount();
 }

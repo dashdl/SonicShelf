@@ -60,7 +60,7 @@
           <el-dropdown>
             <span class="el-dropdown-link">
               <el-avatar :size="36">
-                <el-icon><UserFilled /></el-icon>
+                <img :src="userStore.userInfo.avatar ? `http://localhost:8080${userStore.userInfo.avatar}` : '/user.svg'" alt="">
               </el-avatar>
               <span>{{ username || '管理员' }}</span>
               <el-icon class="el-icon--right"><ArrowDown /></el-icon>
@@ -105,8 +105,6 @@ const isCollapse = ref(false);
 const toggleCollapse = () => {
   isCollapse.value = !isCollapse.value;
 };
-
-
 
 const logout = () => {
   userStore.logout();
@@ -218,7 +216,8 @@ const logout = () => {
 
       .header-left {
         .el-icon {
-          font-size: 20px;
+          height: 100%;
+          width: 100%;
           cursor: pointer;
           color: #666;
           transition: all 0.3s ease;

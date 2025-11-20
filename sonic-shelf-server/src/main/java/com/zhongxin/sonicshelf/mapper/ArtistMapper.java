@@ -22,7 +22,7 @@ public interface ArtistMapper {
     void updateArtist(@Param("artist") ArtistManageRequest artist);
 
     @Update("update artists set music_count=#{count} where id=#{id}")
-    void updateMusicCountByArtistId(int count,Long id);
+    void updateMusicCountByArtistId(int count, Long id);
 
     @Select("select id,name,gender,country,description,cover_image,music_count,created_at from artists where id=#{id}")
     ArtistManageResponse selectArtistByIdReturn(Long id);
@@ -42,4 +42,7 @@ public interface ArtistMapper {
 
     @Update("update artists set album_count = #{count} where id = #{artistId}")
     void updateAlbumCountByArtistId(int count, Long artistId);
+
+    @Select("select count(*) from artists")
+    int countArtistCount();
 }

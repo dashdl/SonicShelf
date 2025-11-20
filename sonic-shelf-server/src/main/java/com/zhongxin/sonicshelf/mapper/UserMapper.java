@@ -51,4 +51,7 @@ public interface UserMapper {
 
     @Delete("delete from users where id=#{id}")
     void deleteUser(Long id);
+
+    @Select("select count(*) from users")
+    int countUserCount();
 }

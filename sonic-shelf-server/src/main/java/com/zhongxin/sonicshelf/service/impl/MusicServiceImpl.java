@@ -104,11 +104,11 @@ public class MusicServiceImpl implements MusicService {
     }
 
     @Override
-    public PageInfo<MusicManageResponse> findAlbumsAsPage(Integer pageNum, Integer pageSize, String keyword, Long artistId, Long albumId) {
+    public PageInfo<MusicManageResponse> findMusicsAsPage(Integer pageNum, Integer pageSize, String keyword, Long artistId, Long albumId, Integer[] categoryIds) {
 
         PageHelper.startPage(pageNum, pageSize);
 
-        List<MusicManageResponse> musicManageResponseList = musicMapper.selectMusics(keyword, artistId, albumId);
+        List<MusicManageResponse> musicManageResponseList = musicMapper.selectMusics(keyword, artistId, albumId,categoryIds);
 
         for (MusicManageResponse music : musicManageResponseList) {
             music.setCategories(categoriesMapper.selectByMusicId(music.getId()));

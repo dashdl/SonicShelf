@@ -23,7 +23,7 @@ public interface MusicService {
 
     List<MusicResponse> findMusicsByAlbumId(Long id);
 
-    PageInfo<MusicManageResponse> findAlbumsAsPage(Integer pageNum, Integer pageSize, String keyword, Long artistId, Long albumId);
+    PageInfo<MusicManageResponse> findMusicsAsPage(Integer pageNum, Integer pageSize, String keyword, Long artistId, Long albumId, Integer[] categoryIds);
 
     MusicManageResponse updateMusic(MusicManageRequest music);
 

@@ -32,9 +32,10 @@ public class MusicsController {
                               @RequestParam Integer pageSize,
                               @RequestParam(required = false) String keyword,
                               @RequestParam(required = false) Long artistId,
-                              @RequestParam(required = false) Long albumId) {
+                              @RequestParam(required = false) Long albumId,
+                              @RequestParam(required = false) Integer[] categoryIds) {
 
-        PageInfo<MusicManageResponse> pageInfo = musicService.findAlbumsAsPage(pageNum, pageSize, keyword, artistId, albumId);
+        PageInfo<MusicManageResponse> pageInfo = musicService.findMusicsAsPage(pageNum, pageSize, keyword, artistId, albumId,categoryIds);
         return Result.success(pageInfo);
     }
 

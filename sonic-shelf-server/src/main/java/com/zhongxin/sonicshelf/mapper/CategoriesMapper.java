@@ -1,6 +1,8 @@
 package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.response.CategoriesResponse;
+import com.zhongxin.sonicshelf.dto.response.CategoryManageResponse;
+import com.zhongxin.sonicshelf.entity.Categories;
 import com.zhongxin.sonicshelf.entity.Category;
 import org.apache.ibatis.annotations.*;
 
@@ -54,4 +56,34 @@ public interface CategoriesMapper {
     List<Category> selectByPlaylistId(Long id);
 
     void addOfficialPlaylistTags(@Param("categoryIds") Integer[] categoryIds, @Param("id") Long id);
+
+    @Select("select count(*) from categories where parent_id is not null ")
+    int countCategoryCount();
+
+    @Select("select * from categories where id = #{id}")
+    CategoryManageResponse selectCategoryManageResponseById(Integer id);
+
+    @Select("select count(*) from music_categories where category_id = #{id}")
+    int countMusicCountByCategoryId(Integer id);
+
+    @Select("select count(*) from playlist_categories where category_id = #{id}")
+    int countPlaylistCountByCategoryId(Integer id);
+
+    @Select("select * from categories where parent_id = #{parentId}")
+    List<CategoryManageResponse> selectCategoryManageResponseByParentId(Integer parentId);
+
+    @Select("select * from categories where parent_id IS NULL")
+    List<CategoryManageResponse> selectParentCategoryManageResponse();
+
+    @Update("update categories set name = #{name}, description = #{description}, parent_id = #{parentId} where id = #{id}")
+    void updateCategory(Categories category);
+
+    @Insert("insert into categories (name,description,parent_id) values (#{name},#{description},#{parentId})")
+    void addCategory(Categories category);
+
+    @Delete("delete from categories where id = #{id}")
+    void deleteCategory(Integer id);
+
+    @Delete("delete from categories where parent_id = #{id}")
+    void deleteByParentId(Integer id);
 }

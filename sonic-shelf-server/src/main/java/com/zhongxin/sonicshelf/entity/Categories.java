@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class Categories {
-    private Long id;
-    private Long parentId;
+    private Integer id;
+    private Integer parentId;
     private String name;
     private String description;
 }

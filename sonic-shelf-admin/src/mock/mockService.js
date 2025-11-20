@@ -373,7 +373,7 @@ const mockService = {
         description: data.description || '',
         musicCount: 0,
         playlistCount: 0,
-        createTime: new Date().toISOString().replace('T', ' ').substring(0, 19)
+        createdAt: new Date().toISOString().replace('T', ' ').substring(0, 19)
       };
       mockCategories.push(newCategory);
       return { code: '200', message: '分类添加成功' };

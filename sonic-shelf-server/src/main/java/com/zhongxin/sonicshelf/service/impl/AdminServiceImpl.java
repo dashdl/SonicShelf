@@ -2,6 +2,7 @@ package com.zhongxin.sonicshelf.service.impl;
 
 import com.zhongxin.sonicshelf.dto.response.AdminResponse;
 import com.zhongxin.sonicshelf.dto.response.LoginResponse;
+import com.zhongxin.sonicshelf.dto.response.MusicManageResponse;
 import com.zhongxin.sonicshelf.entity.Admin;
 import com.zhongxin.sonicshelf.entity.AdminInfo;
 import com.zhongxin.sonicshelf.exception.CustomException;
@@ -35,5 +36,10 @@ public class AdminServiceImpl implements AdminService {
             adminResponse.setAccess_token(jwtUtil.generateToken(tempAdmin));
             return adminResponse;
         }
+    }
+
+    @Override
+    public AdminInfo getInfoByUsername(String usernameFromToken) {
+        return adminMapper.getInfoByUsername(usernameFromToken);
     }
 }

@@ -49,4 +49,6 @@ public interface AlbumMapper {
 
     @Delete("delete from albums where id = #{id}")
     void deleteById(Long id);
+    @Select("select count(*) from albums")
+    int countAlbumCount();
 }

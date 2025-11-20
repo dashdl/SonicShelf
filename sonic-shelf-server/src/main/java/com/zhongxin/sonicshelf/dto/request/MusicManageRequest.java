@@ -11,4 +11,5 @@ public class MusicManageRequest {
     private Integer duration;
     private String fileUrl;
     private Long[] categoryIds;
+    private String lyrics;
 }

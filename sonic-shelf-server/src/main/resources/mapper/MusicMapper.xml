@@ -124,6 +124,7 @@
         am.title as album_title,
         m.duration,
         m.file_url,
+        m.lyrics,
         m.cover_image,
         m.play_count,
         m.created_at,
@@ -142,6 +143,15 @@
                 and (m.title like concat('%', #{keyword}, '%')
                 or a.name like concat('%', #{keyword}, '%') )
             </if>
+            <if test="categoryIds != null and categoryIds != '' and categoryIds.length > 0">
+                AND EXISTS (
+                SELECT 1 FROM music_categories mc
+                WHERE mc.music_id = m.id AND mc.category_id in
+                <foreach collection="categoryIds" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+                )
+            </if>
         </where>
     </select>
     <select id="selectMusicManageResponseById" resultType="com.zhongxin.sonicshelf.dto.response.MusicManageResponse">
@@ -153,6 +163,7 @@
                am.title as album_title,
                m.duration,
                m.file_url,
+               m.lyrics,
                m.cover_image,
                m.play_count,
                m.created_at,

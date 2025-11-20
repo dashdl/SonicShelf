@@ -57,4 +57,6 @@ public interface PlaylistMapper {
 
     @Delete("delete from playlists where id = #{playlistId}")
     void deleteOfficialPlaylist(Long playlistId);
+    @Select("select count(*) from playlists")
+    int countPlaylistCount();
 }

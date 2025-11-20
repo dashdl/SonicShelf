@@ -56,16 +56,18 @@ export const useUserStore = defineStore('user', {
         async getUserInfo() {
             try {
                 // 模拟获取用户信息
-                const mockUserInfo = {
-                    id: 1,
-                    username: 'admin',
-                    email: 'admin@example.com',
-                    nickname: '管理员',
-                    permissions: ['all']
-                }
-                this.userInfo = mockUserInfo
+                // const mockUserInfo = {
+                //     id: 1,
+                //     username: 'admin',
+                //     email: 'admin@example.com',
+                //     nickname: '管理员',
+                // }
+
+                let res = await request.get('auth/admin/getInfo')
+
+                this.userInfo = res.data
                 this.isLoggedIn = true
-                return {code: '200', data: mockUserInfo}
+                return {code: '200', data: res.data}
             } catch (error) {
                 return Promise.reject(error)
             }

@@ -244,6 +244,9 @@
           />
         </el-select>
         <!-- 分类筛选 - 多级标签选择 -->
+        <!-- 说明：此功能前端UI已实现，需要后端API支持 -->
+        <!-- 1. 需要后端提供分类数据API来填充categories和filterTags -->
+        <!-- 2. 需要在handleSearch函数中传递selectedFilterTagIds作为筛选条件 -->
         <div class="category-filter-container">
           <div class="category-selector" @click="showCategoryFilter = !showCategoryFilter">
             <div class="selected-tags-preview" v-if="selectedFilterTags.length > 0">
@@ -330,8 +333,12 @@
           </template>
         </el-table-column>
         <el-table-column prop="artistName" label="歌手" min-width="150"/>
-        <el-table-column prop="albumTitle" label="专辑" min-width="150"/>
-        <el-table-column prop="categories" label="分类" min-width="150">
+        <el-table-column prop="albumTitle" label="专辑" min-width="150">
+          <template #default="scope">
+            <span class="album-title">{{ scope.row.albumTitle }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="categories" label="分类" min-width="130">
           <template #default="scope">
             <el-tag
                 v-for="category in scope.row.categories"
@@ -344,13 +351,27 @@
             <span v-if="!scope.row.categories || scope.row.categories.length === 0">-</span>
           </template>
         </el-table-column>
+        <el-table-column prop="lyrics" label="歌词" min-width="200">
+          <template #default="scope">
+            <div class="lyrics-preview">
+              <span class="lyrics-text">{{ scope.row.lyrics ? scope.row.lyrics : '-' }}</span>
+              <el-button 
+                type="text" 
+                size="small" 
+                @click="handleViewLyrics(scope.row)"
+                v-if="scope.row.lyrics">
+                查看完整歌词
+              </el-button>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="duration" label="时长" min-width="100">
           <template #default="scope">
             <span>{{ formatDuration(scope.row.duration) }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="playCount" label="播放次数" min-width="120"/>
-        <el-table-column prop="createdAt" label="添加时间" min-width="200"/>
+        <el-table-column prop="createdAt" label="添加时间" min-width="180"/>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
             <el-button
@@ -540,11 +561,41 @@
                 style="width: 100px; height: 100px; margin-top: 10px"
             />
           </el-form-item>
+          <el-form-item label="歌词" prop="lyrics">
+            <el-input
+                v-model="musicForm.lyrics"
+                type="textarea"
+                :rows="8"
+                placeholder="请输入歌词"
+                resize="vertical"
+                show-word-limit
+                :maxlength="10000"
+            />
+            <div class="lyrics-tip">
+              支持输入完整歌词，系统会自动处理换行和格式
+            </div>
+          </el-form-item>
         </el-form>
         <template #footer>
           <div class="dialog-footer">
             <el-button @click="dialogVisible = false">取消</el-button>
             <el-button type="primary" @click="handleSubmit">确认</el-button>
+          </div>
+        </template>
+      </el-dialog>
+
+      <!-- 歌词查看对话框 -->
+      <el-dialog
+          v-model="lyricsDialogVisible"
+          :title="`${currentMusicTitle} - 完整歌词`"
+          width="800px"
+      >
+        <div class="lyrics-full">
+          <pre>{{ currentLyrics }}</pre>
+        </div>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="lyricsDialogVisible = false">关闭</el-button>
           </div>
         </template>
       </el-dialog>
@@ -570,12 +621,17 @@ const albumFilter = ref('')
 const artistFilter = ref('')
 const categoryFilter = ref([])
 
-// 分类筛选相关数据
-const showCategoryFilter = ref(false)
+// 分类筛选相关数据 - 前端UI已实现，需要后端支持
+// 说明：分类筛选功能包括多级标签选择，当前仅实现了前端界面和数据处理逻辑
+// 后端需要实现：
+// 1. 提供获取分类列表的API
+// 2. 提供获取子分类/标签的API
+// 3. 在音乐列表查询接口中支持categoryIds参数筛选
+const showCategoryFilter = ref(false) // 控制分类筛选面板显示/隐藏
 const filterUserSelected = ref(1) // 默认选中第一个分类
-const filterTags = ref([]) // 当前分类下的标签
+const filterTags = ref([]) // 当前分类下的标签列表
 const selectedFilterTags = ref([]) // 选中的筛选标签对象数组
-const selectedFilterTagIds = ref([]) // 选中的筛选标签ID数组
+const selectedFilterTagIds = ref([]) // 选中的筛选标签ID数组，用于传递给后端
 
 // 下拉选择数据
 const albums = ref([])
@@ -601,7 +657,8 @@ const musicForm = reactive({
   duration: 0,
   fileUrl: '',
   coverImage: '',
-  categoryIds: []
+  categoryIds: [],
+  lyrics: ''
 })
 
 // 表单验证规则
@@ -649,6 +706,18 @@ const formTitle = computed(() => {
   return musicForm.id ? '编辑音乐' : '添加音乐'
 })
 
+// 歌词查看对话框
+const lyricsDialogVisible = ref(false)
+const currentLyrics = ref('')
+const currentMusicTitle = ref('')
+
+// 查看完整歌词
+const handleViewLyrics = (row) => {
+  currentMusicTitle.value = row.title
+  currentLyrics.value = row.lyrics
+  lyricsDialogVisible.value = true
+}
+
 // 格式化时长
 const formatDuration = (seconds) => {
   if (!seconds) return '00:00'
@@ -673,7 +742,8 @@ const getMusicList = async () => {
       keyword: searchQuery.value,
       albumId: albumFilter.value,
       artistId: artistFilter.value,
-      categoryIds: selectedFilterTagIds.value.join(',')
+      categoryIds: selectedFilterTagIds.value.join(',') // 分类筛选条件，逗号分隔的标签ID列表
+      // 说明：categoryIds参数需要后端API支持，用于根据选中的标签筛选音乐列表
     }
     const res = await request.get('musics/getAll', {params})
     if (res.code === '200') {
@@ -744,12 +814,16 @@ const getSubCategories = async (parentId, type) => {
 }
 
 // 筛选分类 - 切换分类类型
+// 说明：切换不同的分类时，加载对应分类下的标签列表
+// 需要后端提供获取子分类/标签的API支持
 const changeFilterTags = async (categoryId) => {
   filterUserSelected.value = categoryId
-  await getSubCategories(categoryId, 'filter')
+  await getSubCategories(categoryId, 'filter') // 调用获取子分类/标签的函数
 }
 
 // 筛选分类 - 选择标签
+// 说明：处理标签的选中/取消选中逻辑
+// 选中的标签ID会存储在selectedFilterTagIds中，用于传递给后端筛选
 const handleFilterTagSelect = (tagId) => {
   const index = selectedFilterTagIds.value.indexOf(tagId)
   const tag = filterTags.value.find(item => item.id === tagId)
@@ -771,6 +845,7 @@ const handleFilterTagSelect = (tagId) => {
 }
 
 // 筛选分类 - 移除标签
+// 说明：从已选中的标签中移除指定标签
 const removeFilterTag = (tagId) => {
   const index = selectedFilterTagIds.value.indexOf(tagId)
   if (index > -1) {
@@ -1052,7 +1127,8 @@ const resetForm = () => {
     duration: 0,
     fileUrl: '',
     coverImage: '',
-    categoryIds: []
+    categoryIds: [],
+    lyrics: ''
   })
   // 清空待上传文件
   pendingMusicFile.value = null
@@ -1259,7 +1335,7 @@ onMounted(() => {
   flex-wrap: wrap;
 
   .search-input {
-    width: 300px;
+    width: 250px;
   }
 
   .filter-select {
@@ -1288,6 +1364,52 @@ onMounted(() => {
   -webkit-box-orient: vertical;
   line-height: 1.4;
   max-height: 2.8em;
+}
+
+.album-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+  max-height: 2.8em;
+}
+
+.lyrics-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.lyrics-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+  max-height: 1.4em;
+}
+
+.lyrics-full pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.lyrics-tip {
+  font-size: 12px;
+  color: #909399;
+  margin-top: 5px;
+  font-style: italic;
 }
 
 .pagination {

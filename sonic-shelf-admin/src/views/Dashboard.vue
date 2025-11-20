@@ -54,7 +54,7 @@
         <el-card shadow="hover" class="statistic-card">
           <el-statistic
             title="歌手总数"
-            :value="singerCount"
+            :value="artistCount"
             :precision="0"
             suffix="位"
             value-style="color: #fa8c16"
@@ -120,7 +120,7 @@ import request from '@/utils/request'
 const userCount = ref(0)
 const musicCount = ref(0)
 const albumCount = ref(0)
-const singerCount = ref(0)
+const artistCount = ref(0)
 const playlistCount = ref(0)
 const categoryCount = ref(0)
 
@@ -136,24 +136,15 @@ const recentOperations = ref([
 // 获取统计数据
 const getStatistics = async () => {
   try {
-    // 这里可以替换为实际的API请求
-    // const res = await request.get('/dashboard/statistics')
-    // if (res.code === '200') {
-    //   userCount.value = res.data.userCount
-    //   musicCount.value = res.data.musicCount
-    //   albumCount.value = res.data.albumCount
-    //   singerCount.value = res.data.singerCount
-    //   playlistCount.value = res.data.playlistCount
-    //   categoryCount.value = res.data.categoryCount
-    // }
-    
-    // 模拟数据
-    userCount.value = 128
-    musicCount.value = 2560
-    albumCount.value = 320
-    singerCount.value = 160
-    playlistCount.value = 640
-    categoryCount.value = 40
+    const res = await request.get('/dashboard/statistics')
+    if (res.code === '200') {
+      userCount.value = res.data.userCount
+      musicCount.value = res.data.musicCount
+      albumCount.value = res.data.albumCount
+      artistCount.value = res.data.artistCount
+      playlistCount.value = res.data.playlistCount
+      categoryCount.value = res.data.categoryCount
+    }
   } catch (error) {
     console.error('获取统计数据失败:', error)
   }

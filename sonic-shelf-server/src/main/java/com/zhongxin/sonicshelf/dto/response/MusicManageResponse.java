@@ -16,6 +16,7 @@ public class MusicManageResponse {
     private Integer duration;
     private String fileUrl;
     private String coverImage;
+    private String lyrics;
     private Integer playCount;
     private List<Category> categories;
     private String createdAt;
