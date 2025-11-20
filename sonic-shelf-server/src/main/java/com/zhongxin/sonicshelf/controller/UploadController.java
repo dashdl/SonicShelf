@@ -55,7 +55,7 @@ public class UploadController {
         return Result.success("上传成功", "/uploads/userAvatars/" + fileName);
     }
 
-    @PostMapping("/cover/{id}/")
+    @PostMapping("/cover/{id}")
     public Result uploadCover(@RequestParam("file") MultipartFile file, @PathVariable Long id) throws IOException {
         String filePath = System.getProperty("user.dir") + "/files/uploads/playlistCovers/";
 
@@ -129,6 +129,21 @@ public class UploadController {
         musicMapper.uploadMusicFile("/music/" + fileName, id);
 
         return Result.success("上传成功", "/music/" + fileName);
+    }
+
+    @AdminAuth
+    @PostMapping("/playlistCover/{id}")
+    public Result uploadPlaylistCover(@RequestParam("file") MultipartFile file, @PathVariable Long id) throws IOException {
+
+        String filePath = System.getProperty("user.dir") + "/files/uploads/playlistCovers/";
+
+        byte[] bytes = file.getBytes();
+        // 使用时间戳前缀避免文件名冲突，直接使用原始文件名（包含中文）
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        playlistService.updateOfficialPlaylistCover("/uploads/playlistCovers/" + fileName, id);
+        FileUtil.writeBytes(bytes, filePath + fileName);
+
+        return Result.success("上传成功", "/uploads/playlistCovers/" + fileName);
     }
 
 //    @GetMapping("/download/{filName}")

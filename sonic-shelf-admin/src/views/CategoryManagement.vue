@@ -142,6 +142,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import mockService from '@/mock/mockService'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import request from "@/utils/request.js";
 
 // 分类列表数据
 const categoryList = ref([])
@@ -185,7 +186,7 @@ const getCategoryList = async () => {
       pageSize: pageSize.value,
       keyword: searchQuery.value
     }
-    const res = await mockService.category.getList(params)
+    const res = await request.get('categories')
     if (res.code === '200') {
       categoryList.value = res.data.list
       total.value = res.data.total

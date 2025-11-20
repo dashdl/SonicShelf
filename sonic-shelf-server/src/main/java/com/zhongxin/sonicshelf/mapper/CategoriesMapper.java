@@ -1,7 +1,7 @@
 package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.response.CategoriesResponse;
-import com.zhongxin.sonicshelf.dto.response.MusicManageResponse;
+import com.zhongxin.sonicshelf.entity.Category;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -34,13 +34,12 @@ public interface CategoriesMapper {
     @Delete("delete from playlist_categories where playlist_id=#{id} and category_id=#{tag}")
     void removePlaylistTags(@Param("id") Long id, @Param("tag") Long tag);
 
-
     List<Long> selectMusicIdByCategoryId(List<Long> ids);
 
     List<Long> selectCategoryIdsFromMusicCategories(List<Long> ids);
 
     @Select("select c.id,name from categories as c left join music_categories as mc on c.id = mc.category_id where mc.music_id = #{id}")
-    List<MusicManageResponse.Category> selectByMusicId(Long id);
+    List<Category> selectByMusicId(Long id);
 
     @Select("SELECT category_id FROM music_categories WHERE music_id = #{id}")
     List<Long> findByMusicId(Long id);
@@ -50,4 +49,9 @@ public interface CategoriesMapper {
 
     @Delete("delete from music_categories where music_id=#{id} and category_id=#{tag}")
     void removeMusicTags(@Param("id") Long id, @Param("tag") Long tag);
+
+    @Select("select c.id,name from categories as c left join playlist_categories as pc on c.id = pc.category_id where pc.playlist_id = #{id}")
+    List<Category> selectByPlaylistId(Long id);
+
+    void addOfficialPlaylistTags(@Param("categoryIds") Integer[] categoryIds, @Param("id") Long id);
 }

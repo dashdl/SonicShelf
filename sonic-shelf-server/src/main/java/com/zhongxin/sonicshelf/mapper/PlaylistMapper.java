@@ -1,6 +1,8 @@
 package com.zhongxin.sonicshelf.mapper;
 
+import com.zhongxin.sonicshelf.dto.request.PlaylistManageRequest;
 import com.zhongxin.sonicshelf.dto.response.PlaylistCardResponse;
+import com.zhongxin.sonicshelf.dto.response.PlaylistManageResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.entity.Playlist;
 import org.apache.ibatis.annotations.*;
@@ -11,7 +13,6 @@ import java.util.List;
 public interface PlaylistMapper {
 
     List<PlaylistsResponse> selectByUserId(Long id);
-
 
     PlaylistsResponse findByPlaylistId(Long id);
 
@@ -25,7 +26,6 @@ public interface PlaylistMapper {
 
     @Select("select user_id from playlists where id=#{id}")
     Long findCreatorByPlaylistId(Long id);
-
 
     List<PlaylistCardResponse> selectAll(Integer limit);
 
@@ -48,4 +48,13 @@ public interface PlaylistMapper {
 
     @Select("select user_id from playlists where id=#{playlistId}")
     Long selectUserIdByPlaylistId(Long playlistId);
+
+    List<PlaylistManageResponse> selectPlaylist(@Param("keyword") String keyword, @Param("isPublic") Byte isPublic, @Param("categoryIds") Integer[] categoryIds);
+
+    @Insert("insert into playlists (user_id,title,description,is_public) values(1,#{playlist.title},#{playlist.description},#{playlist.isPublic})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    void addPlaylist(@Param("playlist") PlaylistManageRequest playlist);
+
+    @Delete("delete from playlists where id = #{playlistId}")
+    void deleteOfficialPlaylist(Long playlistId);
 }
