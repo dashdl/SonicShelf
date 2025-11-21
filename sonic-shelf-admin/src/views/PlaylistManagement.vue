@@ -269,8 +269,18 @@ const playlistRules = {
     { min: 1, max: 100, message: '歌单名称长度在 1 到 100 个字符', trigger: 'blur' }
   ],
   categoryIds: [
-    { required: true, message: '请选择至少一个分类', trigger: 'change' },
-    { type: 'array', min: 1, message: '请选择至少一个分类', trigger: 'change' }
+    { 
+      required: true, 
+      message: '请选择至少一个分类', 
+      trigger: 'change',
+      validator: (rule, value, callback) => {
+        if (selectedFormTagIds.value && selectedFormTagIds.value.length > 0) {
+          callback()
+        } else {
+          callback(new Error('请选择至少一个分类'))
+        }
+      }
+    }
   ]
 }
 
@@ -394,12 +404,14 @@ const handleSubmit = async () => {
     let newPlaylistId = null
 
     // 准备请求数据，适配后端API字段名称
-    const requestData = {
-      title: playlistForm.title, // 直接使用title字段
-      categoryIds: selectedFormTagIds.value,
-      description: playlistForm.description,
-      isPublic: playlistForm.isPublic // 使用数字值（1:公开, 0:私有）
-    }
+  // 将字符串ID转换为数字ID
+  const categoryIds = selectedFormTagIds.value.map(id => Number(id))
+  const requestData = {
+    title: playlistForm.title, // 直接使用title字段
+    categoryIds: categoryIds,
+    description: playlistForm.description,
+    isPublic: playlistForm.isPublic // 使用数字值（1:公开, 0:私有）
+  }
 
     if (playlistForm.id) {
       // 编辑模式

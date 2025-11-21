@@ -17,6 +17,7 @@ import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 @RestController
@@ -141,6 +142,9 @@ public class PlaylistsController {
         }
 
         playlistsService.updateOfficialPlaylist(playlist);
+        playlistsService.updatePlaylistTags(playlist.getId(), Arrays.stream(playlist.getCategoryIds())
+                .map(Integer::longValue)
+                .toArray(Long[]::new));
 
         return Result.success("歌单信息修改成功");
     }
@@ -172,22 +176,20 @@ public class PlaylistsController {
             throw new CustomException("3004", "请勿编辑用户歌单");
         }
 
+        playlistsService.addMusic(playlistId, musicIds);
         playlistsService.updateMusicCount(playlistId);
-
-        playlistsService.addMusic(playlistId,musicIds);
         return Result.success("添加成功");
     }
 
     @AdminAuth
     @DeleteMapping("/{playlistId}/remove-music/{musicId}")
-    public Result addPlaylistMusic(@PathVariable Long playlistId,
+    public Result removePlaylistMusic(@PathVariable Long playlistId,
                                    @PathVariable Long musicId) {
         if (!playlistsService.isOfficial(playlistId)) {
             throw new CustomException("3004", "请勿编辑用户歌单");
         }
+        playlistsService.removeMusic(playlistId, musicId);
         playlistsService.updateMusicCount(playlistId);
-
-        playlistsService.removeMusic(playlistId,musicId);
         return Result.success("添加成功");
     }
 }
