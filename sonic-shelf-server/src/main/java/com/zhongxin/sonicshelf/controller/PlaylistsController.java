@@ -17,6 +17,7 @@ import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 @RestController
@@ -141,6 +142,9 @@ public class PlaylistsController {
         }
 
         playlistsService.updateOfficialPlaylist(playlist);
+        playlistsService.updatePlaylistTags(playlist.getId(), Arrays.stream(playlist.getCategoryIds())
+                .map(Integer::longValue)
+                .toArray(Long[]::new));
 
         return Result.success("歌单信息修改成功");
     }
@@ -174,7 +178,7 @@ public class PlaylistsController {
 
         playlistsService.updateMusicCount(playlistId);
 
-        playlistsService.addMusic(playlistId,musicIds);
+        playlistsService.addMusic(playlistId, musicIds);
         return Result.success("添加成功");
     }
 
@@ -187,7 +191,7 @@ public class PlaylistsController {
         }
         playlistsService.updateMusicCount(playlistId);
 
-        playlistsService.removeMusic(playlistId,musicId);
+        playlistsService.removeMusic(playlistId, musicId);
         return Result.success("添加成功");
     }
 }
