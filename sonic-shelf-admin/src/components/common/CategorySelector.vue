@@ -1,5 +1,5 @@
 <template>
-  <div class="category-selector-container">
+  <div class="category-selector-container" ref="selectorRef">
     <div class="category-selector" @click="toggleSelector" :class="{ active: showSelector, disabled: disabled }">
       <div class="selected-tags-preview" v-if="selectedTags.length > 0">
         <div class="selected-tag" v-for="item in selectedTags.slice(0, 3)" :key="item.id">
@@ -27,13 +27,13 @@
 
       <div v-else>
         <div class="categories-title">
-          <div
-              class="title-content"
-              v-for="item in internalCategories"
-              :key="item.id"
-              @click="changeCategory(item.id)"
-              :class="{ active: item.id === currentCategoryId }"
-          >
+        <div
+            class="title-content"
+            v-for="item in rootCategories"
+            :key="item.id"
+            @click="changeCategory(item.id)"
+            :class="{ active: item.id === currentCategoryId }"
+        >
             <span :class="{ 'bold-text': item.id === currentCategoryId }">{{ item.name }}</span>
             <div v-if="item.id === currentCategoryId" class="select-underline"></div>
           </div>
@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import {ref, computed, watch, onMounted} from 'vue'
+import {ref, computed, watch, onMounted, onUnmounted} from 'vue'
 import {Close, ArrowDown, ArrowUp, InfoFilled, Loading} from '@element-plus/icons-vue'
 import request from "@/utils/request.js";
 
@@ -101,7 +101,6 @@ const emit = defineEmits([
 const showSelector = ref(false)
 const currentCategoryId = ref(null)
 const currentTags = ref([])
-const internalCategories = ref([])
 const loading = ref(false)
 
 // 新增：分类数据映射表
@@ -162,10 +161,10 @@ const loadCategories = async () => {
             })
             
             // 更新当前分类的子分类数据
-            const currentCategory = internalCategories.value.find(item => item.id === category.id)
-            if (currentCategory) {
-              currentCategory.children = subCategories
-            }
+      const currentCategory = rootCategories.value.find(item => item.id === category.id)
+      if (currentCategory) {
+        currentCategory.children = subCategories
+      }
           }
         } catch (error) {
           // 静默处理子分类加载错误
@@ -188,47 +187,18 @@ const loadCategories = async () => {
           )
           currentCategory.children = children
         }
-        
         // 立即加载当前分类的标签
         loadCurrentCategoryTags()
       }
-      
-      // 更新内部分类列表（用于UI显示）
-      internalCategories.value = rootCategories.value
+
     }
   } catch (error) {
-    internalCategories.value = []
     rootCategories.value = []
-    categoryMap.value.clear()
+        categoryMap.value.clear()
   } finally {
     loading.value = false
   }
 }
-
-// 加载指定分类的子分类（现在直接从映射表获取）
-const loadTagsForCategory = async (categoryId) => {
-  // 由于已经一次性加载了所有数据，这里不需要再发起API请求
-  // 直接从映射表中获取当前分类的子分类
-  const children = Array.from(categoryMap.value.values()).filter(
-      category => String(category.parentId) === String(categoryId)
-  )
-
-  // 更新当前分类的子分类数据
-  const category = internalCategories.value.find(item => item.id === categoryId)
-  if (category) {
-    category.children = children
-
-    // 如果当前分类就是刚加载子分类的分类，更新当前标签
-    if (currentCategoryId.value === categoryId) {
-      loadCurrentCategoryTags()
-    }
-  }
-}
-
-// 监听分类列表变化，初始化当前分类和标签
-watch(() => props.categories, (newCategories) => {
-  // 父组件不会传递分类数据，此监听器不再需要
-}, {immediate: true})
 
 // 监听选中的标签ID变化，确保UI正确显示已选中状态
 watch(() => props.selectedTagIds, () => {
@@ -238,18 +208,18 @@ watch(() => props.selectedTagIds, () => {
 
 // 加载当前分类的标签
 const loadCurrentCategoryTags = () => {
-  if (!currentCategoryId.value) {
-    return
-  }
+    if (!currentCategoryId.value) {
+      return
+    }
 
-  const category = internalCategories.value.find(item => item.id === currentCategoryId.value)
+    const category = rootCategories.value.find(item => item.id === currentCategoryId.value)
 
-  if (category && category.children) {
-    currentTags.value = category.children
-  } else {
-    currentTags.value = []
+    if (category && category.children) {
+      currentTags.value = category.children
+    } else {
+      currentTags.value = []
+    }
   }
-}
 
 // 监听当前分类变化，加载对应的标签
 watch(currentCategoryId, (newCategoryId) => {
@@ -261,6 +231,14 @@ watch(currentCategoryId, (newCategoryId) => {
 // 组件挂载时初始化
 onMounted(() => {
   loadCategories()
+  // 注册点击外部关闭的事件监听器
+  document.addEventListener('click', handleClickOutside)
+})
+
+// 组件卸载时清理
+onUnmounted(() => {
+  // 移除点击外部关闭的事件监听器，避免内存泄漏
+  document.removeEventListener('click', handleClickOutside)
 })
 
 // 切换选择器显示/隐藏
@@ -272,21 +250,21 @@ const toggleSelector = () => {
 
 // 切换分类
 const changeCategory = async (categoryId) => {
-  currentCategoryId.value = categoryId
+    currentCategoryId.value = categoryId
 
-  // 检查当前分类是否已经有标签数据，如果没有则从映射表加载
-  const category = internalCategories.value.find(item => item.id === categoryId)
-  if (category && (!category.children || category.children.length === 0)) {
-    // 直接从映射表获取子分类数据
-    const children = Array.from(categoryMap.value.values()).filter(
-        cat => String(cat.parentId) === String(categoryId)
-    )
-    category.children = children
+    // 检查当前分类是否已经有标签数据，如果没有则从映射表加载
+    const category = rootCategories.value.find(item => item.id === categoryId)
+    if (category && (!category.children || category.children.length === 0)) {
+      // 直接从映射表获取子分类数据
+      const children = Array.from(categoryMap.value.values()).filter(
+          cat => String(cat.parentId) === String(categoryId)
+      )
+      category.children = children
+    }
+
+    // 立即更新当前标签显示
+    loadCurrentCategoryTags()
   }
-
-  // 立即更新当前标签显示
-  loadCurrentCategoryTags()
-}
 
 // 选择/取消选择标签
 const handleTagSelect = (tagId) => {
@@ -314,12 +292,14 @@ const handleTagSelect = (tagId) => {
   emit('update:selectedTags', selectedTagObjects)
 }
 
+// 使用ref获取当前组件的根元素
+const selectorRef = ref(null)
+
 // 点击外部关闭选择器
 const handleClickOutside = (event) => {
-  if (showSelector.value) {
+  if (showSelector.value && selectorRef.value) {
     // 检查点击是否发生在选择器内部
-    const selectorElement = document.querySelector('.category-selector-container')
-    if (selectorElement && !selectorElement.contains(event.target)) {
+    if (!selectorRef.value.contains(event.target)) {
       showSelector.value = false
     }
   }
@@ -342,21 +322,25 @@ const removeTag = (tagId) => {
 // 暴露方法给父组件
 const reset = () => {
   showSelector.value = false
-  currentCategoryId.value = props.categories.length > 0 ? props.categories[0].id :
-      (rootCategories.value.length > 0 ? rootCategories.value[0].id : null)
-
-  if (currentCategoryId.value) {
-    // 直接从映射表加载当前分类的标签
+  
+  // 设置当前分类为第一个根分类
+  if (rootCategories.value.length > 0) {
+    currentCategoryId.value = rootCategories.value[0].id
+    
+    // 直接从映射表加载当前分类的标签并更新
     const children = Array.from(categoryMap.value.values()).filter(
         cat => String(cat.parentId) === String(currentCategoryId.value)
     )
-
-    const category = internalCategories.value.find(item => item.id === currentCategoryId.value)
+    
+    const category = rootCategories.value[0]
     if (category) {
       category.children = children
     }
-
+    
     loadCurrentCategoryTags()
+  } else {
+    currentCategoryId.value = null
+    currentTags.value = []
   }
 }
 

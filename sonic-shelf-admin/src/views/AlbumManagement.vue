@@ -1,147 +1,3 @@
-<!--
-  专辑管理页面
-  
-  数据流说明：
-  1. 页面加载时调用 getAlbumList() 获取专辑列表
-  2. 搜索功能通过 handleSearch() 触发，支持按专辑名称和歌手筛选
-  3. 分页功能通过 handleCurrentChange() 和 handleSizeChange() 实现
-  4. 表单提交通过 handleSubmit() 处理，支持添加和编辑专辑
-  5. 删除功能通过 handleDelete() 实现，带确认对话框
-  
-  API替换说明：
-  1. 当前使用 mockService.album 模拟数据
-  2. 替换为真实API时，请导入 src/api/album.js 中的方法
-  3. 保持相同的返回格式：{ code: '200', data: {...} }
-  
-  后端API详细文档：
-  
-  1. 获取专辑列表
-     - URL: GET /admin/albums
-     - 请求参数（查询参数）：
-       { 
-         pageNum: Number,      // 当前页码，从1开始
-         pageSize: Number,     // 每页条数
-         keyword: String,      // 搜索关键词（专辑名称）
-         singerId: String      // 歌手ID（筛选条件）
-       }
-     - 返回格式：
-       { 
-         code: '200',          // 状态码
-         data: { 
-           list: Array<{       // 专辑列表
-             id: String,       // 专辑ID
-             name: String,     // 专辑名称
-             artistId: String, // 歌手ID
-             artistName: String, // 歌手名称
-             releaseDate: String, // 发行日期（YYYY-MM-DD）
-             description: String, // 专辑简介
-             coverImage: String, // 封面图片URL
-             musicCount: Number, // 歌曲数量
-             createdAt: String, // 创建时间（YYYY-MM-DD HH:mm:ss）
-             updatedAt: String  // 更新时间（YYYY-MM-DD HH:mm:ss）
-           }>,
-           total: Number       // 总记录数
-         }
-       }
-  
-  2. 获取歌手列表
-     - URL: GET /admin/singers
-     - 请求参数（查询参数）：
-       { 
-         pageSize: Number      // 每页条数（用于下拉选择，通常设为较大值）
-       }
-     - 返回格式：
-       { 
-         code: '200',          // 状态码
-         data: { 
-           list: Array<{       // 歌手列表
-             id: String,       // 歌手ID
-             name: String      // 歌手名称
-           }>,
-           total: Number       // 总记录数
-         }
-       }
-  
-  3. 添加专辑
-     - URL: POST /admin/albums
-     - 请求体：
-       { 
-         name: String,         // 专辑名称
-         artistId: String,     // 歌手ID
-         releaseDate: String,  // 发行日期（YYYY-MM-DD）
-         description: String,  // 专辑简介
-         coverImage: String      // 封面图片URL
-       }
-     - 返回格式：
-       { 
-         code: '200',          // 状态码
-         data: {               // 新增的专辑信息
-           id: String,         // 专辑ID
-           name: String,       // 专辑名称
-           artistId: String,   // 歌手ID
-           artistName: String, // 歌手名称
-           releaseDate: String, // 发行日期
-           description: String, // 专辑简介
-           coverImage: String,   // 封面图片URL
-           musicCount: Number, // 歌曲数量
-           createdAt: String, // 创建时间
-           updatedAt: String  // 更新时间
-         }
-       }
-  
-  4. 更新专辑
-     - URL: PUT /admin/albums/{id}
-     - 请求体：
-       { 
-         id: String,           // 专辑ID
-         name: String,         // 专辑名称
-         artistId: String,     // 歌手ID
-         releaseDate: String,  // 发行日期
-         description: String,  // 专辑简介
-         coverImage: String      // 封面图片URL
-       }
-     - 返回格式：
-       { 
-         code: '200',          // 状态码
-         data: {               // 更新后的专辑信息
-           id: String,         // 专辑ID
-           name: String,       // 专辑名称
-           artistId: String,   // 歌手ID
-           artistName: String, // 歌手名称
-           releaseDate: String, // 发行日期
-           description: String, // 专辑简介
-           coverImage: String,   // 封面图片URL
-           musicCount: Number, // 歌曲数量
-           createdAt: String, // 创建时间
-           updatedAt: String  // 更新时间
-         }
-       }
-  
-  5. 删除专辑
-     - URL: DELETE /admin/albums/{id}
-     - 请求参数（路径参数）：
-       id: String             // 专辑ID
-     - 返回格式：
-       { 
-         code: '200',          // 状态码
-         data: null            // 无数据返回
-       }
-  
-  6. 上传封面图片（预留接口）
-     - URL: POST /admin/upload/cover
-     - 请求体：FormData
-       { 
-         file: File            // 图片文件
-       }
-     - 返回格式：
-       { 
-         code: '200',          // 状态码
-         data: { 
-           url: String         // 上传后的图片URL
-         }
-       }
--->
-
 <template>
   <div class="admin-management-container">
     <el-card shadow="hover" class="album-management-card">
@@ -407,21 +263,6 @@ const formTitle = computed(() => {
   return albumForm.id ? '编辑专辑' : '添加专辑'
 })
 
-// 获取专辑列表
-// API: GET /admin/albums
-// 请求参数: { pageNum, pageSize, keyword, artistId }
-// 返回格式: { code: '200', data: { list: Array<Album>, total: Number } }
-// Album字段详细说明:
-// id: String - 专辑唯一标识符
-// name: String - 专辑名称
-// artistId: String - 歌手ID
-// artistName: String - 歌手名称
-// releaseDate: String - 发行日期 (YYYY-MM-DD)
-// description: String - 专辑简介
-// coverImage: String - 封面图片URL
-// musicCount: Number - 歌曲数量
-// createdAt: String - 创建时间 (YYYY-MM-DD HH:mm:ss)
-// updatedAt: String - 更新时间 (YYYY-MM-DD HH:mm:ss)
 const getAlbumList = async () => {
   try {
     const params = {
@@ -441,10 +282,6 @@ const getAlbumList = async () => {
   }
 }
 
-// 获取歌手列表
-// API: GET /admin/artists
-// 请求参数: { pageSize } - 设置较大值以获取所有歌手用于下拉选择
-// 返回格式: { code: '200', data: { list: Array<Artist>, total: Number } }
 const getArtists = async () => {
   try {
     const res = await request.get('artist/getAll', {
@@ -519,9 +356,6 @@ const handleEdit = (row) => {
 }
 
 // 删除专辑
-// API: DELETE /admin/albums/{id}
-// 请求参数: { id } - 专辑ID（路径参数）
-// 返回格式: { code: '200', data: null }
 const handleDelete = (row) => {
   ElMessageBox.confirm('确定要删除该专辑吗？', '提示', {
     confirmButtonText: '确定',
@@ -532,7 +366,7 @@ const handleDelete = (row) => {
       const res = await request.delete('album/delete/' + row.id)  // 传入专辑ID删除指定专辑
       if (res.code === '200') {
         ElMessage.success('删除成功')
-        getAlbumList()  // 删除成功后重新获取列表
+        await getAlbumList()  // 删除成功后重新获取列表
       }
     } catch (error) {
       console.error('删除专辑失败:', error)
@@ -544,21 +378,6 @@ const handleDelete = (row) => {
 }
 
 // 提交表单（添加/编辑专辑）
-// 添加API: POST /admin/albums
-// 编辑API: PUT /admin/albums/{id}
-// 请求体: { id, name, artistId, releaseDate, description }
-// 返回格式: { code: '200', data: Album }
-// Album字段详细说明:
-// id: String - 专辑唯一标识符
-// name: String - 专辑名称
-// artistId: String - 歌手ID
-// artistName: String - 歌手名称
-// releaseDate: String - 发行日期 (YYYY-MM-DD)
-// description: String - 专辑简介
-// coverImage: String - 封面图片URL
-// musicCount: Number - 歌曲数量
-// createdAt: String - 创建时间 (YYYY-MM-DD HH:mm:ss)
-// updatedAt: String - 更新时间 (YYYY-MM-DD HH:mm:ss)
 const handleSubmit = async () => {
   if (!albumFormRef.value) return
   try {
@@ -631,7 +450,7 @@ const handleSubmit = async () => {
       dialogVisible.value = false  // 关闭对话框
       // 清空待上传文件
       pendingCoverFile.value = null
-      getAlbumList()  // 重新获取专辑列表
+      await getAlbumList()  // 重新获取专辑列表
     }
   } catch (error) {
     console.error(albumForm.id ? '编辑专辑失败:' : '添加专辑失败:', error)
@@ -688,9 +507,6 @@ const handleCoverRemove = () => {
 }
 
 // 封面上传成功处理
-// API: POST /admin/upload/cover
-// 请求体: FormData { file: File }
-// 返回格式: { code: '200', data: { url: String } }
 const handleCoverUpload = (response) => {
   if (response.code === '200') {
     albumForm.coverImage = response.data.url  // 保存上传后的图片URL

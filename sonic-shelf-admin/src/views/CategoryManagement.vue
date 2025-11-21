@@ -1,25 +1,3 @@
-<!--
-  分类管理页面
-  
-  数据流说明：
-  1. 页面加载时调用 getCategoryList() 获取分类列表
-  2. 搜索功能通过 handleSearch() 触发，支持按分类名称筛选
-  3. 分页功能通过 handleCurrentChange() 和 handleSizeChange() 实现
-  4. 表单提交通过 handleSubmit() 处理，支持添加和编辑分类
-  5. 删除功能通过 handleDelete() 实现，带确认对话框
-  
-  API替换说明：
-  1. 当前使用 mockService.category 模拟数据
-  2. 替换为真实API时，请导入 src/api/category.js 中的方法
-  3. 保持相同的返回格式：{ code: '200', data: {...} }
-  
-  后端API要求：
-  - GET /admin/categories - 获取分类列表（支持分页、搜索）
-  - POST /admin/categories - 添加分类
-  - PUT /admin/categories/{id} - 更新分类
-  - DELETE /admin/categories/{id} - 删除分类
--->
-
 <template>
   <div class="admin-management-container">
     <el-card shadow="hover" class="category-management-card">
@@ -206,7 +184,6 @@
 
 <script setup>
 import {ref, reactive, onMounted, computed, h} from 'vue'
-import mockService from '@/mock/mockService'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import request from "@/utils/request.js";
 import {Search, Plus, Edit, Delete, Refresh} from '@element-plus/icons-vue'
@@ -233,12 +210,7 @@ const searchQuery = ref('')
 // 对话框
 const dialogVisible = ref(false)
 const categoryFormRef = ref()
-// 分类表单数据
-// 数据结构说明：
-// id: 分类ID（编辑时必填，新增时为空）
-// name: 分类名称（必填，1-50个字符）
-// description: 分类描述（可选）
-// parentId: 父分类ID（0表示一级分类，其他值表示二级分类的父ID）
+
 const categoryForm = reactive({
   id: '',
   name: '',
@@ -354,19 +326,12 @@ const handleSelectionChange = (selection) => {
 
 // 选项卡点击事件
 const handleTabClick = (tab) => {
-  // 切换选项卡时重置搜索和分页
   searchQuery.value = ''
   currentPage.value = 1
-
-  // 获取点击的选项卡对应的子分类
   getSubCategories(tab.props.name)
 }
 
 // 添加分类按钮点击事件
-// 功能：打开分类添加对话框，根据当前是否有激活的选项卡设置默认的parentId
-// 默认行为：
-// - 如果有激活的一级分类选项卡，则默认添加该选项卡下的子分类
-// - 如果没有激活的选项卡，则默认添加一级分类
 const handleAddCategory = () => {
   resetForm()
   // 如果有激活的选项卡，默认添加该选项卡下的子分类
@@ -382,10 +347,6 @@ const handleAddCategory = () => {
 }
 
 // 编辑一级分类事件
-// 功能：打开分类编辑对话框，填充一级分类数据
-// 参数：row - 选中的一级分类数据对象
-// 数据结构：{id, name, description, parentId, musicCount, playlistCount, createdAt}
-// 注意：编辑一级分类时，parentId会被忽略
 const handleEditParentCategory = (row) => {
   Object.assign(categoryForm, row)
   isEditingParent.value = true
@@ -393,9 +354,6 @@ const handleEditParentCategory = (row) => {
 }
 
 // 编辑子分类事件
-// 功能：打开分类编辑对话框，填充子分类数据
-// 参数：row - 选中的子分类数据对象
-// 数据结构：{id, name, description, parentId, musicCount, playlistCount, createdAt}
 const handleEditSubcategory = (row) => {
   Object.assign(categoryForm, row)
   isEditingParent.value = false
@@ -480,38 +438,6 @@ const handleDeleteSubcategory = (row) => {
   })
 }
 
-// 提交表单
-// 功能：处理分类的添加和编辑操作
-// 处理逻辑：
-// 1. 表单验证
-// 2. 准备提交数据（将parentId=0转换为null以匹配数据库要求）
-// 3. 根据是否有id判断是编辑还是添加操作
-// 4. 调用相应的API接口
-// 5. 处理成功或失败的响应
-// 6. 更新页面数据
-//
-// 请求体结构：
-// 添加分类：POST /categories
-// {
-//   name: string,          // 分类名称（必填）
-//   description: string,   // 分类描述（可选）
-//   parentId: number|null  // 父分类ID（null表示一级分类，其他值表示二级分类的父ID）
-// }
-//
-// 编辑分类：PUT /categories/:id
-// {
-//   id: string,            // 分类ID（必填）
-//   name: string,          // 分类名称（必填）
-//   description: string,   // 分类描述（可选）
-//   parentId: number|null  // 父分类ID（null表示一级分类，其他值表示二级分类的父ID）
-// }
-//
-// 响应体结构：
-// {
-//   code: '200',           // 状态码，200表示成功
-//   message: string,       // 操作结果消息
-//   data: object|null      // 返回的分类数据（可选）
-// }
 const handleSubmit = async () => {
   if (!categoryFormRef.value) return
   try {
@@ -527,15 +453,9 @@ const handleSubmit = async () => {
 
     if (categoryForm.id) {
       // 编辑分类
-      // res = await request.put(`categories/${categoryForm.id}`, submitData)
-
-      // 使用mockService模拟编辑
       res = await request.put('categories/update', submitData)
     } else {
       // 添加分类
-      // res = await request.post('categories', submitData)
-
-      // 使用mockService模拟添加
       res = await request.post('categories/add', submitData)
     }
 
@@ -545,15 +465,11 @@ const handleSubmit = async () => {
 
       // 如果是一级分类操作，重新获取一级分类列表
       if (categoryForm.parentId === 0) {
-        // 清空子分类数据
         subCategoriesMap.value.clear()
-        // 重新获取一级分类
         getParentCategories()
       } else {
         // 如果是子分类操作，重新获取该子分类所属的一级分类的子分类
-        // 清空该一级分类的子分类数据
         subCategoriesMap.value.delete(categoryForm.parentId)
-        // 重新获取该一级分类的子分类
         getSubCategories(categoryForm.parentId)
       }
     }
@@ -575,7 +491,6 @@ const resetForm = () => {
     categoryFormRef.value.resetFields()
   }
 }
-
 
 onMounted(() => {
   getParentCategories()
