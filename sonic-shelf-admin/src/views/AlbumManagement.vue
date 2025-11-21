@@ -209,7 +209,6 @@ import {ElMessage, ElMessageBox} from 'element-plus'
 import {Search, Plus, Edit, Delete, Refresh, Upload} from '@element-plus/icons-vue'
 import request from "@/utils/request.js";
 
-
 // 专辑列表数据
 const albumList = ref([])
 const total = ref(0)

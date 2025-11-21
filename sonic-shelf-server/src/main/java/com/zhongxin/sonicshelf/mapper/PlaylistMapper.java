@@ -59,4 +59,12 @@ public interface PlaylistMapper {
     void deleteOfficialPlaylist(Long playlistId);
     @Select("select count(*) from playlists")
     int countPlaylistCount();
+
+    @Select("select is_public from playlists where id = #{playlistId} limit 1")
+    Integer selectPlaylistIsPublic(Long playlistId);
+
+    void addMusic(Long playlistId, Long[] musicIds);
+
+    @Delete("delete from playlist_musics where playlist_id = #{playlistId} and music_id = #{musicId}")
+    void removeMusic(Long playlistId, Long musicId);
 }

@@ -16,6 +16,13 @@
         <result column="created_at" property="createTime"/>
         <result column="play_count" property="playCount"/>
     </resultMap>
+    <insert id="addMusic">
+        insert ignore into playlist_musics (playlist_id, music_id)
+        values
+        <foreach collection="musicIds" item="id" separator=",">
+            (#{playlistId},#{id})
+        </foreach>
+    </insert>
 
     <select id="selectByUserId" resultMap="PlaylistsResponseMap">
         SELECT p.id,

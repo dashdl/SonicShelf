@@ -4,6 +4,7 @@ import com.zhongxin.sonicshelf.dto.request.MusicManageRequest;
 import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicManageResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
+import com.zhongxin.sonicshelf.dto.response.PlaylistMusicResponse;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -63,4 +64,6 @@ public interface MusicMapper {
 
     @Select("select count(*) from musics")
     int countMusicCount();
+
+    List<PlaylistMusicResponse> selectPlaylistMusicResponseByPlaylistId(Long playlistId);
 }

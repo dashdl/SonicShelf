@@ -86,6 +86,7 @@ public class PlaylistsController {
         if (Objects.equals(playlistsService.findUserIdByPlaylistId(playlistId), CurrentUserUtil.getCurrentUserId())) {
             if (musicService.findById(musicId) != null && playlistsService.findByPlaylistId(playlistId) != null)
                 playlistsService.collectMusicByPlaylistIdAndMusicId(playlistId, musicId);
+            playlistsService.updateMusicCount(playlistId);
         } else {
             throw new CustomException("这不是您的歌单");
         }
@@ -100,6 +101,7 @@ public class PlaylistsController {
 
             if (musicService.findById(musicId) != null && playlistsService.findByPlaylistId(playlistId) != null)
                 playlistsService.deleteMusicByPlaylistIdAndMusicId(playlistId, musicId);
+            playlistsService.updateMusicCount(playlistId);
         } else {
             throw new CustomException("这不是您的歌单");
         }
@@ -121,8 +123,8 @@ public class PlaylistsController {
     @PostMapping("/add")
     public Result addPlaylist(@RequestBody PlaylistManageRequest playlist) {
 
-        if (playlist.getIsPublic()!=2){
-            throw new CustomException("3003","请勿添加用户歌单");
+        if (playlist.getIsPublic() != 2) {
+            throw new CustomException("3003", "请勿添加用户歌单");
         }
 
         playlistsService.addPlaylist(playlist);
@@ -134,8 +136,8 @@ public class PlaylistsController {
     @PutMapping("/update")
     public Result updatePlaylist(@RequestBody PlaylistManageRequest playlist) {
 
-        if (playlist.getIsPublic()!=2){
-            throw new CustomException("3003","请勿编辑用户歌单");
+        if (playlist.getIsPublic() != 2) {
+            throw new CustomException("3003", "请勿编辑用户歌单");
         }
 
         playlistsService.updateOfficialPlaylist(playlist);
@@ -150,5 +152,42 @@ public class PlaylistsController {
         playlistsService.deleteOfficialPlaylist(id);
 
         return Result.success();
+    }
+
+    @AdminAuth
+    @GetMapping("/{playlistId}/musics/admin")
+    public Result getPlaylistMusics(@PathVariable Long playlistId) {
+        if (!playlistsService.isPublic(playlistId)) {
+            throw new CustomException("3004", "请勿试图查看非公开歌单");
+        }
+
+        return Result.success("获取成功", musicService.findPlaylistMusicResponseByPlaylistId(playlistId));
+    }
+
+    @AdminAuth
+    @PostMapping("/{playlistId}/add-musics")
+    public Result addPlaylistMusic(@PathVariable Long playlistId,
+                                   @RequestBody Long[] musicIds) {
+        if (!playlistsService.isOfficial(playlistId)) {
+            throw new CustomException("3004", "请勿编辑用户歌单");
+        }
+
+        playlistsService.updateMusicCount(playlistId);
+
+        playlistsService.addMusic(playlistId,musicIds);
+        return Result.success("添加成功");
+    }
+
+    @AdminAuth
+    @DeleteMapping("/{playlistId}/remove-music/{musicId}")
+    public Result addPlaylistMusic(@PathVariable Long playlistId,
+                                   @PathVariable Long musicId) {
+        if (!playlistsService.isOfficial(playlistId)) {
+            throw new CustomException("3004", "请勿编辑用户歌单");
+        }
+        playlistsService.updateMusicCount(playlistId);
+
+        playlistsService.removeMusic(playlistId,musicId);
+        return Result.success("添加成功");
     }
 }

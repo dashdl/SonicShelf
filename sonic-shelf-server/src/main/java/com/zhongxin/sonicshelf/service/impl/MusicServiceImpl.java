@@ -6,6 +6,7 @@ import com.zhongxin.sonicshelf.dto.request.MusicManageRequest;
 import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicManageResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
+import com.zhongxin.sonicshelf.dto.response.PlaylistMusicResponse;
 import com.zhongxin.sonicshelf.entity.Favorite;
 import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.mapper.*;
@@ -153,6 +154,11 @@ public class MusicServiceImpl implements MusicService {
     @Override
     public void deleteMusicById(Long id) {
         musicMapper.deleteById(id);
+    }
+
+    @Override
+    public List<PlaylistMusicResponse> findPlaylistMusicResponseByPlaylistId(Long playlistId) {
+        return musicMapper.selectPlaylistMusicResponseByPlaylistId(playlistId);
     }
 
     private boolean isFavorite(Long musicId) {

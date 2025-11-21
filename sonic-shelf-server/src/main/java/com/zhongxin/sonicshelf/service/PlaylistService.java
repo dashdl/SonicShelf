@@ -39,4 +39,14 @@ public interface PlaylistService {
     void updateOfficialPlaylist(PlaylistManageRequest playlist);
 
     void deleteOfficialPlaylist(Long playlistId);
+
+    boolean isPublic(Long playlistId);
+
+    boolean isOfficial(Long playlistId);
+
+    void addMusic(Long playlistId, Long[] musicIds);
+
+    void removeMusic(Long playlistId, Long musicId);
+
+    void updateMusicCount(Long playlistId);
 }

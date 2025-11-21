@@ -32,4 +32,6 @@ public interface MusicService {
     void updateMusicTags(Long[] categoryIds, Long id);
 
     void deleteMusicById(Long id);
+
+    List<PlaylistMusicResponse> findPlaylistMusicResponseByPlaylistId(Long playlistId);
 }

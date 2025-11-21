@@ -173,4 +173,18 @@
                  INNER JOIN albums am On am.id = m.album_id
         WHERE m.id = #{id}
     </select>
+    <select id="selectPlaylistMusicResponseByPlaylistId" resultType="com.zhongxin.sonicshelf.dto.response.PlaylistMusicResponse">
+        SELECT m.id,
+               m.title,
+               a.name   as artist_name,
+               am.title as album_title,
+               m.cover_image,
+               m.duration
+        FROM musics m
+                 LEFT JOIN playlist_musics pm ON pm.music_id = m.id
+                 LEFT JOIN playlists p ON p.id = pm.playlist_id
+                 LEFT JOIN artists a ON m.artist_id = a.id
+                 LEFT JOIN albums am On am.id = m.album_id
+        WHERE p.id = #{playlistId}
+    </select>
 </mapper>

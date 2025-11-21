@@ -157,4 +157,30 @@ public class PlaylistServiceImpl implements PlaylistService {
     public void deleteOfficialPlaylist(Long playlistId) {
         playlistMapper.deleteOfficialPlaylist(playlistId);
     }
+
+    @Override
+    public boolean isPublic(Long playlistId) {
+        Integer isPublic = playlistMapper.selectPlaylistIsPublic(playlistId);
+        return 1==isPublic || 2==isPublic;
+    }
+
+    @Override
+    public boolean isOfficial(Long playlistId) {
+        return 2==playlistMapper.selectPlaylistIsPublic(playlistId);
+    }
+
+    @Override
+    public void addMusic(Long playlistId, Long[] musicIds) {
+        playlistMapper.addMusic(playlistId,musicIds);
+    }
+
+    @Override
+    public void removeMusic(Long playlistId, Long musicId) {
+        playlistMapper.removeMusic(playlistId,musicId);
+    }
+
+    @Override
+    public void updateMusicCount(Long playlistId) {
+        playlistMapper.updateMusicCount(playlistId,playlistMapper.countMusicCount(playlistId));
+    }
 }

@@ -1,5 +1,8 @@
 <template>
   <div class="admin-management-container">
+    <!-- 歌单音乐编辑组件 -->
+    <PlaylistMusicEditor ref="playlistMusicEditorRef" />
+    
     <el-card shadow="hover" class="playlist-management-card">
       <template #header>
         <div class="card-header">
@@ -84,7 +87,22 @@
           </template>
         </el-table-column>
         <el-table-column prop="userNickname" label="创建者" min-width="120" />
-        <el-table-column prop="musicCount" label="歌曲数量" min-width="120" />
+        <el-table-column label="歌曲数量" min-width="120">
+          <template #default="scope">
+            <div class="music-count-cell">
+              <span>{{ scope.row.musicCount }}</span>
+              <el-button
+                v-if="scope.row.isPublic === 2"
+                type="primary"
+                size="small"
+                @click="handleEditMusic(scope.row)"
+                class="edit-music-btn"
+              >
+                <el-icon><Edit /></el-icon>
+              </el-button>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="playCount" label="播放次数" min-width="120" />
         <el-table-column prop="isPublic" label="状态" min-width="100">
           <template #default="scope">
@@ -213,6 +231,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus, Edit, Delete, Refresh, Close, ArrowDown, ArrowUp, InfoFilled } from '@element-plus/icons-vue'
 import request from "@/utils/request.js";
 import CategorySelector from "@/components/common/CategorySelector.vue";
+import PlaylistMusicEditor from "@/components/music/PlaylistMusicEditor.vue";
 
 // 歌单列表数据
 const playlistList = ref([])
@@ -223,7 +242,7 @@ const pageSize = ref(20)
 // 搜索和筛选
 const searchQuery = ref('')
 const categoryFilter = ref('')
-const isPublicFilter = ref('')
+const isPublicFilter = ref('2') // 默认筛选官方歌单
 
 // 分类选择相关数据 - 由CategorySelector组件使用
 const selectedFilterTagIds = ref([]) // 选中的筛选标签ID数组
@@ -257,6 +276,9 @@ const playlistRules = {
 
 // 上传组件引用
 const coverUploadRef = ref()
+
+// 歌单音乐编辑组件引用
+const playlistMusicEditorRef = ref()
 
 // 待上传的封面文件
 const pendingCoverFile = ref(null)
@@ -334,6 +356,12 @@ const handleEdit = async (row) => {
   selectedFormTags.value = row.categories || []
   
   dialogVisible.value = true
+}
+
+// 编辑歌单音乐信息
+const handleEditMusic = (row) => {
+  // 调用歌单音乐编辑组件打开对话框
+  playlistMusicEditorRef.value.open(row)
 }
 
 const handleDelete = (row) => {
@@ -469,7 +497,7 @@ const resetForm = () => {
 // 重置搜索和筛选
 const handleReset = () => {
   searchQuery.value = ''
-  isPublicFilter.value = ''
+  isPublicFilter.value = '2' // 重置为默认筛选官方歌单
   selectedFilterTags.value = []
   selectedFilterTagIds.value = []
   showCategoryFilter.value = false
@@ -546,6 +574,16 @@ onMounted(() => {
 
   .filter-select {
     width: 150px;
+  }
+}
+
+.music-count-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  .edit-music-btn {
+    margin-left: 8px;
   }
 }
 </style>
