@@ -335,9 +335,7 @@ const addMusicToPlaylist = async () => {
     adding.value = true
     const musicIds = selectedMusics.value.map(music => music.id)
     
-    const res = await request.post(`/playlists/${props.playlistId}/add-musics`, {
-      musicIds: musicIds
-    })
+    const res = await request.post(`/playlists/${props.playlistId}/add-musics`, musicIds)
     
     if (res.code === '200') {
       ElMessage.success('添加成功')
