@@ -245,56 +245,13 @@
         </el-select>
         <!-- 分类筛选 - 多级标签选择 -->
         <!-- 说明：此功能前端UI已实现，需要后端API支持 -->
-        <!-- 1. 需要后端提供分类数据API来填充categories和filterTags -->
+        
         <!-- 2. 需要在handleSearch函数中传递selectedFilterTagIds作为筛选条件 -->
-        <div class="category-filter-container">
-          <div class="category-selector" @click="showCategoryFilter = !showCategoryFilter">
-            <div class="selected-tags-preview" v-if="selectedFilterTags.length > 0">
-              <div class="selected-filter-tag" v-for="item in selectedFilterTags.slice(0, 3)" :key="item.id">
-                {{ item.name }}
-                <el-icon @click.stop="removeFilterTag(item.id)">
-                  <Close/>
-                </el-icon>
-              </div>
-              <span v-if="selectedFilterTags.length > 3" class="more-tags-count">+{{
-                  selectedFilterTags.length - 3
-                }}</span>
-            </div>
-            <span v-else class="placeholder-text">选择分类标签</span>
-            <el-icon class="dropdown-icon">
-              <ArrowDown v-if="!showCategoryFilter"/>
-              <ArrowUp v-if="showCategoryFilter"/>
-            </el-icon>
-          </div>
-          <div v-if="showCategoryFilter" class="categories-filter-form">
-            <div class="categories-filter-title">
-              <div class="title-content"
-                   v-for="item in categories"
-                   :key="item.id"
-                   @click="changeFilterTags(item.id)"
-                   :class="{ active: item.id === filterUserSelected }">
-                <span :class="{ 'bold-text': item.id === filterUserSelected }">{{ item.name }}</span>
-                <div v-if="item.id === filterUserSelected" class="select-underline"></div>
-              </div>
-            </div>
-            <div class="categories-filter-content">
-              <div class="filter-grid-list">
-                <div @click="handleFilterTagSelect(item.id)"
-                     v-for="item in filterTags"
-                     :key="item.id"
-                     :class="['filter-tag', { 'filter-tag-selected': selectedFilterTagIds.includes(item.id) }]">
-                  {{ item.name }}
-                </div>
-              </div>
-              <div v-if="filterTags.length === 0" class="empty-tags">
-                <el-icon>
-                  <InfoFilled/>
-                </el-icon>
-                <span>暂无标签</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <CategorySelector
+          v-model:selectedTagIds="selectedFilterTagIds"
+          placeholder="选择分类标签"
+          @update:selectedTags="handleFilterSelectedTagsChange"
+        />
         <el-button type="primary" @click="handleSearch">
           <el-icon>
             <Search/>
@@ -449,56 +406,13 @@
           <el-form-item label="时长(秒)" prop="duration">
             <el-input-number v-model="musicForm.duration" :min="0" placeholder="请输入时长"/>
           </el-form-item>
-          <!-- 分类选择 - 多级标签选择 -->
+          <!-- 分类选择 - 使用拆分出来的CategorySelector组件 -->
           <el-form-item label="分类" prop="categoryIds">
-            <div class="category-form-container">
-              <div class="category-form-selector" @click="showCategoryForm = !showCategoryForm">
-                <div class="selected-tags-preview" v-if="selectedFormTags.length > 0">
-                  <div class="selected-form-tag" v-for="item in selectedFormTags.slice(0, 3)" :key="item.id">
-                    {{ item.name }}
-                    <el-icon @click.stop="removeFormTag(item.id)">
-                      <Close/>
-                    </el-icon>
-                  </div>
-                  <span v-if="selectedFormTags.length > 3" class="more-tags-count">+{{
-                      selectedFormTags.length - 3
-                    }}</span>
-                </div>
-                <span v-else class="placeholder-text">选择分类标签</span>
-                <el-icon class="dropdown-icon">
-                  <ArrowDown v-if="!showCategoryForm"/>
-                  <ArrowUp v-if="showCategoryForm"/>
-                </el-icon>
-              </div>
-              <div v-if="showCategoryForm" class="categories-form-panel">
-                <div class="categories-form-title">
-                  <div class="title-content"
-                       v-for="item in categories"
-                       :key="item.id"
-                       @click="changeFormTags(item.id)"
-                       :class="{ active: item.id === formUserSelected }">
-                    <span :class="{ 'bold-text': item.id === formUserSelected }">{{ item.name }}</span>
-                    <div v-if="item.id === formUserSelected" class="select-underline"></div>
-                  </div>
-                </div>
-                <div class="categories-form-content">
-                  <div class="form-grid-list">
-                    <div @click="handleFormTagSelect(item.id)"
-                         v-for="item in formTags"
-                         :key="item.id"
-                         :class="['form-tag', { 'form-tag-selected': selectedFormTagIds.includes(item.id) }]">
-                      {{ item.name }}
-                    </div>
-                  </div>
-                  <div v-if="formTags.length === 0" class="empty-tags">
-                    <el-icon>
-                      <InfoFilled/>
-                    </el-icon>
-                    <span>暂无标签</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <CategorySelector
+              v-model:selectedTagIds="selectedFormTagIds"
+              placeholder="选择分类标签"
+              @update:selectedTags="handleFormSelectedTagsChange"
+            />
           </el-form-item>
           <el-form-item label="音乐文件" prop="fileUrl">
             <el-upload
@@ -608,6 +522,7 @@ import {ref, reactive, onMounted, watch, computed} from 'vue'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {Search, Plus, Edit, Delete, Close, ArrowDown, ArrowUp, InfoFilled} from '@element-plus/icons-vue'
 import request from "@/utils/request.js";
+import CategorySelector from "@/components/common/CategorySelector.vue";
 
 // 音乐列表数据
 const musicList = ref([])
@@ -619,29 +534,18 @@ const pageSize = ref(20)
 const searchQuery = ref('')
 const albumFilter = ref('')
 const artistFilter = ref('')
-const categoryFilter = ref([])
 
 // 分类筛选相关数据 - 前端UI已实现，需要后端支持
-// 说明：分类筛选功能包括多级标签选择，当前仅实现了前端界面和数据处理逻辑
-// 后端需要实现：
-// 1. 提供获取分类列表的API
-// 2. 提供获取子分类/标签的API
-// 3. 在音乐列表查询接口中支持categoryIds参数筛选
-const showCategoryFilter = ref(false) // 控制分类筛选面板显示/隐藏
-const filterUserSelected = ref(1) // 默认选中第一个分类
-const filterTags = ref([]) // 当前分类下的标签列表
-const selectedFilterTags = ref([]) // 选中的筛选标签对象数组
+// 分类筛选相关数据
 const selectedFilterTagIds = ref([]) // 选中的筛选标签ID数组，用于传递给后端
 
 // 下拉选择数据
 const albums = ref([])
 const artists = ref([])
-const categories = ref([])
+
+
 
 // 表单分类选择相关数据
-const showCategoryForm = ref(false)
-const formUserSelected = ref(1) // 默认选中第一个分类
-const formTags = ref([]) // 当前分类下的标签
 const selectedFormTags = ref([]) // 选中的表单标签对象数组
 const selectedFormTagIds = ref([]) // 选中的表单标签ID数组
 
@@ -768,23 +672,6 @@ const getAlbums = async () => {
   }
 }
 
-// 获取分类列表
-const getCategories = async () => {
-  try {
-    const res = await request.get('categories')
-    if (res.code === '200') {
-      categories.value = res.data
-      // 获取默认分类的子分类
-      if (categories.value.length > 0) {
-        await getSubCategories(filterUserSelected.value, 'filter')
-        await getSubCategories(formUserSelected.value, 'form')
-      }
-    }
-  } catch (error) {
-    console.error('获取分类列表失败:', error)
-  }
-}
-
 // 获取歌手列表
 const getArtists = async () => {
   try {
@@ -797,109 +684,7 @@ const getArtists = async () => {
   }
 }
 
-// 获取子分类
-const getSubCategories = async (parentId, type) => {
-  try {
-    const res = await request.get('categories', {params: {parentId}})
-    if (res.code === '200') {
-      if (type === 'filter') {
-        filterTags.value = res.data
-      } else if (type === 'form') {
-        formTags.value = res.data
-      }
-    }
-  } catch (error) {
-    console.error('获取子分类失败:', error)
-  }
-}
 
-// 筛选分类 - 切换分类类型
-// 说明：切换不同的分类时，加载对应分类下的标签列表
-// 需要后端提供获取子分类/标签的API支持
-const changeFilterTags = async (categoryId) => {
-  filterUserSelected.value = categoryId
-  await getSubCategories(categoryId, 'filter') // 调用获取子分类/标签的函数
-}
-
-// 筛选分类 - 选择标签
-// 说明：处理标签的选中/取消选中逻辑
-// 选中的标签ID会存储在selectedFilterTagIds中，用于传递给后端筛选
-const handleFilterTagSelect = (tagId) => {
-  const index = selectedFilterTagIds.value.indexOf(tagId)
-  const tag = filterTags.value.find(item => item.id === tagId)
-
-  if (index > -1) {
-    // 取消选择
-    selectedFilterTagIds.value.splice(index, 1)
-    const tagIndex = selectedFilterTags.value.findIndex(item => item.id === tagId)
-    if (tagIndex > -1) {
-      selectedFilterTags.value.splice(tagIndex, 1)
-    }
-  } else {
-    // 选择
-    selectedFilterTagIds.value.push(tagId)
-    if (tag) {
-      selectedFilterTags.value.push(tag)
-    }
-  }
-}
-
-// 筛选分类 - 移除标签
-// 说明：从已选中的标签中移除指定标签
-const removeFilterTag = (tagId) => {
-  const index = selectedFilterTagIds.value.indexOf(tagId)
-  if (index > -1) {
-    selectedFilterTagIds.value.splice(index, 1)
-    const tagIndex = selectedFilterTags.value.findIndex(item => item.id === tagId)
-    if (tagIndex > -1) {
-      selectedFilterTags.value.splice(tagIndex, 1)
-    }
-  }
-}
-
-// 表单分类 - 切换分类类型
-const changeFormTags = async (categoryId) => {
-  formUserSelected.value = categoryId
-  await getSubCategories(categoryId, 'form')
-}
-
-// 表单分类 - 选择标签
-const handleFormTagSelect = (tagId) => {
-  const index = selectedFormTagIds.value.indexOf(tagId)
-  const tag = formTags.value.find(item => item.id === tagId)
-
-  if (index > -1) {
-    // 取消选择
-    selectedFormTagIds.value.splice(index, 1)
-    const tagIndex = selectedFormTags.value.findIndex(item => item.id === tagId)
-    if (tagIndex > -1) {
-      selectedFormTags.value.splice(tagIndex, 1)
-    }
-  } else {
-    // 选择
-    selectedFormTagIds.value.push(tagId)
-    if (tag) {
-      selectedFormTags.value.push(tag)
-    }
-  }
-
-  // 更新表单数据
-  musicForm.categoryIds = [...selectedFormTagIds.value]
-}
-
-// 表单分类 - 移除标签
-const removeFormTag = (tagId) => {
-  const index = selectedFormTagIds.value.indexOf(tagId)
-  if (index > -1) {
-    selectedFormTagIds.value.splice(index, 1)
-    const tagIndex = selectedFormTags.value.findIndex(item => item.id === tagId)
-    if (tagIndex > -1) {
-      selectedFormTags.value.splice(tagIndex, 1)
-    }
-  }
-  // 更新表单数据
-  musicForm.categoryIds = [...selectedFormTagIds.value]
-}
 
 // 搜索
 const handleSearch = () => {
@@ -912,11 +697,21 @@ const handleReset = () => {
   searchQuery.value = ''
   albumFilter.value = ''
   artistFilter.value = ''
-  categoryFilter.value = []
-  selectedFilterTags.value = []
   selectedFilterTagIds.value = []
   currentPage.value = 1
   getMusicList()
+}
+
+// 处理筛选分类标签变化
+const handleFilterSelectedTagsChange = (selectedTags) => {
+  // 已使用CategorySelector组件，无需处理
+}
+
+// 处理表单分类标签变化
+const handleFormSelectedTagsChange = (selectedTags) => {
+  selectedFormTags.value = selectedTags
+  // 更新表单数据
+  musicForm.categoryIds = [...selectedFormTagIds.value]
 }
 
 // 分页大小改变
@@ -949,19 +744,10 @@ const handleAdd = () => {
 const handleEdit = (row) => {
   Object.assign(musicForm, row)
 
-  // 初始化分类选择
-  selectedFormTagIds.value = [...(row.categoryIds || [])]
-  selectedFormTags.value = []
-
-  // 根据分类ID获取分类信息
-  if (row.categoryIds && row.categoryIds.length > 0) {
-    row.categoryIds.forEach(id => {
-      const category = categories.value.find(cat => cat.id === id)
-      if (category) {
-        selectedFormTags.value.push(category)
-      }
-    })
-  }
+  // 初始化分类选择 - 从categories字段中提取标签ID
+  const categoryIds = row.categories ? row.categories.map(cat => cat.id) : []
+  selectedFormTagIds.value = [...categoryIds]
+  // selectedFormTags.value 由CategorySelector组件自动计算，不需要手动设置
 
   dialogVisible.value = true
 }
@@ -1309,7 +1095,6 @@ onMounted(() => {
   getMusicList();
   getAlbums();
   getArtists();
-  getCategories();
 });
 </script>
 
@@ -1418,287 +1203,4 @@ onMounted(() => {
   margin-top: 20px;
 }
 
-/* 分类选择器样式 */
-.category-filter-container,
-.category-form-container {
-  position: relative;
-  min-width: 280px;
-  max-width: 320px;
-}
-
-.category-selector,
-.category-form-selector {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 10px;
-  height: 30px;
-  border: 1px solid #dcdfe6;
-  border-radius: 6px;
-  background: #fff;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-
-  &:hover {
-    border-color: #409eff;
-    box-shadow: 0 2px 8px rgba(64, 158, 255, 0.15);
-  }
-
-  .selected-tags-preview {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 3px;
-    flex: 1;
-    overflow: hidden;
-    margin-right: 6px;
-    align-items: center;
-  }
-
-  .placeholder-text {
-    color: #909399;
-    font-size: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .dropdown-icon {
-    color: #c0c4cc;
-    transition: transform 0.3s;
-  }
-
-  &.active .dropdown-icon {
-    transform: rotate(180deg);
-  }
-}
-
-.more-tags-count {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 6px;
-  background: #f0f2f5;
-  color: #909399;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 500;
-  margin-left: 4px;
-}
-
-.selected-filter-tag,
-.selected-form-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 6px;
-  background: linear-gradient(135deg, #409eff, #66b1ff);
-  color: #fff;
-  border-radius: 4px;
-  font-size: 11px;
-  white-space: nowrap;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-
-  .el-icon {
-    margin-left: 4px;
-    cursor: pointer;
-    font-size: 10px;
-    transition: all 0.2s;
-
-    &:hover {
-      color: #ffd700;
-      transform: scale(1.1);
-    }
-  }
-}
-
-.categories-filter-form,
-.categories-form-panel {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  margin-top: 4px;
-  padding: 16px;
-  background: #fff;
-  border: 1px solid #e4e7ed;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-  z-index: 100;
-  min-width: 320px;
-  max-width: 400px;
-  backdrop-filter: blur(10px);
-}
-
-.categories-filter-title,
-.categories-form-title {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 16px;
-  padding: 8px 12px;
-  border-bottom: 1px solid #f0f2f5;
-  background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
-  flex-shrink: 0;
-
-  .title-content {
-    flex: 1;
-    text-align: center;
-    position: relative;
-    cursor: pointer;
-    padding: 10px 8px;
-    border-radius: 6px;
-    transition: all 0.3s;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover {
-      background: rgba(64, 158, 255, 0.08);
-    }
-
-    &.active {
-      background: rgba(64, 158, 255, 0.12);
-    }
-
-    span {
-      font-size: 13px;
-      color: #606266;
-      transition: all 0.3s;
-      font-weight: 500;
-    }
-
-    .bold-text {
-      color: #409eff;
-      font-weight: 600;
-    }
-
-    .select-underline {
-      position: absolute;
-      bottom: 2px;
-      left: 25%;
-      right: 25%;
-      height: 2px;
-      background: #409eff;
-      border-radius: 1px;
-    }
-  }
-}
-
-.filter-grid-list,
-.form-grid-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-  gap: 6px;
-  max-height: 280px;
-  overflow-y: auto;
-  padding: 6px;
-}
-
-.filter-tag,
-.form-tag {
-  padding: 6px 4px;
-  border: 1px solid #e4e7ed;
-  border-radius: 4px;
-  background: #f8f9fa;
-  cursor: pointer;
-  text-align: center;
-  font-size: 11px;
-  color: #606266;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
-  min-height: 24px;
-  line-height: 1.2;
-
-  &:hover {
-    border-color: #409eff;
-    background: #f0f7ff;
-    color: #409eff;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(64, 158, 255, 0.15);
-  }
-
-  &.filter-tag-selected,
-  &.form-tag-selected {
-    background: linear-gradient(135deg, #409eff, #66b1ff);
-    color: #fff;
-    border-color: #409eff;
-    box-shadow: 0 2px 6px rgba(64, 158, 255, 0.25);
-    font-weight: 500;
-
-    &::after {
-      content: '✓';
-      position: absolute;
-      top: 1px;
-      right: 2px;
-      font-size: 9px;
-      font-weight: bold;
-    }
-  }
-}
-
-/* 滚动条样式 */
-.filter-grid-list::-webkit-scrollbar,
-.form-grid-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.filter-grid-list::-webkit-scrollbar-track,
-.form-grid-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-.filter-grid-list::-webkit-scrollbar-thumb,
-.form-grid-list::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-
-  &:hover {
-    background: #a8a8a8;
-  }
-}
-
-/* 空状态 */
-.empty-tags {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  color: #909399;
-  font-size: 13px;
-  gap: 6px;
-
-  .el-icon {
-    font-size: 16px;
-  }
-}
-
-/* 选中标签样式优化 */
-.selected-filter-tag,
-.selected-form-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 6px;
-  background: linear-gradient(135deg, #409eff, #66b1ff);
-  color: #fff;
-  border-radius: 3px;
-  font-size: 10px;
-  font-weight: 500;
-  white-space: nowrap;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  margin: 1px;
-
-  .el-icon {
-    margin-left: 3px;
-    cursor: pointer;
-    font-size: 9px;
-    transition: all 0.2s;
-    opacity: 0.8;
-
-    &:hover {
-      opacity: 1;
-      transform: scale(1.1);
-    }
-  }
-}
 </style>

@@ -37,12 +37,12 @@ public interface MusicMapper {
 
     List<MusicManageResponse> selectMusics(String keyword, Long artistId, Long albumId, Integer[] categoryIds);
 
-    @Update("update musics set title=#{music.title},artist_id=#{music.artistId},album_id=#{music.albumId},duration=#{music.duration} where id=#{music.id}")
+    @Update("update musics set title=#{music.title},artist_id=#{music.artistId},album_id=#{music.albumId},duration=#{music.duration},lyrics=#{music.lyrics} where id=#{music.id}")
     void updateMusic(@Param("music") MusicManageRequest music);
 
     MusicManageResponse selectMusicManageResponseById(Long id);
 
-    @Insert("insert into musics set title=#{music.title},artist_id=#{music.artistId},album_id=#{music.albumId},duration=#{music.duration}")
+    @Insert("insert into musics set title=#{music.title},artist_id=#{music.artistId},album_id=#{music.albumId},duration=#{music.duration},lyrics=#{music.lyrics}")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void addMusic(@Param("music") MusicManageRequest music);
 

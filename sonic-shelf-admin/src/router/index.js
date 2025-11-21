@@ -13,7 +13,8 @@ const router = createRouter({
         // 登录页面
         {path: '/login', component: Login, name: 'Login'},
         // 主布局
-        {path: '/', component: Layout,
+        {
+            path: '/', component: Layout,
             children: [
                 // 仪表盘
                 {path: '', redirect: '/dashboard'},
@@ -27,9 +28,17 @@ const router = createRouter({
                 // 歌手管理
                 {path: '/singer', component: () => import("@/views/SingerManagement.vue"), name: 'SingerManagement'},
                 // 歌单管理
-                {path: '/playlist', component: () => import("@/views/PlaylistManagement.vue"), name: 'PlaylistManagement'},
+                {
+                    path: '/playlist',
+                    component: () => import("@/views/PlaylistManagement.vue"),
+                    name: 'PlaylistManagement'
+                },
                 // 分类管理
-                {path: '/category', component: () => import("@/views/CategoryManagement.vue"), name: 'CategoryManagement'},
+                {
+                    path: '/category',
+                    component: () => import("@/views/CategoryManagement.vue"),
+                    name: 'CategoryManagement'
+                },
             ]
         },
         // 404页面
@@ -41,7 +50,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const userStore = useUserStore()
     const token = userStore.token
-    
+
     // 如果有token
     if (token) {
         if (to.path === '/login') {

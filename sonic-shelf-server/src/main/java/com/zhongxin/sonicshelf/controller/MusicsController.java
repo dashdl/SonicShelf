@@ -28,7 +28,7 @@ public class MusicsController {
 
     @AdminAuth
     @GetMapping("/getAll")
-    public Result getAllAlbum(@RequestParam Integer pageNum,
+    public Result getAllMusic(@RequestParam Integer pageNum,
                               @RequestParam Integer pageSize,
                               @RequestParam(required = false) String keyword,
                               @RequestParam(required = false) Long artistId,
