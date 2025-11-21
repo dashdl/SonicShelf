@@ -1,31 +1,3 @@
-<!--
-标签选择器组件
-
-组件功能：
-1. 支持多级分类选择
-2. 支持多选标签
-3. 支持显示已选中标签
-4. 支持自定义样式
-
-Props:
-- categories: 分类列表
-- selectedTagIds: 已选中的标签ID数组
-- placeholder: 占位符文本
-- disabled: 是否禁用
-
-Events:
-- update:selectedTagIds: 选中标签ID变化时触发
-- update:selectedTags: 选中标签对象变化时触发
-
-使用示例：
-<CategorySelector
-  v-model:selectedTagIds="selectedTagIds"
-  :categories="categories"
-  placeholder="选择分类标签"
-  @update:selectedTags="handleSelectedTagsChange"
-/>
--->
-
 <template>
   <div class="category-selector-container">
     <div class="category-selector" @click="toggleSelector" :class="{ active: showSelector, disabled: disabled }">
@@ -44,7 +16,7 @@ Events:
         <ArrowUp v-if="showSelector"/>
       </el-icon>
     </div>
-    
+
     <div v-if="showSelector" class="categories-panel">
       <div v-if="loading" class="loading-state">
         <el-icon class="loading-icon">
@@ -52,28 +24,28 @@ Events:
         </el-icon>
         <span>加载中...</span>
       </div>
-      
+
       <div v-else>
         <div class="categories-title">
-          <div 
-            class="title-content"
-            v-for="item in internalCategories"
-            :key="item.id"
-            @click="changeCategory(item.id)"
-            :class="{ active: item.id === currentCategoryId }"
+          <div
+              class="title-content"
+              v-for="item in internalCategories"
+              :key="item.id"
+              @click="changeCategory(item.id)"
+              :class="{ active: item.id === currentCategoryId }"
           >
             <span :class="{ 'bold-text': item.id === currentCategoryId }">{{ item.name }}</span>
             <div v-if="item.id === currentCategoryId" class="select-underline"></div>
           </div>
         </div>
-        
+
         <div class="categories-content">
           <div class="tags-grid-list">
-            <div 
-              @click="handleTagSelect(item.id)"
-              v-for="item in currentTags"
-              :key="item.id"
-              :class="['tag-item', { 'tag-selected': selectedTagIds.includes(item.id) }]"
+            <div
+                @click="handleTagSelect(item.id)"
+                v-for="item in currentTags"
+                :key="item.id"
+                :class="['tag-item', { 'tag-selected': selectedTagIds.map(id => String(id)).includes(String(item.id)) }]"
             >
               {{ item.name }}
             </div>
@@ -91,8 +63,8 @@ Events:
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
-import { Close, ArrowDown, ArrowUp, InfoFilled, Loading } from '@element-plus/icons-vue'
+import {ref, computed, watch, onMounted} from 'vue'
+import {Close, ArrowDown, ArrowUp, InfoFilled, Loading} from '@element-plus/icons-vue'
 import request from "@/utils/request.js";
 
 // Props定义
@@ -132,98 +104,146 @@ const currentTags = ref([])
 const internalCategories = ref([])
 const loading = ref(false)
 
+// 新增：分类数据映射表
+const categoryMap = ref(new Map()) // 存储所有分类数据，key为分类ID，value为分类对象
+const rootCategories = ref([])     // 根级分类列表
+
 // 计算属性：选中的标签对象数组
 const selectedTags = computed(() => {
-  const allTags = internalCategories.value.flatMap(category => category.children || [])
+  // 从映射表中获取所有标签
+  const allTags = Array.from(categoryMap.value.values())
+      .filter(category => category.parentId !== null && category.parentId !== 0)
+      .map(category => ({
+        id: category.id,
+        name: category.name,
+        parentId: category.parentId
+      }))
+
   // 确保类型一致性：将标签ID转换为字符串进行比较
   return allTags.filter(tag => props.selectedTagIds.map(id => String(id)).includes(String(tag.id)))
 })
 
 // 加载根级分类数据
 const loadCategories = async () => {
-  if (props.categories && props.categories.length > 0) {
-    // 如果父组件提供了分类数据，直接使用
-    internalCategories.value = props.categories
-    return
-  }
-  
   loading.value = true
   try {
-    // 加载根级分类（parentId为null的分类）
+    // 一次性加载所有分类数据
     const response = await request.get('categories/getAll')
     
     if (response.code === '200') {
       const allCategories = response.data || []
       
-      // 筛选出根级分类（parentId为null的分类）
-      internalCategories.value = allCategories.filter(category => 
+      // 清空映射表和根分类列表
+      categoryMap.value.clear()
+      rootCategories.value = []
+      
+      // 构建分类映射表 - 先添加根级分类
+      allCategories.forEach(category => {
+        categoryMap.value.set(String(category.id), category)
+      })
+      
+      // 筛选出根级分类（parentId为null或0的分类）
+      rootCategories.value = allCategories.filter(category => 
         category.parentId === null || category.parentId === 0
       )
       
-      // 为每个根级分类添加空的children数组
-      internalCategories.value.forEach(category => {
-        category.children = []
+      // 为每个根级分类加载子分类数据
+      const loadSubCategoriesPromises = rootCategories.value.map(async (category) => {
+        try {
+          const subResponse = await request.get('categories/getAll', { 
+            params: { parentId: category.id } 
+          })
+          
+          if (subResponse.code === '200') {
+            const subCategories = subResponse.data || []
+            // 将子分类添加到映射表
+            subCategories.forEach(subCategory => {
+              categoryMap.value.set(String(subCategory.id), subCategory)
+            })
+            
+            // 更新当前分类的子分类数据
+            const currentCategory = internalCategories.value.find(item => item.id === category.id)
+            if (currentCategory) {
+              currentCategory.children = subCategories
+            }
+          }
+        } catch (error) {
+          // 静默处理子分类加载错误
+        }
       })
       
-      // 设置默认当前分类ID并加载第一个分类的子分类
-      if (internalCategories.value.length > 0 && !currentCategoryId.value) {
-        currentCategoryId.value = internalCategories.value[0].id
-        await loadTagsForCategory(currentCategoryId.value)
+      // 等待所有子分类加载完成
+      await Promise.all(loadSubCategoriesPromises)
+      
+      // 设置默认当前分类ID
+      if (rootCategories.value.length > 0 && !currentCategoryId.value) {
+        currentCategoryId.value = rootCategories.value[0].id
+        
+        // 确保当前分类有子分类数据
+        const currentCategory = rootCategories.value.find(item => item.id === currentCategoryId.value)
+        if (currentCategory && (!currentCategory.children || currentCategory.children.length === 0)) {
+          // 直接从映射表获取子分类数据
+          const children = Array.from(categoryMap.value.values()).filter(
+            cat => String(cat.parentId) === String(currentCategoryId.value)
+          )
+          currentCategory.children = children
+        }
+        
+        // 立即加载当前分类的标签
+        loadCurrentCategoryTags()
       }
+      
+      // 更新内部分类列表（用于UI显示）
+      internalCategories.value = rootCategories.value
     }
   } catch (error) {
     internalCategories.value = []
+    rootCategories.value = []
+    categoryMap.value.clear()
   } finally {
     loading.value = false
   }
 }
 
-// 加载指定分类的子分类
+// 加载指定分类的子分类（现在直接从映射表获取）
 const loadTagsForCategory = async (categoryId) => {
-  try {
-    const response = await request.get('categories/getAll', { params: { parentId: categoryId } })
-    
-    if (response.code === '200') {
-      const category = internalCategories.value.find(item => item.id === categoryId)
-      if (category) {
-        category.children = response.data || []
-        
-        // 如果当前分类就是刚加载子分类的分类，更新当前标签
-        if (currentCategoryId.value === categoryId) {
-          loadCurrentCategoryTags()
-        }
-      }
+  // 由于已经一次性加载了所有数据，这里不需要再发起API请求
+  // 直接从映射表中获取当前分类的子分类
+  const children = Array.from(categoryMap.value.values()).filter(
+      category => String(category.parentId) === String(categoryId)
+  )
+
+  // 更新当前分类的子分类数据
+  const category = internalCategories.value.find(item => item.id === categoryId)
+  if (category) {
+    category.children = children
+
+    // 如果当前分类就是刚加载子分类的分类，更新当前标签
+    if (currentCategoryId.value === categoryId) {
+      loadCurrentCategoryTags()
     }
-  } catch (error) {
-    // 静默处理错误
   }
 }
 
 // 监听分类列表变化，初始化当前分类和标签
 watch(() => props.categories, (newCategories) => {
-  if (newCategories && newCategories.length > 0) {
-    internalCategories.value = newCategories
-    if (internalCategories.value.length > 0 && !currentCategoryId.value) {
-      currentCategoryId.value = internalCategories.value[0].id
-      loadCurrentCategoryTags()
-    }
-  }
-}, { immediate: true })
+  // 父组件不会传递分类数据，此监听器不再需要
+}, {immediate: true})
 
 // 监听选中的标签ID变化，确保UI正确显示已选中状态
 watch(() => props.selectedTagIds, () => {
   // 当选中标签ID变化时，不需要额外处理，因为selectedTags计算属性会自动更新
   // 这里主要是为了触发UI重新渲染
-}, { immediate: true })
+}, {immediate: true})
 
 // 加载当前分类的标签
 const loadCurrentCategoryTags = () => {
   if (!currentCategoryId.value) {
     return
   }
-  
+
   const category = internalCategories.value.find(item => item.id === currentCategoryId.value)
-  
+
   if (category && category.children) {
     currentTags.value = category.children
   } else {
@@ -253,24 +273,31 @@ const toggleSelector = () => {
 // 切换分类
 const changeCategory = async (categoryId) => {
   currentCategoryId.value = categoryId
-  
-  // 检查当前分类是否已经有标签数据，如果没有则加载
+
+  // 检查当前分类是否已经有标签数据，如果没有则从映射表加载
   const category = internalCategories.value.find(item => item.id === categoryId)
   if (category && (!category.children || category.children.length === 0)) {
-    await loadTagsForCategory(categoryId)
+    // 直接从映射表获取子分类数据
+    const children = Array.from(categoryMap.value.values()).filter(
+        cat => String(cat.parentId) === String(categoryId)
+    )
+    category.children = children
   }
+
+  // 立即更新当前标签显示
+  loadCurrentCategoryTags()
 }
 
 // 选择/取消选择标签
 const handleTagSelect = (tagId) => {
   if (props.disabled) return
-  
+
   // 确保类型一致性：将标签ID转换为字符串进行比较
   const stringTagId = String(tagId)
   const newSelectedTagIds = [...props.selectedTagIds].map(id => String(id))
   const index = newSelectedTagIds.indexOf(stringTagId)
   const tag = currentTags.value.find(item => String(item.id) === stringTagId)
-  
+
   if (index > -1) {
     // 取消选择
     newSelectedTagIds.splice(index, 1)
@@ -278,10 +305,10 @@ const handleTagSelect = (tagId) => {
     // 选择
     newSelectedTagIds.push(stringTagId)
   }
-  
+
   // 触发更新事件
   emit('update:selectedTagIds', newSelectedTagIds)
-  
+
   // 计算选中的标签对象并触发事件
   const selectedTagObjects = selectedTags.value.filter(tag => newSelectedTagIds.includes(String(tag.id)))
   emit('update:selectedTags', selectedTagObjects)
@@ -301,12 +328,12 @@ const handleClickOutside = (event) => {
 // 移除标签
 const removeTag = (tagId) => {
   if (props.disabled) return
-  
+
   // 确保类型一致性：将标签ID转换为字符串进行比较
   const stringTagId = String(tagId)
   const newSelectedTagIds = props.selectedTagIds.filter(id => String(id) !== stringTagId)
   emit('update:selectedTagIds', newSelectedTagIds)
-  
+
   // 计算选中的标签对象并触发事件
   const selectedTagObjects = selectedTags.value.filter(tag => newSelectedTagIds.includes(String(tag.id)))
   emit('update:selectedTags', selectedTagObjects)
@@ -315,9 +342,21 @@ const removeTag = (tagId) => {
 // 暴露方法给父组件
 const reset = () => {
   showSelector.value = false
-  currentCategoryId.value = props.categories.length > 0 ? props.categories[0].id : null
+  currentCategoryId.value = props.categories.length > 0 ? props.categories[0].id :
+      (rootCategories.value.length > 0 ? rootCategories.value[0].id : null)
+
   if (currentCategoryId.value) {
-    loadTagsForCategory(currentCategoryId.value)
+    // 直接从映射表加载当前分类的标签
+    const children = Array.from(categoryMap.value.values()).filter(
+        cat => String(cat.parentId) === String(currentCategoryId.value)
+    )
+
+    const category = internalCategories.value.find(item => item.id === currentCategoryId.value)
+    if (category) {
+      category.children = children
+    }
+
+    loadCurrentCategoryTags()
   }
 }
 
@@ -376,7 +415,7 @@ defineExpose({
 .selected-tag {
   display: inline-flex;
   align-items: center;
-  padding: 2px 6px;
+  padding: 1px 6px; /* 减少垂直padding，让标签略低于选择框 */
   background: linear-gradient(135deg, #409eff, #66b1ff);
   color: #fff;
   border-radius: 3px;
@@ -385,6 +424,8 @@ defineExpose({
   white-space: nowrap;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   margin: 1px;
+  line-height: 1.2; /* 添加行高控制 */
+  height: 18px; /* 固定高度，略低于选择框 */
 }
 
 .selected-tag .el-icon {
@@ -457,8 +498,12 @@ defineExpose({
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .categories-title {
