@@ -102,6 +102,9 @@ import { Plus, Delete } from '@element-plus/icons-vue'
 import request from "@/utils/request.js"
 import AddMusicToPlaylist from './AddMusicToPlaylist.vue'
 
+// 定义emit事件
+const emit = defineEmits(['music-updated'])
+
 // 对话框显示状态
 const dialogVisible = ref(false)
 
@@ -218,6 +221,8 @@ const handleAddMusic = () => {
 const handleMusicAdded = async () => {
   // 重新加载歌单音乐列表
   await loadPlaylistMusic()
+  // 触发父组件更新事件
+  emit('music-updated', playlistInfo.id)
 }
 
 /**
@@ -253,6 +258,8 @@ const handleRemoveMusic = async (music) => {
       await loadPlaylistMusic()
       // 更新歌单信息中的歌曲数量
       playlistInfo.musicCount = musicList.value.length
+      // 触发父组件更新事件
+      emit('music-updated', playlistInfo.id)
     }
   } catch (error) {
     if (error !== 'cancel') {

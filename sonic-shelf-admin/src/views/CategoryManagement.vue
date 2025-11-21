@@ -254,19 +254,15 @@ const filteredSubcategories = computed(() => {
   )
 })
 
-// 获取一级分类列表
 const getParentCategories = async () => {
   try {
     const res = await request.get('categories/getAll')
     if (res.code === '200') {
-      // 只保存parentId为null的分类作为一级分类
       parentCategories.value = res.data.filter(category => category.parentId === null)
       allCategories.value = [...parentCategories.value]
 
-      // 设置默认激活的选项卡
       if (parentCategories.value.length > 0 && !activeTab.value) {
         activeTab.value = parentCategories.value[0].id.toString()
-        // 获取默认选项卡的子分类
         getSubCategories(activeTab.value)
       }
     }
@@ -276,10 +272,8 @@ const getParentCategories = async () => {
   }
 }
 
-// 获取指定一级分类的子分类
 const getSubCategories = async (parentId) => {
   try {
-    // 如果已经获取过该一级分类的子分类，直接返回
     if (subCategoriesMap.value.has(parseInt(parentId))) {
       return
     }
@@ -287,9 +281,7 @@ const getSubCategories = async (parentId) => {
     const res = await request.get('categories/getAll', {params: {parentId}})
     if (res.code === '200' && res.data) {
       const parentIdNum = parseInt(parentId)
-      // 保存子分类
       subCategoriesMap.value.set(parentIdNum, res.data)
-      // 将子分类添加到allCategories中
       allCategories.value = [...allCategories.value, ...res.data]
     }
   } catch (error) {
@@ -331,36 +323,30 @@ const handleTabClick = (tab) => {
   getSubCategories(tab.props.name)
 }
 
-// 添加分类按钮点击事件
 const handleAddCategory = () => {
   resetForm()
-  // 如果有激活的选项卡，默认添加该选项卡下的子分类
   if (activeTab.value) {
     categoryForm.parentId = parseInt(activeTab.value)
     isEditingParent.value = false
   } else {
-    // 否则添加一级分类
     categoryForm.parentId = 0
     isEditingParent.value = false
   }
   dialogVisible.value = true
 }
 
-// 编辑一级分类事件
 const handleEditParentCategory = (row) => {
   Object.assign(categoryForm, row)
   isEditingParent.value = true
   dialogVisible.value = true
 }
 
-// 编辑子分类事件
 const handleEditSubcategory = (row) => {
   Object.assign(categoryForm, row)
   isEditingParent.value = false
   dialogVisible.value = true
 }
 
-// 删除一级分类
 const handleDeleteParentCategory = (row) => {
   ElMessageBox.confirm('确定要删除该一级分类吗？删除后该分类下的所有子分类也将被删除。', '提示', {
     confirmButtonText: '确定',
@@ -368,25 +354,17 @@ const handleDeleteParentCategory = (row) => {
     type: 'warning'
   }).then(async () => {
     try {
-      // 这里应该调用API删除一级分类及其子分类
-      // const res = await request.delete(`categories/${row.id}`)
-
-      // 使用mockService模拟删除
       const res = await request.delete('categories/delete/' + row.id)
 
       if (res.code === '200') {
         ElMessage.success('删除成功')
 
-        // 从子分类映射中删除该一级分类的子分类
         subCategoriesMap.value.delete(row.id)
 
-        // 如果删除的是当前激活的选项卡，将activeTab设置为空
-        // 这样getParentCategories()方法就会自动设置第一个选项卡为激活状态
         if (activeTab.value === row.id.toString()) {
           activeTab.value = ''
         }
 
-        // 重新获取一级分类列表
         getParentCategories()
       }
     } catch (error) {
@@ -394,11 +372,9 @@ const handleDeleteParentCategory = (row) => {
       ElMessage.error('删除一级分类失败')
     }
   }).catch(() => {
-    // 取消删除
   })
 }
 
-// 删除子分类
 const handleDeleteSubcategory = (row) => {
   ElMessageBox.confirm('确定要删除该子分类吗？', '提示', {
     confirmButtonText: '确定',
@@ -406,16 +382,11 @@ const handleDeleteSubcategory = (row) => {
     type: 'warning'
   }).then(async () => {
     try {
-      // 这里应该调用API删除子分类
-      // const res = await request.delete(`categories/${row.id}`)
-
-      // 使用mockService模拟删除
       const res = await request.delete('categories/delete/' + row.id)
 
       if (res.code === '200') {
         ElMessage.success('删除成功')
 
-        // 从子分类映射中删除该子分类
         const parentId = row.parentId
         const subCategories = subCategoriesMap.value.get(parentId)
         if (subCategories) {
@@ -423,7 +394,6 @@ const handleDeleteSubcategory = (row) => {
           subCategoriesMap.value.set(parentId, updatedSubCategories)
         }
 
-        // 从allCategories中删除该子分类
         const categoryIndex = allCategories.value.findIndex(category => category.id === row.id)
         if (categoryIndex !== -1) {
           allCategories.value.splice(categoryIndex, 1)
@@ -434,7 +404,6 @@ const handleDeleteSubcategory = (row) => {
       ElMessage.error('删除子分类失败')
     }
   }).catch(() => {
-    // 取消删除
   })
 }
 
@@ -444,18 +413,14 @@ const handleSubmit = async () => {
     await categoryFormRef.value.validate()
     let res
 
-    // 准备提交的数据
     const submitData = {
       ...categoryForm,
-      // 将parentId=0转换为null，以匹配数据库要求
       parentId: categoryForm.parentId === 0 ? null : categoryForm.parentId
     }
 
     if (categoryForm.id) {
-      // 编辑分类
       res = await request.put('categories/update', submitData)
     } else {
-      // 添加分类
       res = await request.post('categories/add', submitData)
     }
 
@@ -463,12 +428,10 @@ const handleSubmit = async () => {
       ElMessage.success(categoryForm.id ? '编辑成功' : '添加成功')
       dialogVisible.value = false
 
-      // 如果是一级分类操作，重新获取一级分类列表
       if (categoryForm.parentId === 0) {
         subCategoriesMap.value.clear()
         getParentCategories()
       } else {
-        // 如果是子分类操作，重新获取该子分类所属的一级分类的子分类
         subCategoriesMap.value.delete(categoryForm.parentId)
         getSubCategories(categoryForm.parentId)
       }

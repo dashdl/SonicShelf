@@ -1,7 +1,10 @@
 <template>
   <div class="admin-management-container">
     <!-- 歌单音乐编辑组件 -->
-    <PlaylistMusicEditor ref="playlistMusicEditorRef" />
+    <PlaylistMusicEditor 
+      ref="playlistMusicEditorRef" 
+      @music-updated="handleMusicUpdated"
+    />
     
     <el-card shadow="hover" class="playlist-management-card">
       <template #header>
@@ -193,6 +196,7 @@
                 :auto-upload="false"
                 ref="coverUploadRef"
                 :on-change="handleCoverChange"
+                :limit="1"
             >
               <template #trigger>
                 <el-button type="primary">
@@ -438,15 +442,13 @@ const handleSubmit = async () => {
       requestData.coverImage = coverImage
       requestData.id = playlistForm.id
 
-      // 使用真实API替代mockService
         res = await request.put(`playlists/update`, requestData)
     } else {
-      // 添加模式 - 先创建歌单
-      // 使用真实API替代mockService
+
       res = await request.post('playlists/add', requestData)
 
-      if (res.code === '200' && res.data && res.data.id) {
-        newPlaylistId = res.data.id
+      if (res.code === '200' && res.data) {
+        newPlaylistId = res.data
         playlistForm.id = newPlaylistId
       }
     }
@@ -481,6 +483,18 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error(playlistForm.id ? '编辑歌单失败:' : '添加歌单失败:', error)
     ElMessage.error(playlistForm.id ? '编辑歌单失败' : '添加歌单失败')
+  }
+}
+
+// 处理音乐更新事件
+const handleMusicUpdated = async (playlistId) => {
+  try {
+    // 重新获取歌单列表以更新歌曲数量
+    await getPlaylistList()
+    
+  } catch (error) {
+    console.error('更新歌单歌曲数量失败:', error)
+    // 即使更新失败也不影响用户体验，静默处理
   }
 }
 

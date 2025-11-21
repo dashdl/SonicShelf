@@ -165,6 +165,7 @@
                 ref="avatarUploadRef"
                 :http-request="uploadAvatar"
                 :on-change="handleAvatarChange"
+                :limit="1"
             >
               <template #trigger>
                 <el-button type="primary">

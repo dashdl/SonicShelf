@@ -84,7 +84,6 @@ const handleLogin = async () => {
     await router.push('/dashboard')
   } catch (error) {
     console.error('登录失败:', error)
-    // 错误消息已经在request拦截器中显示，这里不再重复显示
   } finally {
     loading.value = false
   }

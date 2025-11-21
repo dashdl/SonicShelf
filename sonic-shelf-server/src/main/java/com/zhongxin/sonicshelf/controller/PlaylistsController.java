@@ -128,9 +128,7 @@ public class PlaylistsController {
             throw new CustomException("3003", "请勿添加用户歌单");
         }
 
-        playlistsService.addPlaylist(playlist);
-
-        return Result.success("歌单添加成功");
+        return Result.success("歌单添加成功", playlistsService.addPlaylist(playlist));
     }
 
     @AdminAuth
@@ -184,7 +182,7 @@ public class PlaylistsController {
     @AdminAuth
     @DeleteMapping("/{playlistId}/remove-music/{musicId}")
     public Result removePlaylistMusic(@PathVariable Long playlistId,
-                                   @PathVariable Long musicId) {
+                                      @PathVariable Long musicId) {
         if (!playlistsService.isOfficial(playlistId)) {
             throw new CustomException("3004", "请勿编辑用户歌单");
         }

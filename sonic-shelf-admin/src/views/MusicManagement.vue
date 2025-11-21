@@ -13,7 +13,6 @@
         </div>
       </template>
 
-      <!-- 搜索和筛选 -->
       <div class="search-filter">
         <el-input
             v-model="searchQuery"
@@ -51,8 +50,6 @@
               :value="artist.id"
           />
         </el-select>
-        <!-- 分类筛选 - 多级标签选择 -->
-      
         <CategorySelector
           v-model:selectedTagIds="selectedFilterTagIds"
           placeholder="选择分类标签"
@@ -72,7 +69,6 @@
         </el-button>
       </div>
 
-      <!-- 音乐列表 -->
       <el-table
           :data="musicList"
           stripe
@@ -161,7 +157,6 @@
         </el-table-column>
       </el-table>
 
-      <!-- 分页 -->
       <div class="pagination">
         <el-pagination
             v-model:current-page="currentPage"
@@ -174,7 +169,6 @@
         />
       </div>
 
-      <!-- 音乐表单对话框 -->
       <MusicForm
           v-model:visible="dialogVisible"
           :form-data="musicForm"
@@ -184,7 +178,6 @@
           @cancel="handleFormCancel"
       />
 
-      <!-- 歌词查看对话框 -->
       <el-dialog
           v-model="lyricsDialogVisible"
           :title="`${currentMusicTitle} - 完整歌词`"
@@ -236,7 +229,7 @@ const selectedFormTagIds = ref([]) // 选中的表单标签ID数组
 // 对话框
 const dialogVisible = ref(false)
 const musicFormRef = ref()
-// 音乐列表数据
+// 音乐表单数据
 const musicForm = reactive({
   id: '',
   title: '',

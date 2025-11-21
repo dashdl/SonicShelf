@@ -135,12 +135,13 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public void addPlaylist(PlaylistManageRequest playlist) {
+    public Long addPlaylist(PlaylistManageRequest playlist) {
 
         playlistMapper.addPlaylist(playlist);
 
         categoriesMapper.addOfficialPlaylistTags(playlist.getCategoryIds(), playlist.getId());
 
+        return playlist.getId();
     }
 
     @Override
@@ -161,26 +162,26 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     public boolean isPublic(Long playlistId) {
         Integer isPublic = playlistMapper.selectPlaylistIsPublic(playlistId);
-        return 1==isPublic || 2==isPublic;
+        return 1 == isPublic || 2 == isPublic;
     }
 
     @Override
     public boolean isOfficial(Long playlistId) {
-        return 2==playlistMapper.selectPlaylistIsPublic(playlistId);
+        return 2 == playlistMapper.selectPlaylistIsPublic(playlistId);
     }
 
     @Override
     public void addMusic(Long playlistId, Long[] musicIds) {
-        playlistMapper.addMusic(playlistId,musicIds);
+        playlistMapper.addMusic(playlistId, musicIds);
     }
 
     @Override
     public void removeMusic(Long playlistId, Long musicId) {
-        playlistMapper.removeMusic(playlistId,musicId);
+        playlistMapper.removeMusic(playlistId, musicId);
     }
 
     @Override
     public void updateMusicCount(Long playlistId) {
-        playlistMapper.updateMusicCount(playlistId,playlistMapper.countMusicCount(playlistId));
+        playlistMapper.updateMusicCount(playlistId, playlistMapper.countMusicCount(playlistId));
     }
 }

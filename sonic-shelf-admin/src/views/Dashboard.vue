@@ -7,7 +7,6 @@
         </div>
       </template>
       
-      <!-- 统计卡片 -->
       <div class="statistics-cards">
         <el-card shadow="hover" class="statistic-card">
           <el-statistic
@@ -94,7 +93,6 @@
         </el-card>
       </div>
 
-      <!-- 最近操作记录 -->
       <el-card shadow="hover" class="recent-operations-card">
         <template #header>
           <div class="card-header">

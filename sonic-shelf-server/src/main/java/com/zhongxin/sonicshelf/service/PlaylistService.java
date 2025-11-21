@@ -32,7 +32,7 @@ public interface PlaylistService {
 
     PageInfo<PlaylistManageResponse> findPlaylistAsPage(Integer pageNum, Integer pageSize, String keyword, Integer[] categoryId, Byte status);
 
-    void addPlaylist(PlaylistManageRequest playlist);
+    Long addPlaylist(PlaylistManageRequest playlist);
 
     void updateOfficialPlaylistCover(String s, Long id);
 

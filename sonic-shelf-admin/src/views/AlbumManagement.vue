@@ -169,6 +169,7 @@
                 :on-remove="handleCoverRemove"
                 :auto-upload="false"
                 ref="coverUploadRef"
+                :limit="1"
             >
               <template #trigger>
                 <el-button type="primary">
@@ -265,15 +266,15 @@ const formTitle = computed(() => {
 const getAlbumList = async () => {
   try {
     const params = {
-      pageNum: currentPage.value,     // 当前页码
-      pageSize: pageSize.value,       // 每页条数
-      keyword: searchQuery.value,     // 搜索关键词（专辑名称）
-      artistId: artistFilter.value    // 歌手ID筛选
+      pageNum: currentPage.value,
+      pageSize: pageSize.value,
+      keyword: searchQuery.value,
+      artistId: artistFilter.value
     }
     const res = await request.get('album/getAll', {params})
     if (res.code === '200') {
-      albumList.value = res.data.list  // 专辑列表数据
-      total.value = res.data.total     // 总记录数
+      albumList.value = res.data.list
+      total.value = res.data.total
     }
   } catch (error) {
     console.error('获取专辑列表失败:', error)
@@ -288,9 +289,9 @@ const getArtists = async () => {
         pageNum: 1,
         pageSize: 1000,
       }
-    })  // 每页1000条，确保获取所有歌手
+    })
     if (res.code === '200') {
-      artists.value = res.data.list  // 歌手列表数据，用于下拉选择
+      artists.value = res.data.list
     }
   } catch (error) {
     console.error('获取歌手列表失败:', error)
@@ -362,17 +363,16 @@ const handleDelete = (row) => {
     type: 'warning'
   }).then(async () => {
     try {
-      const res = await request.delete('album/delete/' + row.id)  // 传入专辑ID删除指定专辑
+      const res = await request.delete('album/delete/' + row.id)
       if (res.code === '200') {
         ElMessage.success('删除成功')
-        await getAlbumList()  // 删除成功后重新获取列表
+        await getAlbumList()
       }
     } catch (error) {
       console.error('删除专辑失败:', error)
       ElMessage.error('删除专辑失败')
     }
   }).catch(() => {
-    // 取消删除
   })
 }
 
@@ -380,14 +380,12 @@ const handleDelete = (row) => {
 const handleSubmit = async () => {
   if (!albumFormRef.value) return
   try {
-    await albumFormRef.value.validate()  // 表单验证
+    await albumFormRef.value.validate()
 
     let res
     let newAlbumId = null
 
     if (albumForm.id) {
-      // 编辑模式
-      // 如果是编辑模式且有待上传的封面文件，先上传封面
       if (pendingCoverFile.value) {
         const formData = new FormData()
         formData.append('file', pendingCoverFile.value)
@@ -399,19 +397,17 @@ const handleSubmit = async () => {
         })
 
         if (uploadRes.code === '200') {
-          // 上传成功后更新专辑表单中的封面路径
           albumForm.coverImage = uploadRes.data
           ElMessage.success('封面上传成功')
         } else {
           ElMessage.error('封面上传失败')
-          return // 封面上传失败，不继续更新专辑信息
+          return
         }
       }
 
       const {coverImage, ...editData} = albumForm
       res = await request.put('album/update', editData)
     } else {
-      // 添加模式 - 先创建专辑
       const {coverImage, ...editData} = albumForm
       res = await request.post('album/add', editData)
 
@@ -422,7 +418,6 @@ const handleSubmit = async () => {
     }
 
     if (res.code === '200') {
-      // 如果是添加模式且有待上传封面，上传封面
       if (newAlbumId && pendingCoverFile.value) {
         try {
           const formData = new FormData()
@@ -446,10 +441,9 @@ const handleSubmit = async () => {
       }
 
       ElMessage.success(albumForm.id ? '编辑成功' : '添加成功')
-      dialogVisible.value = false  // 关闭对话框
-      // 清空待上传文件
+      dialogVisible.value = false
       pendingCoverFile.value = null
-      await getAlbumList()  // 重新获取专辑列表
+      await getAlbumList()
     }
   } catch (error) {
     console.error(albumForm.id ? '编辑专辑失败:' : '添加专辑失败:', error)
@@ -505,10 +499,9 @@ const handleCoverRemove = () => {
   pendingCoverFile.value = null
 }
 
-// 封面上传成功处理
 const handleCoverUpload = (response) => {
   if (response.code === '200') {
-    albumForm.coverImage = response.data.url  // 保存上传后的图片URL
+    albumForm.coverImage = response.data.url
     ElMessage.success('封面上传成功')
   }
 }
