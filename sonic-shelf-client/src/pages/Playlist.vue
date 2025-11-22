@@ -45,7 +45,7 @@ const replace = async () => {
     playerStore.playSong(0)
     playerStore.playlistId = currentId;
     playerStore.isPlaylist = true;
-    localStorage.setItem("playlistId", JSON.stringify(currentId))
+    localStorage.setItem("playlistId",currentId)
     localStorage.setItem("isPlaylist", JSON.stringify(playerStore.isPlaylist))
   })
 }
@@ -129,7 +129,6 @@ const loadPlaylistData = async (playlistId) => {
       data.total = res.data.total;
       musicInfo.value = res.data.list;
       hasMore.value = res.data.hasNextPage
-      console.log(hasMore.value)
     }),
     request.get('comments', {
       params: {

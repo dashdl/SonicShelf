@@ -69,7 +69,6 @@ export const usePlayerStore = defineStore('player', {
 
             this.isPlaylist = localStorage.getItem("isPlaylist")
             this.playlistId = localStorage.getItem("playlistId")
-
             return this.audio;
         },
 
