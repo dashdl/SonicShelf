@@ -22,6 +22,8 @@ export const usePlayerStore = defineStore('player', {
             currentPlayDuration: 0,
             isRecorded: false,
             recordId: 0,
+            isPlaylist: false,
+            playlistId: '',
         }
     },
 
@@ -64,6 +66,9 @@ export const usePlayerStore = defineStore('player', {
             if (this.audio) {
                 this.audio.volume = this.volume;
             }
+
+            this.isPlaylist = localStorage.getItem("isPlaylist")
+            this.playlistId = localStorage.getItem("playlistId")
 
             return this.audio;
         },
@@ -162,7 +167,6 @@ export const usePlayerStore = defineStore('player', {
 
                     this.resetPlayTimer();
                     this.startPlayTimer();
-
                     localStorage.setItem("nowPlaying", JSON.stringify(this.currentIndex));
                 } catch (error) {
                     console.error('播放歌曲失败:', error);
@@ -365,6 +369,12 @@ export const usePlayerStore = defineStore('player', {
                     this.recordId = res.data;
                 }
             })
+            if (this.isPlaylist)
+                request.put(`playlists/add-playCount/${this.playlistId}`).then((res) => {
+                    if (res.code === '200') {
+                        this.isPlaylist = false;
+                    }
+                })
         },
 
         updatePlayHistory(currentPlayDuration) {
@@ -384,7 +394,6 @@ export const usePlayerStore = defineStore('player', {
             this.playTimer = setInterval(() => {
                 this.currentPlayDuration = Math.floor((Date.now() - this.playStartTime) / 1000);
 
-                // 检查是否达到60秒阈值
                 if (this.currentPlayDuration >= 60) {
                     this.recordPlayHistoryWithThreshold();
                 }
@@ -392,7 +401,6 @@ export const usePlayerStore = defineStore('player', {
             }, 1000);
         },
 
-// 停止计时器
         // 停止计时器（暂停时使用，不重置时间）
         stopPlayTimer() {
             if (this.playTimer) {
@@ -401,7 +409,7 @@ export const usePlayerStore = defineStore('player', {
             }
         },
 
-// 重置计时器（切换歌曲或清空播放列表时使用）
+        // 重置计时器（切换歌曲或清空播放列表时使用）
         resetPlayTimer() {
             this.stopPlayTimer();
             this.currentPlayDuration = 0;

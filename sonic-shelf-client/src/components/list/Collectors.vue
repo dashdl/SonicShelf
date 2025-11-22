@@ -66,7 +66,7 @@ const baseUrl = 'http://localhost:8080';
 .collectors-container {
   display: grid;
   column-gap: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
   grid-template-rows: 1fr;
   align-items: stretch;
 }
@@ -88,9 +88,15 @@ const baseUrl = 'http://localhost:8080';
 }
 
 
-@media (max-width: 1080px) {
+@media (min-width: 1080px) {
   .collectors-container {
     grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1440px) and (max-width: 1669px) {
+  .collectors-container {
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 

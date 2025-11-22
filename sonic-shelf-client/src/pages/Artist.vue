@@ -118,6 +118,8 @@ const replace = async () => {
   playerStore.updatePlaylist(items.value)
   localStorage.setItem("playlist", JSON.stringify(items.value))
   await playerStore.playSong(0)
+  playerStore.isPlaylist = false;
+  localStorage.setItem("isPlaylist", JSON.stringify(playerStore.isPlaylist))
 }
 
 const favorite = async () => {
@@ -160,7 +162,8 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div class="profile">
           <span>{{ artist.translatedName }}</span>
-          <span @click="router.push(`/profile/${artist.userId}`)" style="margin-left: 20px;cursor: pointer">个人页 ></span>
+          <span @click="router.push(`/profile/${artist.userId}`)"
+                style="margin-left: 20px;cursor: pointer">个人页 ></span>
         </div>
         <div class="button-group">
           <div @click="replace" class="play-button">

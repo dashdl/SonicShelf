@@ -43,6 +43,10 @@ const replace = async () => {
     playerStore.updatePlaylist(res.data)
     localStorage.setItem("playlist", JSON.stringify(res.data))
     playerStore.playSong(0)
+    playerStore.playlistId = currentId;
+    playerStore.isPlaylist = true;
+    localStorage.setItem("playlistId", JSON.stringify(currentId))
+    localStorage.setItem("isPlaylist", JSON.stringify(playerStore.isPlaylist))
   })
 }
 const favorite = async () => {

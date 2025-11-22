@@ -1,7 +1,8 @@
 <script setup>
 import SidebarItem from "@/components/common/SidebarItem.vue";
-import {reactive, ref, watch} from "vue";
+import {reactive, ref, watch, onMounted} from "vue";
 import router from "@/router/index.js";
+import { useRoute } from "vue-router";
 
 const props = defineProps({
   userPlaylist: {
@@ -15,14 +16,33 @@ const props = defineProps({
 })
 
 const userSelect = ref('home')
+const route = useRoute();
 
-watch(() => props.userPlaylist, () => {
-})
+const updateActiveStateByRoute = () => {
+  const currentPath = route.path;
+  const pathKey = currentPath.substring(1).split('/')[0];
+  const allItems = [...homeItems, ...userItems];
+  const matchedItem = allItems.find(item => item.key === pathKey);
+
+  if (matchedItem) {
+    userSelect.value = matchedItem.key;
+  } else {
+    userSelect.value = '';
+  }
+}
 
 const handleClick = (item) => {
   router.push(`/${item.key}`)
   userSelect.value = item.key
 }
+
+watch(() => route.path, () => {
+  updateActiveStateByRoute();
+});
+
+onMounted(() => {
+  updateActiveStateByRoute();
+});
 
 const playlistShow = reactive({
   favorite: false,

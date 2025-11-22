@@ -70,4 +70,7 @@ public interface PlaylistMapper {
 
     @Update("update playlists set favorite_count = #{favoriteCount} where id = #{targetId}")
     void updateFavoriteCount(Long targetId, Integer favoriteCount);
+
+    @Update("update playlists set play_count = play_count + 1 where id = #{id}")
+    void addPlayCount(Long id);
 }

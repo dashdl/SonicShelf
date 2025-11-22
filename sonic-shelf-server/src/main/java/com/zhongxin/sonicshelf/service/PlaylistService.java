@@ -49,4 +49,6 @@ public interface PlaylistService {
     void removeMusic(Long playlistId, Long musicId);
 
     void updateMusicCount(Long playlistId);
+
+    void addPlayCount(Long id);
 }

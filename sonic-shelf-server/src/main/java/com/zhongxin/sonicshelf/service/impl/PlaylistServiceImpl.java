@@ -184,4 +184,9 @@ public class PlaylistServiceImpl implements PlaylistService {
     public void updateMusicCount(Long playlistId) {
         playlistMapper.updateMusicCount(playlistId, playlistMapper.countMusicCount(playlistId));
     }
+
+    @Override
+    public void addPlayCount(Long id) {
+        playlistMapper.addPlayCount(id);
+    }
 }

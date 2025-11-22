@@ -37,6 +37,8 @@ const replace = async () => {
   playerStore.updatePlaylist(musics.value)
   localStorage.setItem("playlist", JSON.stringify(musics.value))
   await playerStore.playSong(0)
+  playerStore.isPlaylist = false;
+  localStorage.setItem("isPlaylist", JSON.stringify(playerStore.isPlaylist))
 }
 
 const favorite = async () => {

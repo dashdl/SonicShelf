@@ -94,6 +94,13 @@ public class PlaylistsController {
         return Result.success();
     }
 
+    @PutMapping("add-playCount/{id}")
+    public Result addPlayCount(@PathVariable Long id) {
+
+        playlistsService.addPlayCount(id);
+        return Result.success();
+    }
+
     @DeleteMapping("/{playlistId}/collect/{musicId}")
     public Result deleteMusic(@PathVariable Long playlistId,
                               @PathVariable Long musicId) {
