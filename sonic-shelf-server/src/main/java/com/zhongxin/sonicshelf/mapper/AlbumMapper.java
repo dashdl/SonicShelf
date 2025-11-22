@@ -51,4 +51,7 @@ public interface AlbumMapper {
     void deleteById(Long id);
     @Select("select count(*) from albums")
     int countAlbumCount();
+
+    @Update("update albums set favorite_count = #{favoriteCount} where id = #{targetId}")
+    void updateFavoriteCount(Long targetId, Integer favoriteCount);
 }

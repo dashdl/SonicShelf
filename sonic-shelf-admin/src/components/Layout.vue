@@ -46,6 +46,11 @@
           <el-icon><Setting /></el-icon>
           <span>分类管理</span>
         </el-menu-item>
+
+        <el-menu-item index="comment">
+          <el-icon><ChatDotRound /></el-icon>
+          <span>评论管理</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -89,6 +94,7 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/userStore';
+import { Monitor, User, Headset, Collection, Setting, Menu, ArrowDown, SwitchButton, ChatDotRound } from '@element-plus/icons-vue';
 
 const router = useRouter();
 const userStore = useUserStore();

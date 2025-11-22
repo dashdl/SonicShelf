@@ -39,6 +39,12 @@ const router = createRouter({
                     component: () => import("@/views/CategoryManagement.vue"),
                     name: 'CategoryManagement'
                 },
+                // 评论管理
+                {
+                    path: '/comment',
+                    component: () => import("@/views/CommentManagement.vue"),
+                    name: 'CommentManagement'
+                },
             ]
         },
         // 404页面

@@ -16,7 +16,12 @@ export const usePlayerStore = defineStore('player', {
             currentName: '',
             currentLyric: '',  // 原始歌词文本
             parsedLyrics: [],  // 解析后的歌词数组 [{time, text}]
-            currentLyricIndex: -1
+            currentLyricIndex: -1,
+            playTimer: null,
+            playStartTime: 0,
+            currentPlayDuration: 0,
+            isRecorded: false,
+            recordId: 0,
         }
     },
 
@@ -89,6 +94,7 @@ export const usePlayerStore = defineStore('player', {
             this.audio.addEventListener('error', (error) => {
                 console.error('音频播放错误:', error);
                 this.isPlaying = false;
+                this.stopPlayTimer();
             });
         },
 
@@ -126,6 +132,7 @@ export const usePlayerStore = defineStore('player', {
             }
             localStorage.setItem('playlist', JSON.stringify(this.currentPlaylist));
             localStorage.removeItem('nowPlaying');
+            this.stopPlayTimer();
         },
 
 
@@ -153,10 +160,14 @@ export const usePlayerStore = defineStore('player', {
                         console.warn('播放需要用户交互:', error);
                     });
 
+                    this.resetPlayTimer();
+                    this.startPlayTimer();
+
                     localStorage.setItem("nowPlaying", JSON.stringify(this.currentIndex));
                 } catch (error) {
                     console.error('播放歌曲失败:', error);
                     this.isPlaying = false;
+                    this.stopPlayTimer();
                 }
             }
         },
@@ -171,6 +182,11 @@ export const usePlayerStore = defineStore('player', {
                     });
                 }
                 this.isPlaying = !this.isPlaying;
+                if (this.isPlaying) {
+                    this.startPlayTimer();
+                } else {
+                    this.stopPlayTimer();
+                }
             }
         },
 
@@ -179,6 +195,7 @@ export const usePlayerStore = defineStore('player', {
                 const nextIndex = (this.currentIndex + 1) % this.currentPlaylist.length;
                 this.playSong(nextIndex);
             }
+            this.resetPlayTimer()
         },
 
         prev() {
@@ -186,6 +203,7 @@ export const usePlayerStore = defineStore('player', {
                 const prevIndex = this.currentIndex > 0 ? this.currentIndex - 1 : this.currentPlaylist.length - 1;
                 this.playSong(prevIndex);
             }
+            this.resetPlayTimer()
         },
 
         setCurrentTime(time) {
@@ -317,6 +335,79 @@ export const usePlayerStore = defineStore('player', {
             }).catch(error => {
                 console.error('获取音乐信息失败:', error);
             });
+        },
+
+        recordPlayHistoryWithThreshold() {
+            if (this.currentPlayDuration < 60) {
+                return;
+            }
+
+            const currentMusic = this.currentPlaylist[this.currentIndex];
+            if (!currentMusic) return;
+
+            // 调用后端API记录播放历史或更新历史记录
+            if (!this.isRecorded) {
+                this.recordPlayHistory(currentMusic.id, this.currentPlayDuration);
+                this.isRecorded = true;
+            } else {
+                this.updatePlayHistory(this.currentPlayDuration);
+            }
+
+        },
+
+
+        recordPlayHistory(id, currentPlayDuration) {
+            request.post(`play-histories`, {
+                musicId: id,
+                playDuration: currentPlayDuration
+            }).then(res => {
+                if (res.code === '200') {
+                    this.recordId = res.data;
+                }
+            })
+        },
+
+        updatePlayHistory(currentPlayDuration) {
+            request.put('play-histories/update', {
+                id: this.recordId,
+                playDuration: currentPlayDuration
+            })
+        },
+
+        startPlayTimer() {
+            // 如果是暂停后重新播放，调整playStartTime以保持当前的播放时长
+            if (this.currentPlayDuration > 0) {
+                this.playStartTime = Date.now() - (this.currentPlayDuration * 1000);
+            } else {
+                this.playStartTime = Date.now();
+            }
+            this.playTimer = setInterval(() => {
+                this.currentPlayDuration = Math.floor((Date.now() - this.playStartTime) / 1000);
+
+                // 检查是否达到60秒阈值
+                if (this.currentPlayDuration >= 60) {
+                    this.recordPlayHistoryWithThreshold();
+                }
+
+            }, 1000);
+        },
+
+// 停止计时器
+        // 停止计时器（暂停时使用，不重置时间）
+        stopPlayTimer() {
+            if (this.playTimer) {
+                clearInterval(this.playTimer);
+                this.playTimer = null;
+            }
+        },
+
+// 重置计时器（切换歌曲或清空播放列表时使用）
+        resetPlayTimer() {
+            this.stopPlayTimer();
+            this.currentPlayDuration = 0;
+            this.playStartTime = 0;
+            this.isRecorded = false;
+            this.recordId = 0;
         }
     }
 })

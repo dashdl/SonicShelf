@@ -35,6 +35,9 @@ public interface FavoriteMapper {
     @Select("select target_id from favorites where target_type=#{targetType} and user_id = #{currentUserId}")
     List<Long> selectIdByUserIdAndTargetType(Long currentUserId, String targetType);
 
+    @Select("select count(*) from favorites where target_type = #{targetType} and target_id = #{targetId}")
+    Integer countFavoriteCount(String targetType, Long targetId);
+
 
 //    List<Long> selectByIds(@Param("ids") List<Long> ids);
 

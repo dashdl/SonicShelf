@@ -49,6 +49,7 @@ const handleLike = (id, like) => {
       }
     }).then(res => {
       if (res.code === '200') {
+        comments.value.find(comment => comment.id === id).likeCount -= 1
         comments.value.find(comment => comment.id === id).like = false;
         ElMessage.success("取消点赞");
       } else {
@@ -64,6 +65,7 @@ const handleLike = (id, like) => {
     }).then(res => {
       if (res.code === '200') {
         comments.value.find(comment => comment.id === id).like = true;
+        comments.value.find(comment => comment.id === id).likeCount += 1
         ElMessage.success("点赞成功");
       } else {
         ElMessage.error("点赞失败");

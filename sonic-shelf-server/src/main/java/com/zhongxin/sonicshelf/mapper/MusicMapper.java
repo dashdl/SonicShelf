@@ -66,4 +66,18 @@ public interface MusicMapper {
     int countMusicCount();
 
     List<PlaylistMusicResponse> selectPlaylistMusicResponseByPlaylistId(Long playlistId);
+
+    @Update("update musics set favorite_count = #{favoriteCount} where id = #{targetId}")
+    void updateFavoriteCount(Long targetId, Integer favoriteCount);
+
+    @Select("select artist_id from musics where id = #{id}")
+    Long getArtistIdById(Long id);
+
+    @Select("select album_id from musics where id = #{id}")
+    Long getAlbumIdById(Long id);
+
+    @Update("update musics set play_count = play_count + 1 where id = #{id}")
+    void addPlayCount(Long id);
+
+    List<MusicResponse> selectMusicsFromHistories(@Param("currentUserId") Long currentUserId);
 }

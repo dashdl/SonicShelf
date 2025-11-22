@@ -6,39 +6,39 @@
         <p>Welcome to SonicShelf Admin</p>
       </div>
       <el-form
-        ref="loginFormRef"
-        :model="loginForm"
-        :rules="loginRules"
-        label-position="top"
-        class="login-form"
+          ref="loginFormRef"
+          :model="loginForm"
+          :rules="loginRules"
+          label-position="top"
+          class="login-form"
       >
         <el-form-item label="用户名" prop="username">
           <el-input
-            v-model="loginForm.username"
-            placeholder="请输入用户名"
-            prefix-icon="User"
-            clearable
+              v-model="loginForm.username"
+              placeholder="请输入用户名"
+              prefix-icon="User"
+              clearable
           />
         </el-form-item>
 
         <el-form-item label="密码" prop="password">
           <el-input
-            v-model="loginForm.password"
-            type="password"
-            placeholder="请输入密码"
-            prefix-icon="Lock"
-            clearable
-            show-password
+              v-model="loginForm.password"
+              type="password"
+              placeholder="请输入密码"
+              prefix-icon="Lock"
+              clearable
+              show-password
           />
         </el-form-item>
 
         <el-form-item>
           <el-button
-            type="primary"
-            :loading="loading"
-            @click="handleLogin"
-            class="login-button"
-            round
+              type="primary"
+              :loading="loading"
+              @click="handleLogin"
+              class="login-button"
+              round
           >
             {{ loading ? '登录中...' : '登录' }}
           </el-button>
@@ -49,10 +49,10 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/store/userStore'
-import { ElMessage } from 'element-plus'
+import {ref, reactive} from 'vue'
+import {useRouter} from 'vue-router'
+import {useUserStore} from '@/store/userStore'
+import {ElMessage} from 'element-plus'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -66,12 +66,12 @@ const loginForm = reactive({
 
 const loginRules = {
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur' }
+    {required: true, message: '请输入用户名', trigger: 'blur'},
+    {min: 3, max: 20, message: '用户名长度在 3 到 20 个字符', trigger: 'blur'}
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, max: 20, message: '密码长度在 6 到 20 个字符', trigger: 'blur' }
+    {required: true, message: '请输入密码', trigger: 'blur'},
+    {min: 6, max: 20, message: '密码长度在 6 到 20 个字符', trigger: 'blur'}
   ]
 }
 
@@ -96,7 +96,7 @@ const handleLogin = async () => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #fc3d49 0%, #fc3b5b 100%);
   padding: 20px;
 }
 
@@ -153,7 +153,7 @@ const handleLogin = async () => {
   height: 40px;
   font-size: 16px;
   font-weight: bold;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #fc3b5b 0%, #fc3d49 100%);
   border: none;
   transition: all 0.3s ease;
 

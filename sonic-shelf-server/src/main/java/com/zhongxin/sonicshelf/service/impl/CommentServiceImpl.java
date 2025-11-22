@@ -2,6 +2,8 @@ package com.zhongxin.sonicshelf.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.dto.response.CommentCountResponse;
+import com.zhongxin.sonicshelf.dto.response.CommentManageResponse;
 import com.zhongxin.sonicshelf.dto.response.CommentResponse;
 import com.zhongxin.sonicshelf.entity.Comment;
 import com.zhongxin.sonicshelf.exception.CustomException;
@@ -67,7 +69,7 @@ public class CommentServiceImpl implements CommentService {
             Comment comment = commentMapper.selectByCommentId(commentId);
             if (comment == null) {
                 return false;
-            }else {
+            } else {
                 Comment commentRequest = new Comment();
                 commentRequest.setUserId(CurrentUserUtil.getCurrentUserId());
                 commentRequest.setTargetType(targetType);
@@ -78,6 +80,45 @@ public class CommentServiceImpl implements CommentService {
         } catch (RuntimeException e) {
             throw new CustomException("评论不存在");
         }
+    }
+
+    @Override
+    public Integer countCommentCount() {
+        return commentMapper.countCommentCount();
+    }
+
+    @Override
+    public CommentCountResponse countDistribution() {
+        return new CommentCountResponse(
+                commentMapper.countMusicCount(),
+                commentMapper.countPlaylistCount(),
+                commentMapper.countArtistCount(),
+                commentMapper.countAlbumCount(),
+                commentMapper.countDynamicCount()
+        );
+    }
+
+    @Override
+    public PageInfo<CommentManageResponse> findCommentsAspage(Integer pageNum, Integer pageSize, String keyword, String targetType, String startDate, String endDate) {
+
+        PageHelper.startPage(pageNum, pageSize);
+
+        return PageInfo.of(commentMapper.selectComment(keyword,targetType,startDate,endDate));
+    }
+
+    @Override
+    public void adminDeleteCommentById(Long id) {
+        commentMapper.adminDeleteCommentById(id);
+    }
+
+    @Override
+    public void batchDeleteCommentById(Long[] ids) {
+        commentMapper.batchDeleteCommentById(ids);
+    }
+
+    @Override
+    public CommentManageResponse findCommentById(Long id) {
+        return commentMapper.selectCommentManageResponseById(id);
     }
 
 }

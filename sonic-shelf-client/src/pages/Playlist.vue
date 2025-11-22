@@ -111,7 +111,6 @@ const loadPlaylistData = async (playlistId) => {
         Info.musicCount = res.data.musicCount;
         Info.playCount = res.data.playCount;
         Info.createTime = res.data.createTime.substring(0, 10);
-        hasMore.value = res.data.hasNextPage;
       } else {
         ElMessage.error("歌单信息获取失败")
         console.log('不是我')
@@ -125,6 +124,8 @@ const loadPlaylistData = async (playlistId) => {
     }).then(res => {
       data.total = res.data.total;
       musicInfo.value = res.data.list;
+      hasMore.value = res.data.hasNextPage
+      console.log(hasMore.value)
     }),
     request.get('comments', {
       params: {
@@ -157,7 +158,6 @@ const loadPlaylistData = async (playlistId) => {
         userSelect.favorite = res.data
       }
     })
-
   ])
 }
 

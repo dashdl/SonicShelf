@@ -35,15 +35,10 @@
         WHERE user_id = #{userId}
     </select>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-        INSERT INTO play_histories(user_id, music_id, play_duration, play_time) 
-        VALUES(#{userId}, #{musicId}, #{playDuration}, #{playTime})
-    </insert>
-
     <update id="updatePlayHistory">
         UPDATE play_histories 
-        SET play_duration = #{playDuration}, play_time = #{playTime}
-        WHERE id = #{id}
+        SET play_duration = #{playDuration}
+        WHERE id = #{id} and user_id = #{userId}
     </update>
 
     <delete id="deleteById">

@@ -1,5 +1,6 @@
 package com.zhongxin.sonicshelf.mapper;
 
+import com.zhongxin.sonicshelf.dto.response.CommentManageResponse;
 import com.zhongxin.sonicshelf.dto.response.CommentResponse;
 import com.zhongxin.sonicshelf.entity.Comment;
 import org.apache.ibatis.annotations.*;
@@ -34,6 +35,7 @@ public interface CommentMapper {
             "    left join users u on c.user_id = u.id" +
             "    where target_id = #{targetId}" +
             "    and target_type = #{targetType}" +
+            "    and c.status = 1" +
             "    order by c.created_at desc")
     List<CommentResponse> findCommentsByTargetTypeAndTargetId(String targetType, Long targetId);
 
@@ -62,4 +64,34 @@ public interface CommentMapper {
 
     @Delete("delete from comments where id=#{commentId}")
     void deleteById(Long commentId);
+
+    @Select("select count(*) from comments")
+    Integer countCommentCount();
+
+    @Select("select count(*) from comments where target_type = 'music'")
+    Integer countMusicCount();
+
+    @Select("select count(*) from comments where target_type = 'playlist'")
+    Integer countPlaylistCount();
+
+    @Select("select count(*) from comments where target_type = 'artist'")
+    Integer countArtistCount();
+
+    @Select("select count(*) from comments where target_type = 'album'")
+    Integer countAlbumCount();
+
+    @Select("select count(*) from comments where target_type = 'dynamic'")
+    Integer countDynamicCount();
+
+    List<CommentManageResponse> selectComment(String keyword, String targetType, String startDate, String endDate);
+
+    @Update("update comments set status = 0 where id = #{id}")
+    void adminDeleteCommentById(Long id);
+
+    void batchDeleteCommentById(Long[] ids);
+
+    CommentManageResponse selectCommentManageResponseById(Long id);
+
+    @Update("update comments set like_count = #{likeCount} where id = #{targetId}")
+    void updateLikeCount(Long targetId, Integer likeCount);
 }

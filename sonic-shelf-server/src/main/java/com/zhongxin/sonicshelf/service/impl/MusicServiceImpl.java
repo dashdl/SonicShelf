@@ -34,7 +34,7 @@ public class MusicServiceImpl implements MusicService {
 
     @Override
     public PageInfo<MusicResponse> findAsPageByListId(Integer pageNum, Integer pageSize, Long id) {
-
+        PageHelper.startPage(pageNum, pageSize);
         List<MusicResponse> musicResponses = musicMapper.findAsPageByListId(id, CurrentUserUtil.getCurrentUserId());
 
         for (MusicResponse music : musicResponses) {
@@ -109,7 +109,7 @@ public class MusicServiceImpl implements MusicService {
 
         PageHelper.startPage(pageNum, pageSize);
 
-        List<MusicManageResponse> musicManageResponseList = musicMapper.selectMusics(keyword, artistId, albumId,categoryIds);
+        List<MusicManageResponse> musicManageResponseList = musicMapper.selectMusics(keyword, artistId, albumId, categoryIds);
 
         for (MusicManageResponse music : musicManageResponseList) {
             music.setCategories(categoriesMapper.selectByMusicId(music.getId()));
@@ -153,7 +153,13 @@ public class MusicServiceImpl implements MusicService {
 
     @Override
     public void deleteMusicById(Long id) {
+
+        Long artistId = musicMapper.getArtistIdById(id);
+        Long albumId = musicMapper.getAlbumIdById(id);
         musicMapper.deleteById(id);
+
+        artistMapper.updateMusicCountByArtistId(musicMapper.countByArtistId(artistId), id);
+        albumMapper.updateMusicCountByAlbumId(musicMapper.countByAlbumId(albumId), id);
     }
 
     @Override

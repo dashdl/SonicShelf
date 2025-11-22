@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FavoriteServiceImpl implements FavoriteService {
@@ -26,7 +27,9 @@ public class FavoriteServiceImpl implements FavoriteService {
     @Autowired
     private MusicMapper musicMapper;
     @Resource
-    AlbumMapper albumMapper;
+    private AlbumMapper albumMapper;
+    @Resource
+    private ArtistMapper artistMapper;
 
 
     @Override
@@ -37,6 +40,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             throw new CustomException("400", "您已收藏该" + FavoriteType.toChinese(targetType));
         }
         favoriteMapper.addFavorite(favorite);
+        updateFavoriteCount(targetType, id);
         return favoriteMapper.selectFavoriteById(favorite.getId().intValue());
     }
 
@@ -47,6 +51,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         if (!isFavorite(favorite)) throw new CustomException("400", "您未收藏该" + FavoriteType.toChinese(targetType));
 
         favoriteMapper.removeFavorite(favorite);
+        updateFavoriteCount(targetType, id);
     }
 
     @Override
@@ -111,5 +116,20 @@ public class FavoriteServiceImpl implements FavoriteService {
         List<AlbumInfoResponse> albumResponses = albumMapper.selectAlbumByIds(ids);
         for (AlbumInfoResponse music : albumResponses) music.setFavorite(true);
         return PageInfo.of(albumResponses);
+    }
+
+    private void updateFavoriteCount(String targetType, Long targetId) {
+        if (Objects.equals(targetType, "music")) {
+            musicMapper.updateFavoriteCount(targetId, favoriteMapper.countFavoriteCount(targetType, targetId));
+        }
+        if (Objects.equals(targetType, "playlist")) {
+            playlistMapper.updateFavoriteCount(targetId, favoriteMapper.countFavoriteCount(targetType, targetId));
+        }
+        if (Objects.equals(targetType, "album")) {
+            albumMapper.updateFavoriteCount(targetId, favoriteMapper.countFavoriteCount(targetType, targetId));
+        }
+        if (Objects.equals(targetType, "artist")) {
+            artistMapper.updateFollowerCount(targetId, favoriteMapper.countFavoriteCount(targetType, targetId));
+        }
     }
 }

@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, onUnmounted, ref, nextTick, watch} from "vue";
+import {onMounted, onUnmounted, ref, nextTick, watch, useTemplateRef} from "vue";
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import {usePlayerStore} from "@/store/player.js";
@@ -41,16 +41,24 @@ const reactiveItems = ref([]);
 watch(() => props.items, (newItems) => {
   reactiveItems.value = JSON.parse(JSON.stringify(newItems)).map(item => ({
     ...item,
-    showInteract: false
+    showInteract: false,
+    interactPosition: 'bottom'
   }));
 }, {immediate: true, deep: true});
 
-const toggleInteract = (item) => {
+const toggleInteract = (item,event) => {
   reactiveItems.value.forEach(i => {
     if (i.id !== item.id) {
       i.showInteract = false;
     }
   });
+
+  // 判断按钮在视口中的位置
+  const buttonRect = event.currentTarget.getBoundingClientRect();
+  const viewportHeight = window.innerHeight;
+
+  // 如果按钮在视口上半部分，交互卡片显示在下方；否则显示在上方
+  item.interactPosition = buttonRect.top < viewportHeight / 2 ? 'top' : 'bottom';
   item.showInteract = !item.showInteract;
 };
 
@@ -190,7 +198,14 @@ const cleanupScrollListener = () => {
   }
 };
 
-onMounted(async () => {
+const format=(duration)=>{
+  if (!duration || isNaN(duration)) return '00:00'
+  const minutes = Math.floor(duration / 60)
+  const secs = Math.floor(duration % 60)
+  return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+}
+
+onMounted( async () => {
   await nextTick();
   setupScrollContainer();
 });
@@ -251,12 +266,13 @@ const baseUrl = 'http://localhost:8080';
               <img src="/icons/player/comment.svg" style="width: 18px" alt="">
             </div>
             <div class="interact-button">
-              <img @click.stop="toggleInteract(item)" src="/icons/status/more.svg" style="width: 18px" alt="">
+              <img @click.stop="toggleInteract(item,$event)" src="/icons/status/more.svg" style="width: 18px" alt="">
             </div>
             <InteractCard
                 v-if="item.showInteract"
                 :music-id="item.id"
                 :show-delete="props.showDelete"
+                :position="item.interactPosition"
                 @click.stop
                 @collect="collect"
             />
@@ -271,10 +287,10 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div class="like-cell">
           <img @click="favorite(item.id,item.favorite)"
-               :src="item.favorite===true ? '/icons/player/like.svg':'/icons/player/unlike.svg' " style="width: 18px;"
+               :src="item.favorite===true ? '/icons/player/like.svg':'/icons/player/unlike.svg' " style="width: 18px;cursor: pointer;"
                alt="">
         </div>
-        <div class="time-cell"><span style="color: #7b818f">04:55</span></div>
+        <div class="time-cell"><span style="color: #7b818f">{{ format(item.duration) }}</span></div>
       </div>
     </div>
   </div>
@@ -392,8 +408,10 @@ span {
 }
 
 .total-cell {
+  padding-right: 20px;
   width: 70%;
   overflow: hidden;
+  display: flex;
 }
 
 .total-cell span {

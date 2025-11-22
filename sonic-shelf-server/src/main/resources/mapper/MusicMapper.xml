@@ -187,4 +187,44 @@
                  LEFT JOIN albums am On am.id = m.album_id
         WHERE p.id = #{playlistId}
     </select>
+    <select id="selectMusicsFromHistories" resultType="com.zhongxin.sonicshelf.dto.response.MusicResponse">
+        SELECT m.id,
+               m.title,
+               m.cover_image       as coverImage,
+               a.name              as artistName,
+               a.id                as artistId,
+               am.title            as albumTitle,
+               am.id               as albumId,
+               m.duration,
+               m.file_url          as fileUrl,
+               latest_ph.play_time as playTime
+        FROM musics m
+                 INNER JOIN artists a ON m.artist_id = a.id
+                 INNER JOIN albums am ON am.id = m.album_id
+                 INNER JOIN (SELECT music_id, MAX(play_time) as max_play_time
+                             FROM play_histories
+                             WHERE user_id = #{currentUserId}
+                             GROUP BY music_id) latest ON latest.music_id = m.id
+                 INNER JOIN play_histories latest_ph
+                            ON latest_ph.music_id = latest.music_id AND latest_ph.play_time = latest.max_play_time AND
+                               latest_ph.user_id = #{currentUserId}
+        ORDER BY latest_ph.play_time DESC
+    </select>
+
+<!--    #         SELECT m.id,-->
+<!--    #                m.title,-->
+<!--    #                m.cover_image,-->
+<!--    #                a.name as artist_name,-->
+<!--    #                a.id as artist_id,-->
+<!--    #                am.title as album_title,-->
+<!--    #                am.id as album_id,-->
+<!--    #                m.duration,-->
+<!--    #                m.file_url-->
+<!--    #         FROM musics m-->
+<!--    #                  INNER JOIN artists a ON m.artist_id = a.id-->
+<!--    #                  INNER JOIN albums am ON am.id = m.album_id-->
+<!--    #                  INNER JOIN play_histories as ph ON ph.music_id = m.id-->
+<!--    #                  INNER JOIN users as u ON ph.user_id = u.id-->
+<!--    #         WHERE ph.user_id = #{currentUserId}-->
+
 </mapper>

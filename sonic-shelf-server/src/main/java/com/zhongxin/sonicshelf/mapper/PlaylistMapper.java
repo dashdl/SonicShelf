@@ -67,4 +67,7 @@ public interface PlaylistMapper {
 
     @Delete("delete from playlist_musics where playlist_id = #{playlistId} and music_id = #{musicId}")
     void removeMusic(Long playlistId, Long musicId);
+
+    @Update("update playlists set favorite_count = #{favoriteCount} where id = #{targetId}")
+    void updateFavoriteCount(Long targetId, Integer favoriteCount);
 }

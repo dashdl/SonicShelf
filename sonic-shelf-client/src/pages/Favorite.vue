@@ -43,7 +43,7 @@ const replace = async () => {
 }
 
 const loading = ref(false)
-const hasMore = ref(true)
+const hasMore = ref(false)
 
 const Info = reactive({
   id: '',
@@ -87,6 +87,7 @@ const loadPlaylistData = async () => {
     }).then(res => {
       data.total = res.data.total;
       musicInfo.value = res.data.list;
+      hasMore.value = res.data.hasNextPage;
     }),
     // request.get('comments', {
     //   params: {
@@ -185,20 +186,20 @@ const baseUrl = 'http://localhost:8080';
           <span @click="userSelect.page=1" :class="{ 'bold-text': userSelect.page === 1 }">歌曲</span>
           <div v-if="userSelect.page === 1" class="button-underline"></div>
         </div>
-<!--        <div class="button">-->
-<!--          <div class="numb">-->
-<!--            <span style="font-size:12px;font-weight: bold">{{ data.commentCount }}</span>-->
-<!--          </div>-->
-<!--          <span @click="userSelect.page=2" :class="{ 'bold-text': userSelect.page === 2 }">评论</span>-->
-<!--          <div v-if="userSelect.page === 2" class="button-underline"></div>-->
-<!--        </div>-->
-<!--        <div class="button">-->
-<!--          <div class="numb">-->
-<!--            <span style="font-size:12px;font-weight: bold">{{ collectorNum }}</span>-->
-<!--          </div>-->
-<!--          <span @click="userSelect.page=3" :class="{ 'bold-text': userSelect.page === 3 }">收藏者</span>-->
-<!--          <div v-if="userSelect.page === 3" class="button-underline"></div>-->
-<!--        </div>-->
+        <!--        <div class="button">-->
+        <!--          <div class="numb">-->
+        <!--            <span style="font-size:12px;font-weight: bold">{{ data.commentCount }}</span>-->
+        <!--          </div>-->
+        <!--          <span @click="userSelect.page=2" :class="{ 'bold-text': userSelect.page === 2 }">评论</span>-->
+        <!--          <div v-if="userSelect.page === 2" class="button-underline"></div>-->
+        <!--        </div>-->
+        <!--        <div class="button">-->
+        <!--          <div class="numb">-->
+        <!--            <span style="font-size:12px;font-weight: bold">{{ collectorNum }}</span>-->
+        <!--          </div>-->
+        <!--          <span @click="userSelect.page=3" :class="{ 'bold-text': userSelect.page === 3 }">收藏者</span>-->
+        <!--          <div v-if="userSelect.page === 3" class="button-underline"></div>-->
+        <!--        </div>-->
       </div>
       <div class="search">
         <img src="/icons/navigation/search.svg" style="height: 13px;margin-right: 3px;" alt="">

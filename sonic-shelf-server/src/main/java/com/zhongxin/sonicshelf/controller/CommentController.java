@@ -1,11 +1,16 @@
 package com.zhongxin.sonicshelf.controller;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.zhongxin.sonicshelf.annotation.AdminAuth;
+import com.zhongxin.sonicshelf.dto.response.CommentManageResponse;
+import com.zhongxin.sonicshelf.dto.response.MusicManageResponse;
 import com.zhongxin.sonicshelf.entity.Comment;
 import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.service.CommentService;
 import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
-import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -52,4 +57,49 @@ public class CommentController {
         return Result.success("删除成功");
     }
 
+    @AdminAuth
+    @GetMapping("/count")
+    public Result getCommentCount() {
+        return Result.success(commentService.countCommentCount());
+    }
+
+    @AdminAuth
+    @GetMapping("/distribution")
+    public Result getCommentDistribution() {
+        return Result.success(commentService.countDistribution());
+    }
+
+    @AdminAuth
+    @GetMapping("/getAll")
+    public Result getAllComments(@RequestParam Integer pageNum,
+                                 @RequestParam Integer pageSize,
+                                 @RequestParam(required = false) String keyword,
+                                 @RequestParam(required = false) String targetType,
+                                 @RequestParam(required = false) String startDate,
+                                 @RequestParam(required = false) String endDate) {
+
+        PageInfo<CommentManageResponse> cmr = commentService.findCommentsAspage(pageNum, pageSize, keyword, targetType, startDate, endDate);
+
+        return Result.success(cmr);
+    }
+
+    @AdminAuth
+    @DeleteMapping("/delete/{id}")
+    public Result deleteComment(@PathVariable Long id) {
+        commentService.adminDeleteCommentById(id);
+        return Result.success();
+    }
+
+    @AdminAuth
+    @DeleteMapping("/batchDelete")
+    public Result batchDeleteComment(@RequestParam Long[] ids) {
+        commentService.batchDeleteCommentById(ids);
+        return Result.success();
+    }
+
+    @AdminAuth
+    @GetMapping("/getById/{id}")
+    public Result getCommentById(@PathVariable Long id) {
+        return Result.success(commentService.findCommentById(id));
+    }
 }

@@ -45,4 +45,7 @@ public interface ArtistMapper {
 
     @Select("select count(*) from artists")
     int countArtistCount();
+
+    @Update("update artists set follower_count = #{favoriteCount} where id = #{targetId}")
+    void updateFollowerCount(Long targetId, Integer favoriteCount);
 }

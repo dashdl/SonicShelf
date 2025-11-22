@@ -5,6 +5,7 @@ import request from "@/utils/request.js";
 import {useRoute} from "vue-router";
 import {ElMessage} from "element-plus";
 import {usePlayerStore} from "@/store/player.js";
+import {computed} from "vue";
 
 const route = useRoute();
 const player = usePlayerStore();
@@ -14,6 +15,10 @@ const props = defineProps({
   showDelete:{
     type: Boolean,
     default: false
+  },
+  position: {
+    type: String,
+    default: 'bottom' // 'top' 或 'bottom'
   }
 })
 
@@ -38,10 +43,22 @@ const deleteMusic = async () => {
     ElMessage.error(res.message);
   }
 }
+
+const containerStyle = computed(() => {
+  if (props.position === 'top') {
+    return {
+      top: '50%',
+    };
+  } else {
+    return {
+      bottom: '50%',
+    };
+  }
+});
 </script>
 
 <template>
-  <div class="interact-container">
+  <div class="interact-container" :style="containerStyle">
     <div @click="player.checkMusicId(musicId)" class="interact-item">
       <img src="/icons/status/play.svg" style="width: 17px;margin-right: 10px" alt="">
       <span style="font-size: 13px">播放</span>
@@ -85,7 +102,7 @@ span {
   padding: 5px 0;
   width: 190px;
   right: -180px;
-  bottom: 50%;
+
   display: flex;
   flex-direction: column;
   background-color: #ffffff;

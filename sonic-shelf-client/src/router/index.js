@@ -65,6 +65,11 @@ const router = createRouter({
                     component: () => import("@/pages/Artist.vue"),
                     props: true,
                 },
+                {
+                    path: '/histories',
+                    component: () => import("@/pages/PlayHistory.vue"),
+                    props: true,
+                },
             ]
         },
         // {path: '/:pathMatch(.*)', redirect: '/notFound'},
