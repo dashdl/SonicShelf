@@ -34,4 +34,6 @@ public interface MusicService {
     void deleteMusicById(Long id);
 
     List<PlaylistMusicResponse> findPlaylistMusicResponseByPlaylistId(Long playlistId);
+
+    PageInfo<MusicInfoResponse> findMusicsAsPageForUser(Integer pageNum, Integer pageSize, String keyword);
 }

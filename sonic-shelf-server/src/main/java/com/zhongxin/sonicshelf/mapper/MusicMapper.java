@@ -1,10 +1,7 @@
 package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.request.MusicManageRequest;
-import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
-import com.zhongxin.sonicshelf.dto.response.MusicManageResponse;
-import com.zhongxin.sonicshelf.dto.response.MusicResponse;
-import com.zhongxin.sonicshelf.dto.response.PlaylistMusicResponse;
+import com.zhongxin.sonicshelf.dto.response.*;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -80,4 +77,8 @@ public interface MusicMapper {
     void addPlayCount(Long id);
 
     List<MusicResponse> selectMusicsFromHistories(@Param("currentUserId") Long currentUserId);
+
+    DynamicResponse selectMusicInfoById(Long targetId);
+
+    List<MusicInfoResponse> selectMusicsForUser(String keyword);
 }

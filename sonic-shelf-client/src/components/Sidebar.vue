@@ -56,7 +56,7 @@ const homeItems = [
   {icon: '/icons/sidebar/home.svg', activeIcon: '/icons/sidebar/homeActive.svg', label: '推荐', key: 'home'},
   {icon: '/icons/sidebar/home-b.png', label: '精选', key: 'home'},
   {icon: '/icons/sidebar/home-b.png', label: '播客', key: 'home'},
-  {icon: '/icons/sidebar/home-b.png', label: '关注', key: 'home'},
+  {icon: '/icons/sidebar/dynamic.svg',activeIcon: '/icons/sidebar/dynamicActive.svg', label: '关注', key: 'dynamic'},
 ]
 const userItems = [
   {

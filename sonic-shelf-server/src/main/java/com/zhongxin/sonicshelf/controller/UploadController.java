@@ -5,6 +5,7 @@ import cn.hutool.core.io.FileUtil;
 import com.zhongxin.sonicshelf.annotation.AdminAuth;
 import com.zhongxin.sonicshelf.mapper.AlbumMapper;
 import com.zhongxin.sonicshelf.mapper.ArtistMapper;
+import com.zhongxin.sonicshelf.mapper.DynamicMapper;
 import com.zhongxin.sonicshelf.mapper.MusicMapper;
 import com.zhongxin.sonicshelf.service.PlaylistService;
 import com.zhongxin.sonicshelf.service.UserService;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RestController
@@ -36,6 +39,8 @@ public class UploadController {
     private MusicMapper musicMapper;
     @Autowired
     JwtUtil jwtUtil;
+    @Autowired
+    private DynamicMapper dynamicMapper;
 
     @PostMapping("/avatar")
     public Result uploadAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
@@ -145,6 +150,27 @@ public class UploadController {
 
         return Result.success("上传成功", "/uploads/playlistCovers/" + fileName);
     }
+
+    @PostMapping("/dynamicImage/{id}")
+    public Result uploadDynamicImage(@RequestParam("files") MultipartFile[] files, @PathVariable Long id) throws IOException {
+
+        String filePath = System.getProperty("user.dir") + "/files/uploads/dynamicImages/";
+        int sort = 0;
+        for (MultipartFile file : files) {
+            if (file.isEmpty()) {
+                continue;
+            }
+            byte[] bytes = file.getBytes();
+            // 使用时间戳前缀避免文件名冲突，直接使用原始文件名（包含中文）
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            FileUtil.writeBytes(bytes, filePath + fileName);
+            dynamicMapper.insertDynamicImage("/uploads/dynamicImages/" + fileName, id, sort);
+            sort++;
+        }
+
+        return Result.success("上传成功");
+    }
+
 
 //    @GetMapping("/download/{filName}")
 //    public void download(@PathVariable("filName") String filName, HttpServletResponse response) throws IOException {

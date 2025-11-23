@@ -3,12 +3,16 @@
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import {usePlayerStore} from "@/store/player.js";
+import InteractCard from "@/components/common/cards/InteractCard.vue";
+import {ref, watch} from "vue";
 
 const player = usePlayerStore();
 
 const props = defineProps({
   item: {type: Object, required: true},
 })
+
+const emit = defineEmits(["collect"])
 
 const favorite = () => {
   if (props.item.favorite === false) {
@@ -32,11 +36,38 @@ const favorite = () => {
   }
 }
 
+const showInteract = ref(false)
+const interactPosition = ref(null)
+
+const toggleInteract = (item, event) => {
+  // 判断按钮在视口中的位置
+  const buttonRect = event.currentTarget.getBoundingClientRect();
+  const viewportHeight = window.innerHeight;
+  interactPosition.value = buttonRect.top < viewportHeight / 2 ? 'top' : 'bottom';
+  const viewportWidth = window.innerWidth;
+
+  // 计算元素右侧到视口右侧的距离
+  const distanceToRight = viewportWidth - buttonRect.right;
+  if (distanceToRight < 200) {
+    interactPosition.value += 'left'
+  }
+  showInteract.value = !showInteract.value;
+};
+const hideInteractCard = () => {
+  setTimeout(() => {
+    showInteract.value = false;
+  }, 100);
+};
+
+const collect = (id) => {
+  emit("collect", id);
+}
+
 const baseUrl = 'http://localhost:8080';
 </script>
 
 <template>
-  <div class="music-card">
+  <div class="music-card" @mouseleave="hideInteractCard">
     <div class="info">
       <div @click="player.checkMusicId(props.item.id)" class="cover">
         <img id="cover" :src="props.item.coverImage ? baseUrl + props.item.coverImage : '/images/default/cover.png'"
@@ -49,11 +80,22 @@ const baseUrl = 'http://localhost:8080';
       </div>
     </div>
     <div class="button-group">
-      <div class="button"><img @click="favorite"
-                               :src=" props.item.favorite ?'/icons/player/like.svg' :'/icons/player/unlike.svg'"
-                               style="width: 20px;" alt="">
+      <div class="button">
+        <img @click="favorite"
+             :src=" props.item.favorite ?'/icons/player/like.svg' :'/icons/player/unlike.svg'"
+             style="width: 20px;" alt="">
       </div>
-      <div class="button"><img src="/icons/status/more.svg" style="height: 20px" alt=""></div>
+      <div class="button">
+        <img @click.stop="toggleInteract(item,$event)" src="/icons/status/more.svg" style="height: 20px" alt="">
+      </div>
+      <InteractCard
+          v-if="showInteract"
+          :music-id="props.item.id"
+          :show-delete="false"
+          :position="interactPosition"
+          @click.stop
+          @collect="collect"
+      />
     </div>
   </div>
 </template>
@@ -80,8 +122,13 @@ const baseUrl = 'http://localhost:8080';
   filter: brightness(90%);
 }
 
+.music-card:hover #playButton {
+  opacity: 70%;
+}
+
 .info {
   display: flex;
+  align-items: center;
 }
 
 .cover {
@@ -95,7 +142,6 @@ const baseUrl = 'http://localhost:8080';
 
 .cover:hover {
   cursor: pointer;
-
 }
 
 .cover:hover #playButton {
@@ -108,7 +154,7 @@ const baseUrl = 'http://localhost:8080';
   height: 35px;
   top: 50%;
   left: 50%;
-  opacity: 70%;
+  opacity: 0;
   transition: all 0.1s ease;
   transform: translate(-50%, -50%);
 }
@@ -118,16 +164,17 @@ const baseUrl = 'http://localhost:8080';
   display: flex;
   flex-direction: column;
   justify-content: center;
-
 }
 
 .text span {
+  flex: 1;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .button-group {
+  position: relative;
   display: flex;
   flex-direction: row;
 }

@@ -211,7 +211,28 @@
         ORDER BY latest_ph.play_time DESC
     </select>
 
-<!--    #         SELECT m.id,-->
+    <select id="selectMusicInfoById" resultType="com.zhongxin.sonicshelf.dto.response.DynamicResponse">
+        SELECT m.title,
+               m.cover_image,
+               a.name as artist_name
+        FROM musics m
+                 INNER JOIN artists a ON m.artist_id = a.id
+                 INNER JOIN albums am On am.id = m.album_id
+        WHERE m.id = #{id}
+    </select>
+    <select id="selectMusicsForUser" resultType="com.zhongxin.sonicshelf.dto.response.MusicInfoResponse">
+        SELECT m.id,
+               m.title,
+               a.name as artist_name,
+               m.cover_image
+        FROM musics m
+                 LEFT JOIN artists a ON m.artist_id = a.id
+        WHERE a.name like concat('%', #{keyword}, '%')
+           or m.title like concat('%', #{keyword}, '%')
+    </select>
+
+
+    <!--    #         SELECT m.id,-->
 <!--    #                m.title,-->
 <!--    #                m.cover_image,-->
 <!--    #                a.name as artist_name,-->

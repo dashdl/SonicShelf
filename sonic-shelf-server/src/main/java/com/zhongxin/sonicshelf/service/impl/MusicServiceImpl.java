@@ -167,6 +167,13 @@ public class MusicServiceImpl implements MusicService {
         return musicMapper.selectPlaylistMusicResponseByPlaylistId(playlistId);
     }
 
+    @Override
+    public PageInfo<MusicInfoResponse> findMusicsAsPageForUser(Integer pageNum, Integer pageSize, String keyword) {
+        PageHelper.startPage(pageNum, pageSize);
+
+        return PageInfo.of(musicMapper.selectMusicsForUser(keyword));
+    }
+
     private boolean isFavorite(Long musicId) {
         Favorite favorite = new Favorite("music", musicId);
         return favoriteMapper.findByUserAndTarget(favorite) != null;

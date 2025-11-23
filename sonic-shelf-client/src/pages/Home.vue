@@ -13,6 +13,8 @@ const likeRecommend = ref([])
 
 const musicList = ref([])
 
+const emit = defineEmits(["collect"])
+
 const updateRecommendCount = () => {
   const width = window.innerWidth
   let newRecommendCount, newLikeRecommend, newMusicCount
@@ -70,6 +72,10 @@ const getRecommendsMusic = async (musicNumb) => {
   }
 }
 
+const collect = (id) => {
+  emit("collect", id);
+}
+
 onMounted(() => {
   updateRecommendCount() // 初始化
   window.addEventListener('resize', updateRecommendCount)
@@ -96,6 +102,7 @@ onUnmounted(() => {
     <div class="like-recommend" :style="{ 'grid-template-columns': gridLikeColumns }">
       <MusicCard
           v-for="item in musicList"
+          @collect="collect"
           :item="item"
       />
     </div>

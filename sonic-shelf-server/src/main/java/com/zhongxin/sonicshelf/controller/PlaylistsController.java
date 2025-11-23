@@ -5,6 +5,7 @@ import com.zhongxin.sonicshelf.annotation.AdminAuth;
 import com.zhongxin.sonicshelf.dto.request.PlaylistManageRequest;
 import com.zhongxin.sonicshelf.dto.request.PlaylistRequest;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
+import com.zhongxin.sonicshelf.dto.response.PlaylistBaseResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistManageResponse;
 import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.entity.Playlist;
@@ -114,6 +115,14 @@ public class PlaylistsController {
             throw new CustomException("这不是您的歌单");
         }
         return Result.success();
+    }
+
+    @GetMapping("/search")
+    public Result search(@RequestParam Integer pageNum,
+                         @RequestParam Integer pageSize,
+                         @RequestParam String keyword) {
+        PageInfo<PlaylistBaseResponse> pageInfo = playlistsService.findPlaylistsAsPageForUser(pageNum, pageSize, keyword);
+        return Result.success(pageInfo);
     }
 
     @AdminAuth

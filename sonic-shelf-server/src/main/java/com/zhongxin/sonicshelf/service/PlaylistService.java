@@ -2,9 +2,7 @@ package com.zhongxin.sonicshelf.service;
 
 import com.github.pagehelper.PageInfo;
 import com.zhongxin.sonicshelf.dto.request.PlaylistManageRequest;
-import com.zhongxin.sonicshelf.dto.response.PlaylistCardResponse;
-import com.zhongxin.sonicshelf.dto.response.PlaylistManageResponse;
-import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
+import com.zhongxin.sonicshelf.dto.response.*;
 import com.zhongxin.sonicshelf.entity.Playlist;
 
 import java.util.List;
@@ -51,4 +49,6 @@ public interface PlaylistService {
     void updateMusicCount(Long playlistId);
 
     void addPlayCount(Long id);
+
+    PageInfo<PlaylistBaseResponse> findPlaylistsAsPageForUser(Integer pageNum, Integer pageSize, String keyword);
 }

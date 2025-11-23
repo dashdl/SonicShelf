@@ -137,6 +137,7 @@ onUnmounted(() => {
   border-radius: $radius;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .search {

@@ -65,7 +65,7 @@
           <el-dropdown>
             <span class="el-dropdown-link">
               <el-avatar :size="36">
-                <img :src="userStore.userInfo.avatar ? `http://localhost:8080${userStore.userInfo.avatar}` : '/user.svg'" alt="">
+                <img :src="userStore.userInfo && userStore.userInfo.avatar ? `http://localhost:8080${userStore.userInfo.avatar}` : '/user.svg'" alt="">
               </el-avatar>
               <span>{{ username || '管理员' }}</span>
               <el-icon class="el-icon--right"><ArrowDown /></el-icon>
@@ -98,6 +98,11 @@ import { Monitor, User, Headset, Collection, Setting, Menu, ArrowDown, SwitchBut
 
 const router = useRouter();
 const userStore = useUserStore();
+
+// 确保userInfo有默认值，避免访问null对象
+if (!userStore.userInfo) {
+  userStore.userInfo = {};
+}
 
 const activeMenu = computed(() => {
   const path = router.currentRoute.value.path;

@@ -1,9 +1,7 @@
 package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.request.PlaylistManageRequest;
-import com.zhongxin.sonicshelf.dto.response.PlaylistCardResponse;
-import com.zhongxin.sonicshelf.dto.response.PlaylistManageResponse;
-import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
+import com.zhongxin.sonicshelf.dto.response.*;
 import com.zhongxin.sonicshelf.entity.Playlist;
 import org.apache.ibatis.annotations.*;
 
@@ -73,4 +71,8 @@ public interface PlaylistMapper {
 
     @Update("update playlists set play_count = play_count + 1 where id = #{id}")
     void addPlayCount(Long id);
+
+    DynamicResponse selectPlaylistInfoById(Long targetId);
+
+    List<PlaylistBaseResponse> selectPlaylistsForUser(String keyword);
 }

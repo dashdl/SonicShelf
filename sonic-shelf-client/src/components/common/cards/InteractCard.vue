@@ -12,7 +12,7 @@ const player = usePlayerStore();
 
 const props = defineProps({
   musicId: null,
-  showDelete:{
+  showDelete: {
     type: Boolean,
     default: false
   },
@@ -45,15 +45,31 @@ const deleteMusic = async () => {
 }
 
 const containerStyle = computed(() => {
-  if (props.position === 'top') {
-    return {
-      top: '50%',
-    };
+  const style = {};
+
+  // if (props.position.includes('top')) {
+  //   return {
+  //     top: '50%',
+  //   };
+  // } else {
+  //   return {
+  //     bottom: '50%',
+  //   };
+  // }
+
+  if (props.position.includes('top')) {
+    style.top = '50%';
   } else {
-    return {
-      bottom: '50%',
-    };
+    style.bottom = '100%';
   }
+
+  if (props.position.includes('left')) {
+    style.right = '0';
+    style.margin = '10px 0';
+  }
+
+  return style;
+
 });
 </script>
 
@@ -102,12 +118,12 @@ span {
   padding: 5px 0;
   width: 190px;
   right: -180px;
-
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 2px 2px 10px #eaeaea;
+  z-index: 10;
 }
 
 .interact-container hr {

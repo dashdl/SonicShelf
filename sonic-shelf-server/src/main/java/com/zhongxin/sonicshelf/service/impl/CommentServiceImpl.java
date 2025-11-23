@@ -8,10 +8,12 @@ import com.zhongxin.sonicshelf.dto.response.CommentResponse;
 import com.zhongxin.sonicshelf.entity.Comment;
 import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.mapper.CommentMapper;
+import com.zhongxin.sonicshelf.mapper.DynamicMapper;
 import com.zhongxin.sonicshelf.service.CommentService;
 import com.zhongxin.sonicshelf.service.LikeService;
 import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +25,8 @@ public class CommentServiceImpl implements CommentService {
     CommentMapper commentMapper;
     @Resource
     LikeService likeService;
+    @Autowired
+    private DynamicMapper dynamicMapper;
 
     @Override
     public List<CommentResponse> findCommentsByTargetTypeAndTargetId(String targetType, Long targetId) {
@@ -56,11 +60,18 @@ public class CommentServiceImpl implements CommentService {
     public void addComment(Comment comment) {
         comment.setUserId(CurrentUserUtil.getCurrentUserId());
         commentMapper.addComment(comment);
+        if (comment.getTargetType().equals("dynamic")) {
+            dynamicMapper.updateCommentCount(commentMapper.countCommentCountByTargetTypeAndTargetId("dynamic", comment.getTargetId()), comment.getTargetId());
+        }
     }
 
     @Override
     public void deleteCommentById(Long commentId) {
+        Comment comment = commentMapper.selectByCommentId(commentId);
         commentMapper.deleteById(commentId);
+        if (comment.getTargetType().equals("dynamic")) {
+            dynamicMapper.updateCommentCount(commentMapper.countCommentCountByTargetTypeAndTargetId("dynamic", comment.getTargetId()), comment.getTargetId());
+        }
     }
 
     @Override
@@ -103,7 +114,7 @@ public class CommentServiceImpl implements CommentService {
 
         PageHelper.startPage(pageNum, pageSize);
 
-        return PageInfo.of(commentMapper.selectComment(keyword,targetType,startDate,endDate));
+        return PageInfo.of(commentMapper.selectComment(keyword, targetType, startDate, endDate));
     }
 
     @Override

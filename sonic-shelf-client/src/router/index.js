@@ -26,6 +26,8 @@ import AlbumCard from "@/components/common/cards/AlbumCard.vue";
 import Dynamic from "@/components/common/cards/DynamicCard.vue";
 import Favorite from "@/pages/Favorite.vue";
 import Collect from "@/pages/Collect.vue";
+import DynamicCard from "@/components/common/cards/DynamicCard.vue";
+import Publish from "@/components/form/Publish.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +70,11 @@ const router = createRouter({
                 {
                     path: '/histories',
                     component: () => import("@/pages/PlayHistory.vue"),
+                    props: true,
+                },
+                {
+                    path: '/dynamic',
+                    component: () => import("@/pages/Dynamic.vue"),
                     props: true,
                 },
             ]

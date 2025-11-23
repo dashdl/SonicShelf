@@ -3,9 +3,7 @@ package com.zhongxin.sonicshelf.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhongxin.sonicshelf.dto.request.PlaylistManageRequest;
-import com.zhongxin.sonicshelf.dto.response.PlaylistCardResponse;
-import com.zhongxin.sonicshelf.dto.response.PlaylistManageResponse;
-import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
+import com.zhongxin.sonicshelf.dto.response.*;
 import com.zhongxin.sonicshelf.entity.Playlist;
 import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.mapper.CategoriesMapper;
@@ -188,5 +186,12 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     public void addPlayCount(Long id) {
         playlistMapper.addPlayCount(id);
+    }
+
+    @Override
+    public PageInfo<PlaylistBaseResponse> findPlaylistsAsPageForUser(Integer pageNum, Integer pageSize, String keyword) {
+
+        PageHelper.startPage(pageNum, pageSize);
+        return PageInfo.of(playlistMapper.selectPlaylistsForUser(keyword));
     }
 }

@@ -3,11 +3,9 @@ package com.zhongxin.sonicshelf.dto.response;
 import lombok.Data;
 
 @Data
-public class MusicInfoResponse {
+public class PlaylistBaseResponse {
     private Long id;
     private String title;
+    private String creatorName;
     private String coverImage;
-    private String artistId;
-    private String artistName;
-    private boolean isFavorite;
 }

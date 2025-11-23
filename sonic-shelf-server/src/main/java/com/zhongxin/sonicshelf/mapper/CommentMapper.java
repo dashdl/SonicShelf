@@ -94,4 +94,7 @@ public interface CommentMapper {
 
     @Update("update comments set like_count = #{likeCount} where id = #{targetId}")
     void updateLikeCount(Long targetId, Integer likeCount);
+
+    @Select("select count(*) from comments where target_type= #{targetType} and target_id = #{targetId}")
+    Integer countCommentCountByTargetTypeAndTargetId(String targetType, Long targetId);
 }
