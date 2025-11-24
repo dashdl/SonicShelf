@@ -245,22 +245,25 @@ onMounted(async () => {
   // }
 });
 
-const follow = () => {
-  if (userInfo.following) {
-    request.delete('follows/unfollow/' + route.params.userId);
+const follow = async () => {
+
+  let res;
+
+  if (!userInfo.following) {
+    res = await request.post('follows/follow/' + route.params.userId);
     if (res.code === '200') {
       userInfo.following = true;
       ElMessage.success("关注成功")
-    }else {
-      ElMessage.success("关注失败")
+    } else {
+      ElMessage.error("关注失败")
     }
-  }else {
-    request.post('follows/follow/' + route.params.userId);
+  } else {
+    res = await request.delete('follows/unfollow/' + route.params.userId);
     if (res.code === '200') {
       userInfo.following = false;
       ElMessage.success("取消关注成功")
-    }else {
-      ElMessage.success("取消关注失败")
+    } else {
+      ElMessage.error("取消关注失败")
     }
   }
 }
