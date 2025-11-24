@@ -6,7 +6,7 @@
       </div>
       <div class="search">
         <img src="/icons/navigation/search.svg" style="height: 18px;margin-left: 10px;margin-right: 10px;" alt="">
-        <input>
+        <input @keydown.enter="search" v-model="keyword">
       </div>
     </div>
     <div class="right-content">
@@ -29,11 +29,10 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script setup>
-import {computed, reactive} from "vue";
+import {computed, reactive, ref} from "vue";
 import LoginForm from "@/components/form/LoginForm.vue";
 import UserPanel from "@/components/form/UserPanel.vue";
 import {onMounted, onUnmounted} from 'vue';
@@ -43,12 +42,23 @@ import router from "@/router/index.js";
 const userStore = useUserStore();
 const baseUrl = 'http://localhost:8080';
 
+let keyword = ref('')
+
 const avatarUrl = computed(() => {
   if (userStore.getAvatar && userStore.getAvatar.startsWith('/icons/')) {
     return userStore.getAvatar;
   }
   return baseUrl + userStore.getAvatar;
 });
+
+const search = () => {
+  if (keyword.value === '') {
+    router.push(`/home`);
+  }else {
+    router.push(`/search/${keyword.value}`);
+  }
+
+}
 
 const data = reactive({
   formVisible: false,
@@ -73,7 +83,7 @@ const handleClickOutside = (event) => {
 };
 
 const jumpToProfile = () => {
-  data.userPanelVisible=false
+  data.userPanelVisible = false
   if (userStore.isLoggedIn) {
     router.push({
       name: 'Profile',

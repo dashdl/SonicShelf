@@ -147,6 +147,17 @@ onMounted(async () => {
   await initialPage();
 })
 
+const jump = () => {
+  if (artist.userId !== '' && artist.userId !== null) {
+    router.push(`/profile/${artist.userId}`)
+  } else {
+    ElMessage.warning("该歌手还未注册平台账户")
+  }
+
+
+}
+
+
 const baseUrl = 'http://localhost:8080';
 </script>
 
@@ -162,7 +173,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div class="profile">
           <span>{{ artist.translatedName }}</span>
-          <span @click="router.push(`/profile/${artist.userId}`)"
+          <span @click="jump"
                 style="margin-left: 20px;cursor: pointer">个人页 ></span>
         </div>
         <div class="button-group">

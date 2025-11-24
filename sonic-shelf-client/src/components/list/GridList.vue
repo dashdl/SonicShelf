@@ -27,7 +27,6 @@ const goTo = (id) => {
   <div class="grid-list">
     <div class="grid-container">
       <GridCard v-for="item in info"
-                @click="goTo(item.id)"
                 :item="item"
                 :type="type"
                 :show-artist="props.showArtist"

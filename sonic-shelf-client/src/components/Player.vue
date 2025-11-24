@@ -392,6 +392,7 @@ const baseUrl = 'http://localhost:8080';
 
 
 .player-component {
+  user-select: none;
   position: relative;
   width: 100%;
   min-width: 1056px;

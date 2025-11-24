@@ -5,19 +5,37 @@ import {onMounted, ref} from "vue";
 import request from "@/utils/request.js";
 import Publish from "@/components/form/Publish.vue";
 
+const props = defineProps({
+  component:{
+    type:Boolean,
+    default:false
+  }
+})
+
 const dynamics = ref([])
 const userSelect = ref(0)
 const showPublish = ref(false)
 
+const refresh=()=>{
+  showPublish.value = false
+  loadDynamic()
+}
+
 const handleSelect = (id) => {
   userSelect.value = id;
-  console.log(id)
 }
 
 const loadDynamic = async () => {
-  const res = await request.get("dynamic/get-all", {params: {pageNum: 1, pageSize: 100}});
-  if (res.code === '200') {
-    dynamics.value = res.data.list;
+  if (props.component===false){
+    const res = await request.get("dynamic/get-all", {params: {pageNum: 1, pageSize: 100}});
+    if (res.code === '200') {
+      dynamics.value = res.data.list;
+    }
+  }else {
+    const res = await request.get("dynamic/get-self", {params: {pageNum: 1, pageSize: 100}});
+    if (res.code === '200') {
+      dynamics.value = res.data.list;
+    }
   }
 }
 onMounted(() => {
@@ -27,7 +45,7 @@ onMounted(() => {
 
 <template>
   <div class="dynamic-container">
-    <div class="dynamic-header">
+    <div v-if="component===false" class="dynamic-header">
       <span style="font-size: 24px;font-weight: bold;">关注</span>
       <div @click="showPublish = true" class="publish">
         <img src="/icons/ui/publish.svg" style="height: 20px" alt="">
@@ -40,11 +58,12 @@ onMounted(() => {
         :key="item.id"
         :user-select="userSelect"
         @select="handleSelect"
+        @delete="refresh"
     />
   </div>
   <Publish
       v-if="showPublish"
-      @close="showPublish = false"
+      @close="refresh"
   />
 </template>
 

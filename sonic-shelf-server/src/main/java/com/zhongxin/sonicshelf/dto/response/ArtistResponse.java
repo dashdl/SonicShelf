@@ -10,6 +10,7 @@ public class ArtistResponse {
     private String description;
     private String coverImage;
     private int albumCount;
+    private Integer musicCount;
     private String translatedName;
     private int followerCount;
 }

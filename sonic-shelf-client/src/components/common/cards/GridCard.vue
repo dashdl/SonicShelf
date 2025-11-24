@@ -23,6 +23,10 @@ const props = defineProps({
   },
 })
 
+const jump = () => {
+  router.push(`/${props.type}/${props.item.id}`);
+}
+
 const replace = (id) => {
   const type = props.type === "album" ? "album" : "playlists";
   request.get(type + '/' + id + '/musics').then(res => {
@@ -37,13 +41,13 @@ const baseUrl = 'http://localhost:8080';
 </script>
 
 <template>
-  <div class="grid-item">
+  <div @click.stop="jump" class="grid-item">
     <div v-if="type==='album'" class="record"></div>
     <img :src="baseUrl + item.coverImage || '/images/default/cover.png'" style="height: 100%;object-fit: cover;"
          alt="">
     <div class="background"></div>
     <div class="play-button">
-      <img @click.stop="replace(item.id)" src="/icons/player/play.svg" style="width: 40px" alt="">
+      <img src="/icons/player/play.svg" style="width: 40px" alt="">
     </div>
     <div class="info">
       <span style="color: #333333;font-size: 14px;margin-bottom: -2px">{{ item.title }}</span>

@@ -25,5 +25,22 @@
         or d.user_id =#{currentUserId}
         order by d.created_at desc
     </select>
+    <select id="selectByUserId" resultType="com.zhongxin.sonicshelf.dto.response.DynamicResponse">
+        select d.id,
+               d.user_id,
+               d.target_id,
+               d.type,
+               u.avatar,
+               u.nickname as user_name,
+               d.created_at,
+               d.content,
+               d.like_count,
+               d.share_count,
+               d.comment_count
+        from dynamics as d
+                 join users as u on d.user_id = u.id
+        where d.user_id = #{currentUserId}
+        order by d.created_at desc
+    </select>
 
 </mapper>

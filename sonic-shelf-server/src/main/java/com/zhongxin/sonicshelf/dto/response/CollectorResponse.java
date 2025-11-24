@@ -8,4 +8,5 @@ public class CollectorResponse {
     private String bio;
     private String nickname;
     private String avatar;
+    private Byte gender;
 }

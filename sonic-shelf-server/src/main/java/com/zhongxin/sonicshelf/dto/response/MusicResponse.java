@@ -10,9 +10,9 @@ public class MusicResponse {
     private String title;
     private String coverImage;
     private String artistName;
-    private String artistId;
+    private Long artistId;
     private String albumTitle;
-    private String albumId;
+    private Long albumId;
     private String fileUrl;
     private String duration;
     private boolean isFavorite;

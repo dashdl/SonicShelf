@@ -15,4 +15,27 @@
             </if>
         </where>
     </select>
+
+    <select id="selectArtistsByKeyword" resultType="com.zhongxin.sonicshelf.dto.response.ArtistResponse">
+        SELECT a.id,
+               a.name,
+               a.cover_image,
+               a.music_count
+        FROM artists as a
+        WHERE a.name like concat('%', #{keyword}, '%')
+           OR EXISTS (SELECT 1
+                      FROM musics as m
+                      WHERE m.artist_id = a.id
+                        AND m.title like concat('%', #{keyword}, '%'))
+    </select>
+
+<!--    SELECT distinct a.id,-->
+<!--    a.name,-->
+<!--    a.cover_image,-->
+<!--    a.music_count-->
+<!--    FROM artists as a-->
+<!--    LEFT JOIN musics as m on a.id = m.artist_id-->
+<!--    WHERE a.name like concat('%', #{keyword}, '%')-->
+<!--    OR m.title like concat('%', #{keyword}, '%')-->
+<!--    GROUP BY a.id, a.name, a.cover_image, a.music_count-->
 </mapper>

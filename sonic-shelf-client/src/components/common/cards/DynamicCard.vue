@@ -5,13 +5,24 @@ import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import {usePlayerStore} from "@/store/player.js";
 import router from "@/router/index.js";
+import {ref} from "vue";
 
 const props = defineProps({
   item: Object,
   userSelect: Number
 })
 
-const emit = defineEmits(["select"]);
+const emit = defineEmits(["select","delete"]);
+
+const showDeleteCard = ref(false)
+
+const deleteDynamic = async (id) => {
+  const res = await request.delete(`dynamic/delete-dynamic/${id}`);
+  if (res.code === '200') {
+    ElMessage.success("删除成功")
+    emit("delete")
+  }
+}
 
 const handleLike = (id, like) => {
   if (like === true) {
@@ -79,6 +90,10 @@ const baseUrl = 'http://localhost:8080';
 
 <template>
   <div class="dynamic-card">
+    <img @click="showDeleteCard=!showDeleteCard" id="interact" src="/icons/status/more.svg" alt="">
+    <div @click="deleteDynamic(item.id)" v-if="showDeleteCard" class="delete-bar">
+      删除
+    </div>
     <div class="dynamic-header">
       <img :src="item.avatar ? baseUrl + item.avatar : '/images/default/avatar.jpg'"
            style="margin-right: 10px;border-radius: 23px;height: 45px;width: 45px;"
@@ -136,11 +151,34 @@ const baseUrl = 'http://localhost:8080';
 
 <style scoped>
 .dynamic-card {
+  position: relative;
   padding: 20px;
   display: flex;
   flex-direction: column;
   background: #fff;
   border-radius: 10px;
+}
+
+#interact {
+  position: absolute;
+  width: 20px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.delete-bar {
+  position: absolute;
+  top: 40px;
+  right: 30px;
+  width: 120px;
+  height: 30px;
+  background: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 5px rgba(100, 100, 100, 0.2);
+  cursor: pointer;
 }
 
 .dynamic-header {
@@ -241,6 +279,7 @@ const baseUrl = 'http://localhost:8080';
 .music-card:hover #cover {
   filter: brightness(90%);
 }
+
 .music-card:hover #playButton {
   opacity: 70%;
 }

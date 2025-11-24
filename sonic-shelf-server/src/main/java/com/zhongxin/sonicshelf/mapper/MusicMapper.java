@@ -81,4 +81,6 @@ public interface MusicMapper {
     DynamicResponse selectMusicInfoById(Long targetId);
 
     List<MusicInfoResponse> selectMusicsForUser(String keyword);
+
+    List<MusicResponse> selectMusicsByKeyword(String keyword);
 }

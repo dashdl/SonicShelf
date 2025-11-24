@@ -33,7 +33,30 @@ public class DynamicServiceImpl implements DynamicService {
         Long[] ids = followMapper.selectFollowingIdByUserId(currentUserId);
 
         PageHelper.startPage(pageNum, pageSize);
-        List<DynamicResponse> dynamicResponseList = dynamicMapper.selectAllByUserId(ids, currentUserId);
+        return PageInfo.of(getDynamicInfo(dynamicMapper.selectAllByUserId(ids, currentUserId)));
+
+    }
+
+    @Override
+    public void addDynamic(DynamicRequest dynamic) {
+        dynamicMapper.insertDynamic(dynamic, CurrentUserUtil.getCurrentUserId());
+    }
+
+    @Override
+    public PageInfo<DynamicResponse> getDynamicByUserId(Long currentUserId, Integer pageNum, Integer pageSize) {
+
+        PageHelper.startPage(pageNum, pageSize);
+
+        return PageInfo.of(getDynamicInfo(dynamicMapper.selectByUserId(currentUserId)));
+    }
+
+    @Override
+    public void deleteDynamic(Long id) {
+        dynamicMapper.deleteDynamicById(id);
+        dynamicMapper.deleteDynamicImageById(id);
+    }
+
+    private List<DynamicResponse> getDynamicInfo(List<DynamicResponse> dynamicResponseList) {
 
         if (dynamicResponseList != null && !dynamicResponseList.isEmpty()) {
             DynamicResponse temp;
@@ -57,15 +80,6 @@ public class DynamicServiceImpl implements DynamicService {
             }
         }
 
-
-        if (dynamicResponseList != null) {
-            return PageInfo.of(dynamicResponseList);
-        }
-        return null;
-    }
-
-    @Override
-    public void addDynamic(DynamicRequest dynamic) {
-        dynamicMapper.insertDynamic(dynamic, CurrentUserUtil.getCurrentUserId());
+        return dynamicResponseList;
     }
 }

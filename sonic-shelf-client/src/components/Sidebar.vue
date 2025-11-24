@@ -2,7 +2,8 @@
 import SidebarItem from "@/components/common/SidebarItem.vue";
 import {reactive, ref, watch, onMounted} from "vue";
 import router from "@/router/index.js";
-import { useRoute } from "vue-router";
+import {useRoute} from "vue-router";
+import {useUserStore} from "@/store/userStore.js";
 
 const props = defineProps({
   userPlaylist: {
@@ -54,9 +55,7 @@ const goToPlaylist = (playlistId) => {
 
 const homeItems = [
   {icon: '/icons/sidebar/home.svg', activeIcon: '/icons/sidebar/homeActive.svg', label: '推荐', key: 'home'},
-  {icon: '/icons/sidebar/home-b.png', label: '精选', key: 'home'},
-  {icon: '/icons/sidebar/home-b.png', label: '播客', key: 'home'},
-  {icon: '/icons/sidebar/dynamic.svg',activeIcon: '/icons/sidebar/dynamicActive.svg', label: '关注', key: 'dynamic'},
+  {icon: '/icons/sidebar/dynamic.svg', activeIcon: '/icons/sidebar/dynamicActive.svg', label: '关注', key: 'dynamic'},
 ]
 const userItems = [
   {
@@ -71,7 +70,6 @@ const userItems = [
     label: '最近播放',
     key: 'histories'
   },
-  {icon: '/icons/sidebar/home-b.png', label: '我的播客', key: 'home'},
   {
     icon: '/icons/sidebar/favorite.svg',
     activeIcon: '/icons/sidebar/favoriteActive.svg',
@@ -110,8 +108,8 @@ const baseUrl = 'http://localhost:8080';
       />
       <hr>
       <div class="playlist-sidebar">
-        <div class="playlist-title">
-          <div @click="playlistShow.creat=!playlistShow.creat" class="click-content">
+        <div v-if="useUserStore().isLoggedIn" class="playlist-title">
+          <div @click="playlistShow.creat=!playlistShow.creat"  class="click-content">
             <span style="margin-right: 8px">创建的歌单</span>
             <span style="font-weight: bold;margin-right: 8px">{{ userPlaylist.length }}</span>
             <img v-if="!playlistShow.creat" src="/icons/status/down.svg" style="width: 12px;margin-bottom: 3px;" alt="">
@@ -127,8 +125,8 @@ const baseUrl = 'http://localhost:8080';
           <span>{{ item.title }}</span>
         </div>
       </div>
-      <hr>
-      <div class="playlist-sidebar">
+      <hr v-if="useUserStore().isLoggedIn">
+      <div v-if="useUserStore().isLoggedIn" class="playlist-sidebar">
         <div class="playlist-title">
           <div @click="playlistShow.favorite=!playlistShow.favorite" class="click-content">
             <span style="margin-right: 8px">收藏的歌单</span>
@@ -146,7 +144,7 @@ const baseUrl = 'http://localhost:8080';
           <span>{{ item.title }}</span>
         </div>
       </div>
-      <hr>
+      <hr v-if="useUserStore().isLoggedIn">
     </div>
   </div>
 </template>

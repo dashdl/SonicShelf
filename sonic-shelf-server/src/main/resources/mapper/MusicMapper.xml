@@ -54,13 +54,9 @@
         m.title,
         m.cover_image,
         a.name as artist_name,
-        am.title as album_title,
-        am.id as album_id,
-        m.duration,
-        m.file_url
+        a.id as artist_id
         FROM musics m
         LEFT JOIN artists a ON m.artist_id = a.id
-        LEFT JOIN albums am ON am.id = m.album_id
         WHERE m.id IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
@@ -229,6 +225,22 @@
                  LEFT JOIN artists a ON m.artist_id = a.id
         WHERE a.name like concat('%', #{keyword}, '%')
            or m.title like concat('%', #{keyword}, '%')
+    </select>
+    <select id="selectMusicsByKeyword" resultType="com.zhongxin.sonicshelf.dto.response.MusicResponse">
+        SELECT m.id,
+               m.title,
+               m.cover_image,
+               a.name as artist_name,
+               a.id   as artist_id,
+               am.title as album_title,
+               am.id as album_id,
+               m.duration
+        FROM musics m
+                 LEFT JOIN artists a ON m.artist_id = a.id
+                 LEFT JOIN albums am ON am.id = m.album_id
+        WHERE a.name like concat('%', #{keyword}, '%')
+           or m.title like concat('%', #{keyword}, '%')
+           or am.title like concat('%', #{keyword}, '%')
     </select>
 
 

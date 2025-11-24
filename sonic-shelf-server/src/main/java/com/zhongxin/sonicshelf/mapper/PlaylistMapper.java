@@ -75,4 +75,6 @@ public interface PlaylistMapper {
     DynamicResponse selectPlaylistInfoById(Long targetId);
 
     List<PlaylistBaseResponse> selectPlaylistsForUser(String keyword);
+
+    List<PlaylistBaseResponse> selectPlaylistsForSearch(String keyword);
 }

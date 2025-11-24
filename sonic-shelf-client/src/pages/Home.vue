@@ -5,6 +5,7 @@ import PlaylistCard from "@/components/common/cards/PlaylistCard.vue";
 import {computed, onMounted, onUnmounted, ref} from "vue";
 import request from "@/utils/request.js";
 import MusicCard from "@/components/common/cards/MusicCard.vue";
+import {useUserStore} from "@/store/userStore.js";
 
 const recommendCount = ref(5) // 默认值
 
@@ -92,14 +93,14 @@ onUnmounted(() => {
       <Carousel/>
       <MightLike/>
     </div>
-    <div class="separator-container">推荐歌单</div>
-    <div class="playlist-recommend" :style="{ gridTemplateColumns }">
+    <div v-if="useUserStore().isLoggedIn" class="separator-container">推荐歌单</div>
+    <div v-if="useUserStore().isLoggedIn" class="playlist-recommend" :style="{ gridTemplateColumns }">
       <PlaylistCard v-for="item in recommendPlaylists"
                     :item="item"
       />
     </div>
-    <div class="separator-container">根据你喜欢的推荐</div>
-    <div class="like-recommend" :style="{ 'grid-template-columns': gridLikeColumns }">
+    <div v-if="useUserStore().isLoggedIn" class="separator-container">根据你喜欢的推荐</div>
+    <div v-if="useUserStore().isLoggedIn" class="like-recommend" :style="{ 'grid-template-columns': gridLikeColumns }">
       <MusicCard
           v-for="item in musicList"
           @collect="collect"

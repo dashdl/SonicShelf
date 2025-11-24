@@ -71,4 +71,10 @@ public class ArtistServiceImpl implements ArtistService {
         artistMapper.addArtist(artist);
         return artistMapper.selectArtistByIdReturn(artist.getId());
     }
+
+    @Override
+    public PageInfo<ArtistResponse> searchArtistsByKeyword(Integer pageNum, Integer pageSize, String keyword) {
+        PageHelper.startPage(pageNum, pageSize);
+        return PageInfo.of(artistMapper.selectArtistsByKeyword(keyword));
+    }
 }

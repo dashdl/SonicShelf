@@ -2,6 +2,7 @@
 import {defineStore} from 'pinia'
 import request from "@/utils/request.js";
 import router from "@/router/index.js";
+import {ElMessage} from "element-plus";
 
 export const useUserStore = defineStore('user', {
     // 状态
@@ -40,7 +41,7 @@ export const useUserStore = defineStore('user', {
         // 从 localStorage 恢复用户状态
         async restoreUserState() {
             const token = localStorage.getItem('token')
-            if (token) {
+            if (token!==null) {
                 this.token = token
                 try {
                     const res = await request.get("/users/profile")
@@ -52,9 +53,10 @@ export const useUserStore = defineStore('user', {
                         this.logout()
                     }
                 } catch (error) {
-                    console.error('恢复用户状态失败:', error)
                     this.logout()
                 }
+            }else {
+                ElMessage.success("请登录或注册账号吧")
             }
         },
 

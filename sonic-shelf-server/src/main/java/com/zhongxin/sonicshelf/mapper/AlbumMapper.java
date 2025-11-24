@@ -54,4 +54,6 @@ public interface AlbumMapper {
 
     @Update("update albums set favorite_count = #{favoriteCount} where id = #{targetId}")
     void updateFavoriteCount(Long targetId, Integer favoriteCount);
+
+    List<AlbumInfoResponse> selectAlbumsByKeyword(String keyword);
 }
