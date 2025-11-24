@@ -20,4 +20,6 @@ public interface ArtistService {
     void deleteArtist(Long artist);
 
     ArtistManageResponse addArtist(ArtistManageRequest artist);
+
+    PageInfo<ArtistResponse> searchArtistsByKeyword(Integer pageNum, Integer pageSize, String keyword);
 }

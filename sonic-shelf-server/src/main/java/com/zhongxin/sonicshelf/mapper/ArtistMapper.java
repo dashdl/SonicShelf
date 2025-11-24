@@ -48,4 +48,6 @@ public interface ArtistMapper {
 
     @Update("update artists set follower_count = #{favoriteCount} where id = #{targetId}")
     void updateFollowerCount(Long targetId, Integer favoriteCount);
+
+    List<ArtistResponse> selectArtistsByKeyword(String keyword);
 }

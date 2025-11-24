@@ -194,4 +194,11 @@ public class PlaylistServiceImpl implements PlaylistService {
         PageHelper.startPage(pageNum, pageSize);
         return PageInfo.of(playlistMapper.selectPlaylistsForUser(keyword));
     }
+
+    @Override
+    public PageInfo<PlaylistBaseResponse> searchPlaylistsByKeyword(Integer pageNum, Integer pageSize, String keyword) {
+
+        PageHelper.startPage(pageNum, pageSize);
+        return PageInfo.of(playlistMapper.selectPlaylistsForSearch(keyword));
+    }
 }

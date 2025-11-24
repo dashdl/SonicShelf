@@ -8,4 +8,8 @@ public interface DynamicService {
     PageInfo<DynamicResponse> getAllDynamicByUserId(Long currentUserId, Integer pageNum, Integer pageSize);
 
     void addDynamic(DynamicRequest dynamic);
+
+    PageInfo<DynamicResponse> getDynamicByUserId(Long currentUserId, Integer pageNum, Integer pageSize);
+
+    void deleteDynamic(Long id);
 }

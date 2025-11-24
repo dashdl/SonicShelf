@@ -15,4 +15,6 @@ public interface AlbumService {
     AlbumManageResponse addAlbum(AlbumManageRequest album);
 
     void deleteAlbumById(Long id);
+
+    PageInfo<AlbumInfoResponse> searchAlbumsByKeyword(Integer pageNum, Integer pageSize, String keyword);
 }

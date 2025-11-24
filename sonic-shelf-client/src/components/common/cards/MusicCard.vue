@@ -5,6 +5,7 @@ import {ElMessage} from "element-plus";
 import {usePlayerStore} from "@/store/player.js";
 import InteractCard from "@/components/common/cards/InteractCard.vue";
 import {ref, watch} from "vue";
+import router from "@/router/index.js";
 
 const player = usePlayerStore();
 
@@ -76,7 +77,7 @@ const baseUrl = 'http://localhost:8080';
       </div>
       <div class="text">
         <span style="font-size: 16px;color:#333333;">{{ props.item.title }}</span>
-        <span>{{ props.item.artistName }}</span>
+        <span @click.stop="router.push('/artist/'+item.artistId)" style="cursor: pointer" >{{ props.item.artistName }}</span>
       </div>
     </div>
     <div class="button-group">

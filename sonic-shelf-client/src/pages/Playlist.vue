@@ -45,7 +45,7 @@ const replace = async () => {
     playerStore.playSong(0)
     playerStore.playlistId = currentId;
     playerStore.isPlaylist = true;
-    localStorage.setItem("playlistId",currentId)
+    localStorage.setItem("playlistId", currentId)
     localStorage.setItem("isPlaylist", JSON.stringify(playerStore.isPlaylist))
   })
 }

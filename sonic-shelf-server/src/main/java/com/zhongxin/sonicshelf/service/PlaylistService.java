@@ -51,4 +51,6 @@ public interface PlaylistService {
     void addPlayCount(Long id);
 
     PageInfo<PlaylistBaseResponse> findPlaylistsAsPageForUser(Integer pageNum, Integer pageSize, String keyword);
+
+    PageInfo<PlaylistBaseResponse> searchPlaylistsByKeyword(Integer pageNum, Integer pageSize, String keyword);
 }

@@ -36,4 +36,6 @@ public interface MusicService {
     List<PlaylistMusicResponse> findPlaylistMusicResponseByPlaylistId(Long playlistId);
 
     PageInfo<MusicInfoResponse> findMusicsAsPageForUser(Integer pageNum, Integer pageSize, String keyword);
+
+    PageInfo<MusicResponse> searchMusicsByKeyword(Integer pageNum, Integer pageSize, String keyword);
 }

@@ -169,4 +169,13 @@ public class UserServiceImpl implements UserService {
         userMapper.deleteUser(id);
 
     }
+
+    @Override
+    public PageInfo<CollectorResponse> searchUsersByKeyword(Integer pageNum, Integer pageSize, String keyword) {
+
+        PageHelper.startPage(pageNum, pageSize);
+
+
+        return PageInfo.of(userMapper.selectUsersByKeyword(keyword));
+    }
 }

@@ -134,5 +134,17 @@
         WHERE u.nickname like concat('%', #{keyword}, '%')
            or p.title like concat('%', #{keyword}, '%')
     </select>
+    <select id="selectPlaylistsForSearch"
+            resultType="com.zhongxin.sonicshelf.dto.response.PlaylistBaseResponse">
+        SELECT p.id,
+               p.title,
+               p.cover_image,
+               u.nickname as creator_name,
+               u.id       as creatorId
+        FROM playlists p
+                 LEFT JOIN users u ON p.user_id = u.id
+        WHERE u.nickname like concat('%', #{keyword}, '%')
+           or p.title like concat('%', #{keyword}, '%')
+    </select>
 
 </mapper>

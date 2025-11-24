@@ -54,4 +54,6 @@ public interface UserMapper {
 
     @Select("select count(*) from users")
     int countUserCount();
+
+    List<CollectorResponse> selectUsersByKeyword(String keyword);
 }

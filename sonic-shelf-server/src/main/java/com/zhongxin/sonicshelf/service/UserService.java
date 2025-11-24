@@ -34,4 +34,6 @@ public interface UserService {
     UserManageResponse updateUserStatus(Long id, byte status);
 
     void deleteUser(Long id);
+
+    PageInfo<CollectorResponse> searchUsersByKeyword(Integer pageNum, Integer pageSize, String keyword);
 }

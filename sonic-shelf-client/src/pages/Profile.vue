@@ -7,6 +7,7 @@ import {ElMessage} from "element-plus";
 import request from "@/utils/request.js";
 import {useRoute} from 'vue-router';
 import {useUserStore} from "@/store/userStore.js";
+import Dynamic from "@/pages/Dynamic.vue";
 
 const route = useRoute();
 const userStore = useUserStore()
@@ -376,6 +377,10 @@ const baseUrl = 'http://localhost:8080';
           </div>
         </div>
       </div>
+      <Dynamic
+        v-if="userSelect.page===2"
+        :component="true"
+      />
     </div>
   </div>
 </template>

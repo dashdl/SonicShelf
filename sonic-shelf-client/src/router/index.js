@@ -28,6 +28,7 @@ import Favorite from "@/pages/Favorite.vue";
 import Collect from "@/pages/Collect.vue";
 import DynamicCard from "@/components/common/cards/DynamicCard.vue";
 import Publish from "@/components/form/Publish.vue";
+import Search from "@/pages/Search.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -75,6 +76,11 @@ const router = createRouter({
                 {
                     path: '/dynamic',
                     component: () => import("@/pages/Dynamic.vue"),
+                    props: true,
+                },
+                {
+                    path: '/search/:keyword',
+                    component: () => import("@/pages/Search.vue"),
                     props: true,
                 },
             ]

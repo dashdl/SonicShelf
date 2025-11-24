@@ -26,4 +26,12 @@ public interface DynamicMapper {
 
     @Insert("insert into dynamic_images (dynamic_id, image_url,sort_order) VALUES(#{id},#{url},#{sort}) ")
     void insertDynamicImage(String url, Long id, int sort);
+
+    List<DynamicResponse> selectByUserId(Long currentUserId);
+
+    @Delete("delete from dynamics where id = #{id}")
+    void deleteDynamicById(Long id);
+
+    @Delete("delete from dynamic_images where dynamic_id = #{id}")
+    void deleteDynamicImageById(Long id);
 }

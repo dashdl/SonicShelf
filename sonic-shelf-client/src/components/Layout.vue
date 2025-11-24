@@ -43,7 +43,7 @@ onMounted(async () => {
     await userStore.restoreUserState();
     await playlistStore.loadPlaylist(userStore.getUserId);
   } catch (error) {
-    ElMessage.error("用户状态加载失败");
+    console.log("用户状态加载失败");
   }
 })
 </script>

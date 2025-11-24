@@ -18,4 +18,14 @@
             </if>
         </where>
     </select>
+    <select id="selectUsersByKeyword" resultType="com.zhongxin.sonicshelf.dto.response.CollectorResponse">
+        select id,
+               bio,
+               nickname,
+               avatar,
+               gender
+        from users
+        where username like concat('%', #{keyword}, '%')
+           or nickname like concat('%', #{keyword}, '%')
+    </select>
 </mapper>

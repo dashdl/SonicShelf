@@ -61,4 +61,10 @@ public class AlbumServiceImpl implements AlbumService {
         albumMapper.deleteById(id);
     }
 
+    @Override
+    public PageInfo<AlbumInfoResponse> searchAlbumsByKeyword(Integer pageNum, Integer pageSize, String keyword) {
+        PageHelper.startPage(pageNum, pageSize);
+        return PageInfo.of(albumMapper.selectAlbumsByKeyword(keyword));
+    }
+
 }

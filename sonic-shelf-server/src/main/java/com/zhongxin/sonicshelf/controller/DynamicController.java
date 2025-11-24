@@ -24,9 +24,23 @@ public class DynamicController {
         return Result.success(response);
     }
 
+    @GetMapping("/get-self")
+    public Result getSelf(@RequestParam Integer pageNum, @RequestParam Integer pageSize) {
+
+        PageInfo<DynamicResponse> response = dynamicService.getDynamicByUserId(CurrentUserUtil.getCurrentUserId(), pageNum, pageSize);
+
+        return Result.success(response);
+    }
+
     @PostMapping("/add-dynamic")
     public Result addDynamic(@RequestBody DynamicRequest dynamic) {
         dynamicService.addDynamic(dynamic);
         return Result.success("动态发布成功", dynamic.getId());
+    }
+
+    @DeleteMapping("/delete-dynamic/{id}")
+    public Result deleteDynamic(@PathVariable Long id) {
+        dynamicService.deleteDynamic(id);
+        return Result.success();
     }
 }
