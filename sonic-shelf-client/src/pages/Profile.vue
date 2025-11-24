@@ -166,6 +166,7 @@ const loadUserInfo = async (targetUserId) => {
       userInfo.location = res.data.location || '';
       userInfo.followersCount = res.data.followers_count || 0;
       userInfo.followingCount = res.data.following_count || 0;
+      userInfo.following = res.data.following
     }
   })
 }
@@ -244,6 +245,26 @@ onMounted(async () => {
   // }
 });
 
+const follow = () => {
+  if (userInfo.following) {
+    request.delete('follows/unfollow/' + route.params.userId);
+    if (res.code === '200') {
+      userInfo.following = true;
+      ElMessage.success("关注成功")
+    }else {
+      ElMessage.success("关注失败")
+    }
+  }else {
+    request.post('follows/follow/' + route.params.userId);
+    if (res.code === '200') {
+      userInfo.following = false;
+      ElMessage.success("取消关注成功")
+    }else {
+      ElMessage.success("取消关注失败")
+    }
+  }
+}
+
 const baseUrl = 'http://localhost:8080';
 </script>
 
@@ -272,10 +293,10 @@ const baseUrl = 'http://localhost:8080';
           <span style="color: #666666;">简介：{{ userInfo.bio }}</span>
           <span style="color: #999999;">地区：{{ userInfo.location }}</span>
         </div>
-        <div @click="favorite" class="follow-button">
-          <img :src="userSelect.favorite ? '/icons/status/hookWhite.svg' : '/icons/status/followWhite.svg'"
+        <div @click="follow" v-if="userStore.getUserId.toString() !== route.params.userId" class="follow-button">
+          <img :src="userInfo.following ? '/icons/status/hookWhite.svg' : '/icons/status/followWhite.svg'"
                style="height: 15px;margin-right: 5px" alt="">
-          <span v-if="userSelect.favorite">已</span>
+          <span v-if="userInfo.following">已</span>
           <span>关注</span>
         </div>
       </div>
@@ -305,7 +326,10 @@ const baseUrl = 'http://localhost:8080';
         <div id="anchor1"></div>
         <div class="separate-content">
           <div class="left-content">
-            <span style="font-size: 20px;font-weight: bold;color: #555555;">我创建的歌单</span>
+            <span
+                style="font-size: 20px;font-weight: bold;color: #555555;">{{
+                route.params.userId === userStore.getUserId.toString() ? '我' : 'TA'
+              }}创建的歌单</span>
           </div>
           <div class="right-content">
             <img @click="createGrid" src="/icons/view/grid.svg" style="width: 17px; margin-right: 8px" alt="">
@@ -318,7 +342,7 @@ const baseUrl = 'http://localhost:8080';
         <TableList v-if="listSwitch.createTable" style="max-width: 1490px; margin-bottom: 50px;"
                    :info="playlistInfo"
         />
-        <div class="page-container">
+        <div v-if="page.pages>0" class="page-container">
           <div class="button-group">
             <a href="#anchor1">
               <div class="button" @click="last">
@@ -342,7 +366,10 @@ const baseUrl = 'http://localhost:8080';
         <div id="anchor2"></div>
         <div class="separate-content">
           <div class="left-content">
-            <span style="font-size: 20px;font-weight: bold;color: #555555;">我收藏的歌单</span>
+            <span
+                style="font-size: 20px;font-weight: bold;color: #555555;">{{
+                route.params.userId === userStore.getUserId.toString() ? '我' : 'TA'
+              }}收藏的歌单</span>
           </div>
           <div class="right-content">
             <img @click="favoritesGrid" src="/icons/view/grid.svg" style="width: 17px; margin-right: 8px" alt="">
@@ -355,7 +382,7 @@ const baseUrl = 'http://localhost:8080';
         <TableList v-if="listSwitch.favoritesTable" style="max-width: 1495px;margin-bottom: 50px;"
                    :info="favoritePlaylistInfo"
         />
-        <div class="page-container">
+        <div v-if="page.pages>0" class="page-container">
           <div class="button-group">
             <a href="#anchor2">
               <div class="button" @click="lastFavorite">
@@ -378,8 +405,8 @@ const baseUrl = 'http://localhost:8080';
         </div>
       </div>
       <Dynamic
-        v-if="userSelect.page===2"
-        :component="true"
+          v-if="userSelect.page===2"
+          :component="true"
       />
     </div>
   </div>
@@ -437,6 +464,7 @@ hr {
 }
 
 .follow-button {
+  user-select: none;
   margin-top: 10px;
   display: flex;
   height: 40px;
@@ -446,6 +474,7 @@ hr {
   justify-content: center;
   color: #ffffff;
   background: linear-gradient(to right, #fc3b5b, #fc3d49);
+  cursor: pointer;
 }
 
 .select-button {

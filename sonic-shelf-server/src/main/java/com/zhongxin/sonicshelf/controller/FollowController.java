@@ -6,7 +6,7 @@ import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/favorites")
+@RequestMapping("/api/v1/follows")
 public class FollowController {
 
     @Resource

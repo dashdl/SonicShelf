@@ -15,6 +15,7 @@ public class UserProfileResponse {
     private String createdAt;
     private int followers_count;
     private int following_count;
+    private boolean isFollowing;
 
 
     public UserProfileResponse() {

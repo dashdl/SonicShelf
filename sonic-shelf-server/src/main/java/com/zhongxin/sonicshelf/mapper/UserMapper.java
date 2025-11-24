@@ -2,9 +2,7 @@ package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.request.RegisterRequest;
 import com.zhongxin.sonicshelf.dto.response.CollectorResponse;
-import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.dto.response.UserManageResponse;
-import com.zhongxin.sonicshelf.dto.response.UserProfileResponse;
 import com.zhongxin.sonicshelf.entity.User;
 import org.apache.ibatis.annotations.*;
 
@@ -56,4 +54,10 @@ public interface UserMapper {
     int countUserCount();
 
     List<CollectorResponse> selectUsersByKeyword(String keyword);
+
+    @Update("update users set following_count = #{count} where id = #{id}")
+    void updateFollowingCount(Integer count, Long id);
+
+    @Update("update users set follower_count = #{count} where id = #{id}")
+    void updateFollowerCount(Integer count, Long id);
 }
