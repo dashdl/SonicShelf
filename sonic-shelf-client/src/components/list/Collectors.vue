@@ -55,7 +55,8 @@ const baseUrl = 'http://localhost:8080';
            alt="">
       <div class="nickname" style="display: flex">
         {{ item.nickname }}
-        <img src="/icons/status/men.svg" style="height: 18px;width: 18px;" alt="">
+        <img :src="item.gender === 1 ? '/icons/status/men.svg' : '/icons/status/woman.svg'"
+             style="height: 18px;width: 18px;" alt="">
       </div>
       <span style="color: #a9adb7">{{ item.bio }}</span>
     </div>

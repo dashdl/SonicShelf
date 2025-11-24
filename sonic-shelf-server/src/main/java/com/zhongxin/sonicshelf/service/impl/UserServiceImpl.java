@@ -8,9 +8,11 @@ import com.zhongxin.sonicshelf.entity.User;
 import com.zhongxin.sonicshelf.exception.AuthException;
 import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.mapper.ArtistMapper;
+import com.zhongxin.sonicshelf.mapper.FollowMapper;
 import com.zhongxin.sonicshelf.mapper.UserMapper;
 import com.zhongxin.sonicshelf.service.ArtistService;
 import com.zhongxin.sonicshelf.service.UserService;
+import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import com.zhongxin.sonicshelf.util.JwtUtil;
 
 import jakarta.annotation.Resource;
@@ -30,11 +32,11 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     UserMapper userMapper;
-    @Resource
-    ArtistMapper artistMapper;
 
     @Autowired
     JwtUtil jwtUtil;
+    @Autowired
+    private FollowMapper followMapper;
 
     @Override
     public RegisterResponse register(RegisterRequest registerRequest) {
@@ -115,7 +117,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProfileResponse findUserById(Long id) {
-        return new UserProfileResponse(userMapper.selectById(id));
+        if(!CurrentUserUtil.isLoggedIn()) return null;
+        UserProfileResponse userProfileResponse = new UserProfileResponse(userMapper.selectById(id));
+
+        userProfileResponse.setFollowing(followMapper.selectFollow(CurrentUserUtil.getCurrentUserId(),id));
+
+        return userProfileResponse;
     }
 
     @Override

@@ -2,9 +2,7 @@ package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.request.RegisterRequest;
 import com.zhongxin.sonicshelf.dto.response.CollectorResponse;
-import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.dto.response.UserManageResponse;
-import com.zhongxin.sonicshelf.dto.response.UserProfileResponse;
 import com.zhongxin.sonicshelf.entity.User;
 import org.apache.ibatis.annotations.*;
 
@@ -29,7 +27,7 @@ public interface UserMapper {
     @Update("update users set avatar=#{avatar} where username=#{username}")
     void updateUserAvatar(@Param("avatar") String url, @Param("username") String username);
 
-    @Select("select u.id,u.bio,u.nickname,u.avatar " +
+    @Select("select u.id,u.bio,u.nickname,u.avatar,u.gender " +
             "from users u left join favorites f on u.id = f.user_id " +
             "where " +
             "f.target_type = #{targetType} and f.target_id = #{targetId}")
@@ -56,4 +54,10 @@ public interface UserMapper {
     int countUserCount();
 
     List<CollectorResponse> selectUsersByKeyword(String keyword);
+
+    @Update("update users set following_count = #{count} where id = #{id}")
+    void updateFollowingCount(Integer count, Long id);
+
+    @Update("update users set follower_count = #{count} where id = #{id}")
+    void updateFollowerCount(Integer count, Long id);
 }

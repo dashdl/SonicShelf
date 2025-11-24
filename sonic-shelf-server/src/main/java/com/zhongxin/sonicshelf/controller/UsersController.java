@@ -3,20 +3,16 @@ package com.zhongxin.sonicshelf.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.zhongxin.sonicshelf.dto.request.RegisterRequest;
-import com.zhongxin.sonicshelf.dto.response.PlaylistsResponse;
 import com.zhongxin.sonicshelf.dto.response.UserManageResponse;
 import com.zhongxin.sonicshelf.dto.response.UserProfileResponse;
 import com.zhongxin.sonicshelf.entity.User;
 import com.zhongxin.sonicshelf.exception.CustomException;
-import com.zhongxin.sonicshelf.mapper.PlaylistMapper;
 import com.zhongxin.sonicshelf.service.UserService;
-import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import com.zhongxin.sonicshelf.util.JwtUtil;
 import com.zhongxin.sonicshelf.util.Result;
 import com.zhongxin.sonicshelf.util.TokenExtractor;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
