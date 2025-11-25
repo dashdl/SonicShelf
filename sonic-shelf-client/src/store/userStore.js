@@ -15,7 +15,7 @@ export const useUserStore = defineStore('user', {
     // 计算属性
     getters: {
         getNickname: (state) => state.userInfo?.nickname || '未登录',
-        getAvatar: (state) => state.userInfo?.avatar || '/icons/logo.png',
+        getAvatar: (state) => state.userInfo?.avatar || '/icons/user.svg',
         getBio: (state) => state.userInfo?.bio || '暂无简介',
         getGender: (state) => state.userInfo?.gender || '未知',
         getBirthday: (state) => state.userInfo?.birthday || '未设置',

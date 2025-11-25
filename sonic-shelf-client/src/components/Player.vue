@@ -242,7 +242,7 @@ const resetRotation = () => {
     coverContent.style.animation = 'none';
     // 强制重排
     void coverContent.offsetWidth;
-    // 重新设置动画，这会导致动画从起始状态重新开始
+    // 重新设置动画（回正唱片）
     coverContent.style.animation = 'rotate 40s linear infinite';
     // 设置播放状态
     coverContent.style.animationPlayState = wasPlaying ? 'running' : 'paused';
