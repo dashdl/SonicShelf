@@ -4,6 +4,7 @@ import {reactive, ref, watch, onMounted} from "vue";
 import router from "@/router/index.js";
 import {useRoute} from "vue-router";
 import {useUserStore} from "@/store/userStore.js";
+import CreatePlaylist from "@/components/form/CreatePlaylist.vue";
 
 const props = defineProps({
   userPlaylist: {
@@ -18,6 +19,12 @@ const props = defineProps({
 
 const userSelect = ref('home')
 const route = useRoute();
+
+const showCreate = ref(false);
+
+const refresh = ()=>{
+  showCreate.value=false
+}
 
 const updateActiveStateByRoute = () => {
   const currentPath = route.path;
@@ -109,17 +116,18 @@ const baseUrl = 'http://localhost:8080';
       <hr>
       <div class="playlist-sidebar">
         <div v-if="useUserStore().isLoggedIn" class="playlist-title">
-          <div @click="playlistShow.creat=!playlistShow.creat"  class="click-content">
+          <div @click="playlistShow.creat=!playlistShow.creat" class="click-content">
             <span style="margin-right: 8px">创建的歌单</span>
             <span style="font-weight: bold;margin-right: 8px">{{ userPlaylist.length }}</span>
             <img v-if="!playlistShow.creat" src="/icons/status/down.svg" style="width: 12px;margin-bottom: 3px;" alt="">
             <img v-if="playlistShow.creat" src="/icons/status/up.svg" style="width: 12px;margin-bottom: 3px;" alt="">
           </div>
-          <img id="create" src="/icons/sidebar/add.svg" style="width: 15px;margin-bottom: 3px;" alt="">
+          <img @click="showCreate=true" id="create" src="/icons/sidebar/add.svg" style="width: 15px;margin-bottom: 3px;"
+               alt="">
         </div>
         <div v-if="playlistShow.creat" v-for="item in userPlaylist" @click="goToPlaylist(item.id)"
              class="playlist-item">
-          <img :src="baseUrl + item.coverImage ||'/images/default/cover.png'"
+          <img :src="item.coverImage !== null ? baseUrl + item.coverImage : '/images/default/cover.png'"
                style="margin-right: 8px;width: 35px;height: 35px;border-radius: 5px"
                alt="">
           <span>{{ item.title }}</span>
@@ -138,7 +146,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div v-if="playlistShow.favorite" v-for="item in favoritePlaylist" @click="goToPlaylist(item.id)"
              class="playlist-item">
-          <img :src="baseUrl + item.coverImage ||'/images/default/cover.png'"
+          <img :src="item.coverImage !== null ? baseUrl + item.coverImage : '/images/default/cover.png'"
                style="margin-right: 8px;width: 35px;height: 35px;border-radius: 5px"
                alt="">
           <span>{{ item.title }}</span>
@@ -147,6 +155,7 @@ const baseUrl = 'http://localhost:8080';
       <hr v-if="useUserStore().isLoggedIn">
     </div>
   </div>
+  <CreatePlaylist v-if="showCreate" @close="refresh"/>
 </template>
 
 <style scoped lang="scss">

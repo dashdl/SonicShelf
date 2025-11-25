@@ -201,4 +201,16 @@ public class PlaylistServiceImpl implements PlaylistService {
         PageHelper.startPage(pageNum, pageSize);
         return PageInfo.of(playlistMapper.selectPlaylistsForSearch(keyword));
     }
+
+    @Override
+    public void createPlaylist(boolean isPublic, String title) {
+
+        if (isPublic) {
+            playlistMapper.insertPlaylist(1,title,CurrentUserUtil.getCurrentUserId());
+        }else {
+            playlistMapper.insertPlaylist(0,title,CurrentUserUtil.getCurrentUserId());
+        }
+
+
+    }
 }

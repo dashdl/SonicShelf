@@ -16,10 +16,13 @@ import com.zhongxin.sonicshelf.service.PlaylistService;
 import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @RestController
 @RequestMapping("/api/v1/playlists")
@@ -61,6 +64,12 @@ public class PlaylistsController {
             throw new CustomException("这不是您的歌单");
         }
         return Result.success(playlistsService.findByPlaylistId(id));
+    }
+
+    @PostMapping("/create")
+    public Result createPlaylist(@RequestBody UserPlaylistRequest playlist) {
+        playlistsService.createPlaylist(playlist.isPublic(), playlist.getTitle());
+        return Result.success();
     }
 
     @GetMapping("/{id}/musics")
@@ -205,5 +214,27 @@ public class PlaylistsController {
         playlistsService.removeMusic(playlistId, musicId);
         playlistsService.updateMusicCount(playlistId);
         return Result.success("添加成功");
+    }
+
+    public static class UserPlaylistRequest {
+
+        private String title;
+        private boolean isPublic;
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public boolean isPublic() {
+            return isPublic;
+        }
+
+        public void setIsPublic(boolean isPublic) {
+            this.isPublic = isPublic;
+        }
     }
 }

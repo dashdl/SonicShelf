@@ -40,7 +40,6 @@ const search = async () => {
   if (res.code === '200') {
     users.value = res.data.list
   }
-  console.log(artists.value.length)
 }
 
 watch(() => props.keyword, async (newKeyword, oldKeyword) => {
@@ -75,7 +74,8 @@ onMounted(async () => {
       <GridCard
           v-for="item in playlists"
           :key="item.id"
-          :item="item"/>
+          :item="item"
+          type="playlist"/>
     </div>
     <div v-if="albums.length>0" @click="userSelect(4)" class="separator-bar">
       专辑

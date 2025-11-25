@@ -3,6 +3,7 @@ package com.zhongxin.sonicshelf.controller;
 import com.github.pagehelper.PageInfo;
 import com.zhongxin.sonicshelf.dto.request.DynamicRequest;
 import com.zhongxin.sonicshelf.dto.response.DynamicResponse;
+import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.service.DynamicService;
 import com.zhongxin.sonicshelf.util.CurrentUserUtil;
 import com.zhongxin.sonicshelf.util.Result;
@@ -32,8 +33,21 @@ public class DynamicController {
         return Result.success(response);
     }
 
+    @GetMapping("/get-user/{userId}")
+    public Result getSelf(@RequestParam Integer pageNum, @RequestParam Integer pageSize, @PathVariable Long userId) {
+
+        PageInfo<DynamicResponse> response = dynamicService.getDynamicByUserId(userId, pageNum, pageSize);
+
+        return Result.success(response);
+    }
+
     @PostMapping("/add-dynamic")
     public Result addDynamic(@RequestBody DynamicRequest dynamic) {
+
+        if (!CurrentUserUtil.isLoggedIn()) {
+            throw new CustomException("1003","请先登录账号");
+        }
+
         dynamicService.addDynamic(dynamic);
         return Result.success("动态发布成功", dynamic.getId());
     }

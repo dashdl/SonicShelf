@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhongxin.sonicshelf.dto.request.DynamicRequest;
 import com.zhongxin.sonicshelf.dto.response.DynamicResponse;
+import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.mapper.*;
 import com.zhongxin.sonicshelf.service.DynamicService;
 import com.zhongxin.sonicshelf.service.LikeService;
@@ -43,17 +44,22 @@ public class DynamicServiceImpl implements DynamicService {
     }
 
     @Override
-    public PageInfo<DynamicResponse> getDynamicByUserId(Long currentUserId, Integer pageNum, Integer pageSize) {
+    public PageInfo<DynamicResponse> getDynamicByUserId(Long userId, Integer pageNum, Integer pageSize) {
 
         PageHelper.startPage(pageNum, pageSize);
 
-        return PageInfo.of(getDynamicInfo(dynamicMapper.selectByUserId(currentUserId)));
+        return PageInfo.of(getDynamicInfo(dynamicMapper.selectByUserId(userId)));
     }
 
     @Override
     public void deleteDynamic(Long id) {
-        dynamicMapper.deleteDynamicById(id);
-        dynamicMapper.deleteDynamicImageById(id);
+
+        if (CurrentUserUtil.getCurrentUserId().equals(dynamicMapper.getUserIdById(id))) {
+            dynamicMapper.deleteDynamicById(id);
+            dynamicMapper.deleteDynamicImageById(id);
+        }else {
+            throw new CustomException("1003","请勿试图删除他人动态");
+        }
     }
 
     private List<DynamicResponse> getDynamicInfo(List<DynamicResponse> dynamicResponseList) {

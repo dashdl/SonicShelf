@@ -39,7 +39,7 @@
                d.comment_count
         from dynamics as d
                  join users as u on d.user_id = u.id
-        where d.user_id = #{currentUserId}
+        where d.user_id = #{userId}
         order by d.created_at desc
     </select>
 

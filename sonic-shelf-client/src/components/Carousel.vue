@@ -24,25 +24,26 @@
 
 <script setup>
 import {ref, onMounted, onUnmounted} from 'vue'
+import router from "@/router/index.js";
 
 const carouselItems = ref([
   {
     id: 1,
     title: '热门歌单推荐',
-    imageUrl: '/images/default/cover.png',
-    targetUrl: '/playlists'
+    imageUrl: '/images/carousel/OVP.jpg',
+    targetUrl: '/playlist/69'
   },
   {
     id: 2,
-    title: '新歌首发',
-    imageUrl: '/images/default/cover.png',
-    targetUrl: '/new-songs'
+    title: 'Troye Sivan新专首发',
+    imageUrl: '/images/carousel/1764041481384_1764041444945_cover_1764041423833.jpeg',
+    targetUrl: '/album/25'
   },
   {
     id: 3,
-    title: '经典回顾',
-    imageUrl: '/images/default/cover.png',
-    targetUrl: '/classic'
+    title: '特洛耶·希文（Troye Sivan），1995年6月5日出生于南非共和国约翰内斯堡，澳大利亚流行乐男歌手、影视演员、词曲作者、音乐制作人',
+    imageUrl: '/images/carousel/109951169426920702.jpg',
+    targetUrl: '/artist/171'
   }
 ])
 
@@ -76,7 +77,7 @@ const goToSlide = (index) => {
 
 const handleItemClick = (item) => {
   if (item.targetUrl) {
-    // 点击轮播图处理逻辑
+    router.push(item.targetUrl)
   }
 }
 

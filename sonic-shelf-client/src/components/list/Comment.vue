@@ -224,7 +224,7 @@ const baseUrl = 'http://localhost:8080';
   background-color: #f0f2f5;
   border: #e4e8ec 1px solid;
   border-radius: 10px;
-  z-index: 10;
+  z-index: 1;
 }
 
 .editor textarea {

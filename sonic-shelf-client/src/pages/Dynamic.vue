@@ -4,11 +4,16 @@ import DynamicCard from "@/components/common/cards/DynamicCard.vue";
 import {onMounted, ref} from "vue";
 import request from "@/utils/request.js";
 import Publish from "@/components/form/Publish.vue";
+import {useUserStore} from "@/store/userStore.js";
 
 const props = defineProps({
-  component:{
-    type:Boolean,
-    default:false
+  component: {
+    type: Boolean,
+    default: false
+  },
+  userId: {
+    type: String,
+    default: ''
   }
 })
 
@@ -16,7 +21,7 @@ const dynamics = ref([])
 const userSelect = ref(0)
 const showPublish = ref(false)
 
-const refresh=()=>{
+const refresh = () => {
   showPublish.value = false
   loadDynamic()
 }
@@ -26,15 +31,22 @@ const handleSelect = (id) => {
 }
 
 const loadDynamic = async () => {
-  if (props.component===false){
+  if (props.component === false) {
     const res = await request.get("dynamic/get-all", {params: {pageNum: 1, pageSize: 100}});
     if (res.code === '200') {
       dynamics.value = res.data.list;
     }
-  }else {
-    const res = await request.get("dynamic/get-self", {params: {pageNum: 1, pageSize: 100}});
-    if (res.code === '200') {
-      dynamics.value = res.data.list;
+  } else {
+    if (props.userId === '') {
+      const res = await request.get("dynamic/get-self", {params: {pageNum: 1, pageSize: 100}});
+      if (res.code === '200') {
+        dynamics.value = res.data.list;
+      }
+    } else {
+      const res = await request.get(`dynamic/get-user/${props.userId}`, {params: {pageNum: 1, pageSize: 100}});
+      if (res.code === '200') {
+        dynamics.value = res.data.list;
+      }
     }
   }
 }
@@ -84,7 +96,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   background: #f7f9fc;
-  z-index: 1;
+  z-index: 2;
 }
 
 .publish {

@@ -329,12 +329,17 @@ input, textarea {
   background-color: #f7f9fc;
 }
 
-.avatar img {
-  margin-top: 75px;
-  width: 180px;
-  height: 180px;
-  border-radius: 15px;
-  cursor: pointer;
+.avatar {
+  img {
+    margin-top: 75px;
+    height: 180px;
+    width: 180px;
+    border-radius: 15px;
+    cursor: pointer;
+    object-fit: cover;
+    object-position: center;
+    //aspect-ratio: 1 / 1;
+  }
 }
 
 .select-button {

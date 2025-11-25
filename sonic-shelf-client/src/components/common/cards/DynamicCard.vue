@@ -6,13 +6,14 @@ import {ElMessage} from "element-plus";
 import {usePlayerStore} from "@/store/player.js";
 import router from "@/router/index.js";
 import {ref} from "vue";
+import {useUserStore} from "@/store/userStore.js";
 
 const props = defineProps({
   item: Object,
   userSelect: Number
 })
 
-const emit = defineEmits(["select","delete"]);
+const emit = defineEmits(["select", "delete"]);
 
 const showDeleteCard = ref(false)
 
@@ -90,7 +91,8 @@ const baseUrl = 'http://localhost:8080';
 
 <template>
   <div class="dynamic-card">
-    <img @click="showDeleteCard=!showDeleteCard" id="interact" src="/icons/status/more.svg" alt="">
+    <img @click="showDeleteCard=!showDeleteCard" v-if="item.userId === useUserStore().getUserId" id="interact"
+         src="/icons/status/more.svg" alt="">
     <div @click="deleteDynamic(item.id)" v-if="showDeleteCard" class="delete-bar">
       删除
     </div>

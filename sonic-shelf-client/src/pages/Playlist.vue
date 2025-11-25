@@ -209,7 +209,7 @@ const baseUrl = 'http://localhost:8080';
           <img src="/icons/content/headphone.svg" style="width: 15px" alt="">
           <span style="font-size: 12px;color: #ffffff;font-weight: bold;">{{ Info.playCount }}</span>
         </div>
-        <img :src="baseUrl + Info.coverImage ||'/images/default/cover.png'"
+        <img :src="Info.coverImage!==null && Info.coverImage!=='' ? baseUrl + Info.coverImage : '/images/default/cover.png'"
              style="width: 195px;height: 195px;border-radius: 10px;margin-right: 40px"
              alt="">
       </div>
@@ -322,6 +322,10 @@ const baseUrl = 'http://localhost:8080';
   cursor: pointer;
 }
 
+.cover{
+  width: 235px;
+}
+
 .headphone {
   position: absolute;
   display: flex;
@@ -331,6 +335,7 @@ const baseUrl = 'http://localhost:8080';
 }
 
 .profile-content {
+  width: calc(100% - 235px);
   display: flex;
   flex-direction: column;
 }

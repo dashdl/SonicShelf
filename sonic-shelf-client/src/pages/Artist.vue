@@ -126,8 +126,14 @@ const favorite = async () => {
   let res;
   if (userSelect.favorite === false) {
     res = await request.post('favorites/artist/' + route.params.artistId)
+    if (artist.userId !== null) {
+      await request.post('follows/follow/' + artist.userId);
+    }
   } else {
     res = await request.delete('favorites/artist/' + route.params.artistId)
+    if (artist.userId !== null) {
+      await request.delete('follows/unfollow/' + artist.userId);
+    }
   }
   if (res.code === '200') {
     ElMessage.success(res.message)
@@ -165,7 +171,7 @@ const baseUrl = 'http://localhost:8080';
   <div class="artist-container">
     <div class="profile-container">
       <img :src="artist.coverImage ? baseUrl + artist.coverImage : '/images/default/avatar.jpg'"
-           style="width: 200px;height: 200px;border-radius: 100px;margin-right: 40px"
+           style="width: 200px;height: 200px;border-radius: 100px;margin-right: 40px;object-fit: cover;aspect-ratio: 1 / 1;"
            alt="">
       <div class="profile-content">
         <div class="name">
@@ -295,6 +301,7 @@ const baseUrl = 'http://localhost:8080';
   color: #333333;
   background: #e9eaec;
   border: 2px solid #e4e8ec;
+  cursor: pointer;
 }
 
 .separator-content {

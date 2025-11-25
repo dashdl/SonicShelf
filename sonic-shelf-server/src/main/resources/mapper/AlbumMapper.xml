@@ -78,7 +78,8 @@
                am.artist_id,
                a.name as artist_name,
                am.release_date,
-               am.cover_image
+               am.cover_image,
+               am.music_count
         from albums as am
                  join artists as a on am.artist_id = a.id
         where am.title like concat('%', #{keyword}, '%')

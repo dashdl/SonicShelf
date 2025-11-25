@@ -140,7 +140,8 @@
                p.title,
                p.cover_image,
                u.nickname as creator_name,
-               u.id       as creatorId
+               u.id       as creatorId,
+               p.music_count
         FROM playlists p
                  LEFT JOIN users u ON p.user_id = u.id
         WHERE u.nickname like concat('%', #{keyword}, '%')

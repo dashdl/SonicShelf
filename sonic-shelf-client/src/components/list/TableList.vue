@@ -45,14 +45,15 @@ const baseUrl = 'http://localhost:8080';
     <div class="table-row" v-for="(item, index) in info" @click="goToPlaylist(item.id)" :key="index">
       <div class="left-cell">
         <div class="rank-cell">
-          <span id="title" style="font-size: 12px">{{index+1}}</span>
+          <span id="title" style="font-size: 12px">{{ index + 1 }}</span>
           <div class="play-button">
             <img src="/icons/player/play.svg" style="width: 20px;filter: brightness(0.4);" alt="">
           </div>
         </div>
         <div class="title-cell">
           <div class="cover">
-            <img :src="baseUrl+item.coverImage||'/images/default/cover.png'" style="width: 50px;height: 50px;border-radius: 8px;margin-right: 10px;object-fit: cover;" alt="">
+            <img :src="item.coverImage ? baseUrl+item.coverImage : '/images/default/cover.png'"
+                 style="width: 50px;height: 50px;border-radius: 8px;margin-right: 10px;object-fit: cover;" alt="">
           </div>
           <div class="title">
             <span style="font-size: 20px;color: #333333;">{{ item.title }}</span>
@@ -61,7 +62,7 @@ const baseUrl = 'http://localhost:8080';
       </div>
       <div class="right-cell">
         <div class="total-cell"><span>{{ item.musicCount }}首</span></div>
-        <div class="like-cell"><span>{{item.userName}}</span></div>
+        <div class="like-cell"><span>{{ item.userName }}</span></div>
       </div>
     </div>
 
@@ -90,14 +91,16 @@ span {
   border-radius: 10px;
 }
 
-.table-row:not(:first-child):hover{
+.table-row:not(:first-child):hover {
   background-color: #ffffff;
-  box-shadow: 0 2px 2px rgba(0,0,0,0.02);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.02);
 }
-.table-row:hover .play-button{
+
+.table-row:hover .play-button {
   z-index: 1;
 }
-.table-row:hover #title{
+
+.table-row:hover #title {
   z-index: -1;
 }
 
@@ -125,7 +128,7 @@ span {
   align-items: center;
 }
 
-.play-button{
+.play-button {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -133,7 +136,7 @@ span {
   z-index: -1;
 }
 
-.play-button:hover{
+.play-button:hover {
   cursor: pointer;
 }
 

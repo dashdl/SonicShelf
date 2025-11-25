@@ -77,4 +77,7 @@ public interface PlaylistMapper {
     List<PlaylistBaseResponse> selectPlaylistsForUser(String keyword);
 
     List<PlaylistBaseResponse> selectPlaylistsForSearch(String keyword);
+
+    @Insert("insert into playlists (is_public,title,user_id) values (#{isPublic},#{title},#{currentUserId})")
+    void insertPlaylist(int isPublic, String title, Long currentUserId);
 }

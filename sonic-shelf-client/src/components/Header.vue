@@ -11,7 +11,8 @@
     </div>
     <div class="right-content">
       <img id="avatar" @click="jumpToProfile" :src="avatarUrl"
-           style="height: 30px;border-radius: 15px; margin-right: 5px;cursor: pointer;" alt="">
+           style="height: 30px;border-radius: 15px; margin-right: 5px;cursor: pointer;object-fit: cover;aspect-ratio: 1 / 1;"
+           alt="">
       <span @click="jumpToProfile" style="cursor: pointer">{{ userStore.getNickname }}</span>
       <img src="" alt="">
       <img @click="data.userPanelVisible=!data.userPanelVisible" src="/icons/status/down.svg"
@@ -54,7 +55,7 @@ const avatarUrl = computed(() => {
 const search = () => {
   if (keyword.value === '') {
     router.push(`/home`);
-  }else {
+  } else {
     router.push(`/search/${keyword.value}`);
   }
 

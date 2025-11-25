@@ -43,7 +43,8 @@ const baseUrl = 'http://localhost:8080';
 <template>
   <div @click.stop="jump" class="grid-item">
     <div v-if="type==='album'" class="record"></div>
-    <img :src="baseUrl + item.coverImage || '/images/default/cover.png'" style="height: 100%;object-fit: cover;"
+    <img :src="item.coverImage ? baseUrl + item.coverImage : '/images/default/cover.png'"
+         style="height: 100%;object-fit: cover;"
          alt="">
     <div class="background"></div>
     <div class="play-button">

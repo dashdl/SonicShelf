@@ -275,7 +275,7 @@ const baseUrl = 'http://localhost:8080';
   <div class="main-container">
     <div class="profile-container">
       <img :src="baseUrl + userInfo.avatar||'/images/default/avatar.jpg'"
-           style="width: 200px;height: 200px;border-radius: 100px;margin-right: 40px"
+           style="width: 200px;height: 200px;border-radius: 100px;margin-right: 40px;object-fit: cover;aspect-ratio: 1 / 1;"
            alt="">
       <div class="profile-content">
         <div class="nickname">
@@ -410,6 +410,7 @@ const baseUrl = 'http://localhost:8080';
       <Dynamic
           v-if="userSelect.page===2"
           :component="true"
+          :user-id="route.params.userId ? route.params.userId : ''"
       />
     </div>
   </div>
