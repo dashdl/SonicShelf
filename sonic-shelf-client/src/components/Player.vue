@@ -231,6 +231,24 @@ const hideLyric = () => {
   lyricTop.value = 0
 }
 
+// 切歌时重置唱片旋转状态
+const resetRotation = () => {
+  const coverContent = document.querySelector('.cover-content');
+  if (coverContent) {
+    // 临时保存当前播放状态
+    const wasPlaying = playerStore.isPlaying;
+    
+    // 移除动画类
+    coverContent.style.animation = 'none';
+    // 强制重排
+    void coverContent.offsetWidth;
+    // 重新设置动画，这会导致动画从起始状态重新开始
+    coverContent.style.animation = 'rotate 40s linear infinite';
+    // 设置播放状态
+    coverContent.style.animationPlayState = wasPlaying ? 'running' : 'paused';
+  }
+}
+
 onUnmounted(() => {
   document.removeEventListener('mousemove', onDrag);
   document.removeEventListener('mouseup', stopDrag);
@@ -246,7 +264,8 @@ onMounted(() => {
   startProgressUpdate();
   startVolumeProgressUpdate(); // 启动音量更新
 
-  // 监听播放状态变化
+  // 监听播放状态变化和当前歌曲索引变化
+  let prevIndex = playerStore.currentIndex;
   const unwatch = playerStore.$subscribe((mutation, state) => {
     if (state.isPlaying) {
       startProgressUpdate();
@@ -255,6 +274,12 @@ onMounted(() => {
     }
     // 监听音量变化
     updateVolumeProgressFromStore();
+
+    // 监听当前索引变化，实现切歌时回正
+    if (state.currentIndex !== prevIndex) {
+      resetRotation();
+      prevIndex = state.currentIndex;
+    }
   });
 
   const titleObserver = new ResizeObserver(entries => {
@@ -285,7 +310,8 @@ const baseUrl = 'http://localhost:8080';
 <template>
   <div class="player-component">
     <div class="cover-container">
-      <div @click="showLyric" class="cover-content">
+      <div @click="showLyric" class="cover-content"
+           :style="{ animationPlayState: playerStore.isPlaying ? 'running' : 'paused' }">
         <img
             :src=" playerStore.currentPlaylist && playerStore.currentIndex >= 0 && playerStore.currentIndex < playerStore.currentPlaylist.length ? baseUrl + playerStore.currentPlaylist[playerStore.currentIndex].coverImage : '/images/default/cover.png'"
             style="height: 45px;border-radius: 23px" alt="">
@@ -428,6 +454,7 @@ const baseUrl = 'http://localhost:8080';
   align-items: center;
   border-radius: 33px;
   background-color: #0d0d0d;
+  transform-origin: center center;
   animation: rotate 40s linear infinite;
 }
 
