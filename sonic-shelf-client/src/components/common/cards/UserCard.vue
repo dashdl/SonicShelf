@@ -27,7 +27,7 @@ const baseUrl = 'http://localhost:8080';
 
 <template>
   <div @click="jump" class="user-card">
-    <img :src="props.type==='user' ? baseUrl + props.item.avatar : baseUrl + props.item.coverImage"
+    <img :src="props.type==='user' ? props.item.avatar ? baseUrl + props.item.avatar : '/icons/user.svg' : baseUrl + props.item.coverImage ? baseUrl + props.item.coverImage : '/icons/user.svg'"
          style="margin-bottom: 18px;width: 77%;border-radius: 50%;object-fit: cover;aspect-ratio: 1 / 1;"
          alt="">
     <div class="nickname" style="display: flex">

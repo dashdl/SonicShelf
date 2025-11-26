@@ -161,7 +161,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div class="profile">
           <img id="profile" @click="router.push('/profile/'+Info.userId)"
-               :src="baseUrl+userStore.getAvatar||'/images/default/avatar.jpg'"
+               :src="userStore.getAvatar !== '/icons/user.svg' ? baseUrl+userStore.getAvatar : '/icons/user.svg'"
                style="width: 25px;height: 25px;border-radius: 23px;margin-right: 8px;"
                alt="">
           <span id="profile" @click="router.push('/profile/'+Info.userId)"

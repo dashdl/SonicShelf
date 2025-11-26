@@ -34,6 +34,10 @@ public class DynamicServiceImpl implements DynamicService {
         Long[] ids = followMapper.selectFollowingIdByUserId(currentUserId);
 
         PageHelper.startPage(pageNum, pageSize);
+        if(ids == null || ids.length == 0) {
+            return PageInfo.of(getDynamicInfo(dynamicMapper.selectByUserId(CurrentUserUtil.getCurrentUserId())));
+        }
+
         return PageInfo.of(getDynamicInfo(dynamicMapper.selectAllByUserId(ids, currentUserId)));
 
     }

@@ -274,7 +274,7 @@ const baseUrl = 'http://localhost:8080';
 <template>
   <div class="main-container">
     <div class="profile-container">
-      <img :src="baseUrl + userInfo.avatar||'/images/default/avatar.jpg'"
+      <img :src="userInfo.avatar ? baseUrl + userInfo.avatar : '/icons/user.svg'"
            style="width: 200px;height: 200px;border-radius: 100px;margin-right: 40px;object-fit: cover;aspect-ratio: 1 / 1;"
            alt="">
       <div class="profile-content">
@@ -293,8 +293,8 @@ const baseUrl = 'http://localhost:8080';
             </span>
         </div>
         <div class="profile">
-          <span style="color: #666666;">简介：{{ userInfo.bio }}</span>
-          <span style="color: #999999;">地区：{{ userInfo.location }}</span>
+          <span style="color: #666666;">简介：{{ userInfo.bio ? userInfo.bio : '这个人很懒，什么也没留下。' }}</span>
+          <span style="color: #999999;">地区：{{ userInfo.location ? userInfo.location : '未知' }}</span>
         </div>
         <div @click="follow" v-if="userStore.getUserId.toString() !== route.params.userId" class="follow-button">
           <img :src="userInfo.following ? '/icons/status/hookWhite.svg' : '/icons/status/followWhite.svg'"

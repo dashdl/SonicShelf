@@ -97,7 +97,7 @@ const baseUrl = 'http://localhost:8080';
       删除
     </div>
     <div class="dynamic-header">
-      <img :src="item.avatar ? baseUrl + item.avatar : '/images/default/avatar.jpg'"
+      <img :src="item.avatar ? baseUrl + item.avatar : '/icons/user.svg'"
            style="margin-right: 10px;border-radius: 23px;height: 45px;width: 45px;"
            alt="">
       <div class="dynamic-user">
