@@ -7,9 +7,16 @@ import com.zhongxin.sonicshelf.dto.response.MusicInfoResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicManageResponse;
 import com.zhongxin.sonicshelf.dto.response.MusicResponse;
 import com.zhongxin.sonicshelf.service.MusicService;
+import com.zhongxin.sonicshelf.util.CurrentUserUtil;
+import com.zhongxin.sonicshelf.util.RandomArraySelector;
 import com.zhongxin.sonicshelf.util.Result;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/musics")
@@ -34,6 +41,16 @@ public class MusicsController {
                          @RequestParam String keyword) {
         PageInfo<MusicInfoResponse> pageInfo = musicService.findMusicsAsPageForUser(pageNum, pageSize, keyword);
         return Result.success(pageInfo);
+    }
+
+    @GetMapping("/guest")
+    public Result findGuest(@RequestParam(required = false) Integer limit) {
+        List<MusicInfoResponse> musicInfoResponses = null;
+
+        musicInfoResponses = musicService.findGuest(limit);
+
+        return Result.success(musicInfoResponses);
+
     }
 
     @AdminAuth

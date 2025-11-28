@@ -187,6 +187,18 @@ public class MusicServiceImpl implements MusicService {
         return PageInfo.of(musicInfoResponseList);
     }
 
+    @Override
+    public List<MusicInfoResponse> findGuest(Integer limit) {
+        List<MusicInfoResponse> musicList = musicMapper.selectByPlayCount(limit);
+        if (CurrentUserUtil.isLoggedIn()) {
+            for (MusicInfoResponse music : musicList) {
+                music.setFavorite(isFavorite(music.getId()));
+            }
+        }
+
+        return musicList;
+    }
+
     private boolean isFavorite(Long musicId) {
         Favorite favorite = new Favorite("music", musicId);
         return favoriteMapper.findByUserAndTarget(favorite) != null;

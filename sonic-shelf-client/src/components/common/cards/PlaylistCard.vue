@@ -1,5 +1,6 @@
 <script setup>
 import {ref, onMounted} from 'vue'
+import router from "@/router/index.js";
 
 const props = defineProps({
   item: {
@@ -107,7 +108,7 @@ const baseUrl = 'http://localhost:8080';
 </script>
 
 <template>
-  <div class="playlistCard" @mouseenter="() => handleMouseEvent(true)" @mouseleave="() => handleMouseEvent(false)">
+  <div class="playlistCard" @click="router.push(`playlist/${item.id}`)" @mouseenter="() => handleMouseEvent(true)" @mouseleave="() => handleMouseEvent(false)">
     <div class="playCount">
       <img style="height: 15px" src="/icons/content/headphone.svg" alt="">
       {{ item.playCount }}
@@ -148,7 +149,7 @@ const baseUrl = 'http://localhost:8080';
 }
 
 .playlistCard:hover .info {
-  transform: translateY(-50px);
+  transform: translateY(-49px);
 }
 
 .playCount {

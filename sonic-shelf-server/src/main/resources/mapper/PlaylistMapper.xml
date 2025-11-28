@@ -147,5 +147,18 @@
         WHERE u.nickname like concat('%', #{keyword}, '%')
            or p.title like concat('%', #{keyword}, '%')
     </select>
+    <select id="selectAsCard" resultType="com.zhongxin.sonicshelf.dto.response.PlaylistBaseResponse">
+        select id,
+               title,
+               cover_image
+        from playlists
+        where is_public = 2
+    </select>
+    <select id="selectGuest" resultType="com.zhongxin.sonicshelf.dto.response.PlaylistCardResponse">
+        select id, title, cover_image as coverImage, play_count as play_count
+        from playlists
+        where is_public = 2
+            limit #{limit}
+    </select>
 
 </mapper>

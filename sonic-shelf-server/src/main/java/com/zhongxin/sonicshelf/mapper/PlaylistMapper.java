@@ -80,4 +80,8 @@ public interface PlaylistMapper {
 
     @Insert("insert into playlists (is_public,title,user_id) values (#{isPublic},#{title},#{currentUserId})")
     void insertPlaylist(int isPublic, String title, Long currentUserId);
+
+    List<PlaylistBaseResponse> selectAsCard();
+
+    List<PlaylistCardResponse> selectGuest(Integer limit);
 }

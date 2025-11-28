@@ -83,4 +83,6 @@ public interface MusicMapper {
     List<MusicInfoResponse> selectMusicsForUser(String keyword);
 
     List<MusicResponse> selectMusicsByKeyword(String keyword);
+
+    List<MusicInfoResponse> selectByPlayCount(Integer limit);
 }

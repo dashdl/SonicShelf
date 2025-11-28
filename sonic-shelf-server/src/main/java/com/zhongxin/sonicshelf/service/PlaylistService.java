@@ -55,4 +55,8 @@ public interface PlaylistService {
     PageInfo<PlaylistBaseResponse> searchPlaylistsByKeyword(Integer pageNum, Integer pageSize, String keyword);
 
     void createPlaylist(boolean isPublic, String title);
+
+    PageInfo<PlaylistBaseResponse> findPlaylistAsCard(Integer pageSize);
+
+    List<PlaylistCardResponse> findGuest(Integer limit);
 }

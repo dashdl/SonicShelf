@@ -164,7 +164,7 @@ const baseUrl = 'http://localhost:8080';
       <div class="title">精彩评论</div>
       <div class="comment-item" v-for="item in comments" :key="item.id">
         <img :src="baseUrl + item.avatar ||'/images/default/avatar.jpg'"
-             style="margin-right: 15px;border-radius: 23px;height: 45px;width: 45px;"
+             style="margin-right: 15px;border-radius: 23px;height: 45px;width: 45px;object-fit: cover"
              alt="">
         <div class="comment-text">
           <span style="color: dodgerblue">{{ item.nickname }}</span>

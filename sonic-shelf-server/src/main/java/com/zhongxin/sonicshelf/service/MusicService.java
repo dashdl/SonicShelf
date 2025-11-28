@@ -38,4 +38,6 @@ public interface MusicService {
     PageInfo<MusicInfoResponse> findMusicsAsPageForUser(Integer pageNum, Integer pageSize, String keyword);
 
     PageInfo<MusicResponse> searchMusicsByKeyword(Integer pageNum, Integer pageSize, String keyword);
+
+    List<MusicInfoResponse> findGuest(Integer limit);
 }

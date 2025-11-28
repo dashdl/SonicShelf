@@ -206,11 +206,31 @@ public class PlaylistServiceImpl implements PlaylistService {
     public void createPlaylist(boolean isPublic, String title) {
 
         if (isPublic) {
-            playlistMapper.insertPlaylist(1,title,CurrentUserUtil.getCurrentUserId());
-        }else {
-            playlistMapper.insertPlaylist(0,title,CurrentUserUtil.getCurrentUserId());
+            playlistMapper.insertPlaylist(1, title, CurrentUserUtil.getCurrentUserId());
+        } else {
+            playlistMapper.insertPlaylist(0, title, CurrentUserUtil.getCurrentUserId());
         }
 
 
+    }
+
+    @Override
+    public PageInfo<PlaylistBaseResponse> findPlaylistAsCard(Integer pageSize) {
+
+        PageHelper.startPage(1, pageSize);
+
+        return PageInfo.of(playlistMapper.selectAsCard());
+    }
+
+    @Override
+    public List<PlaylistCardResponse> findGuest(Integer limit) {
+
+        List<PlaylistCardResponse> playlistCardResponses = playlistMapper.selectGuest(limit);
+
+        for (PlaylistCardResponse playlistCardResponse : playlistCardResponses) {
+            playlistCardResponse.setSongs(playlistMapper.selectByPlaylistId(playlistCardResponse.getId()));
+        }
+
+        return playlistCardResponses;
     }
 }

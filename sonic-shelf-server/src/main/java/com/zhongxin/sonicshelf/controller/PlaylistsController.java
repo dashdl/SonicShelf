@@ -90,6 +90,17 @@ public class PlaylistsController {
         return Result.success(playlistsService.findAll(limit));
     }
 
+    @GetMapping("/recommend-card")
+    public Result recommendCard(@RequestParam Integer pageSize) {
+        PageInfo<PlaylistBaseResponse> pageCard = playlistsService.findPlaylistAsCard(pageSize);
+        return Result.success(pageCard);
+    }
+
+    @GetMapping("/recommend-guest")
+    public Result recommendGuest(@RequestParam Integer limit) {
+        return Result.success(playlistsService.findGuest(limit));
+    }
+
     @PostMapping("/{playlistId}/collect/{musicId}")
     public Result collect(@PathVariable Long playlistId,
                           @PathVariable Long musicId) {

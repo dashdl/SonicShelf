@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import java.util.Arrays;
 
 @Configuration
@@ -34,17 +35,19 @@ public class SecurityConfig {
                 // 配置请求授权
                 .authorizeHttpRequests(auth -> auth
                         // 公开接口（登录、注册等）
-                        .requestMatchers( "/api/v1/auth/**", "/public/**","/uploads/**","/songs/**","/cover/**","/music/**","/api/v1/search/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**", "/public/**", "/uploads/**", "/songs/**", "/cover/**", "/music/**",
+                                "/api/v1/search/**", "/api/v1/playlists/recommend-card", "/api/v1/playlists/recommend-guest",
+                        "/api/v1/musics/guest").permitAll()
                         // 静态资源
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-                        // Swagger文档（如果使用）
+                        // Swagger文档
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // 错误页面
                         .requestMatchers("/error").permitAll()
                         // 其他所有请求需要认证
                         .anyRequest().authenticated()
                 )
-                // 禁用CSRF（前后端分离项目）
+                // 禁用CSRF
                 .csrf(csrf -> csrf.disable())
                 // 设置无状态会话（JWT适用）
                 .sessionManagement(session -> session
@@ -52,7 +55,7 @@ public class SecurityConfig {
                 )
                 // 添加JWT过滤器
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                // 异常处理（可选但推荐）
+                // 异常处理
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 );
@@ -79,7 +82,7 @@ public class SecurityConfig {
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setAllowCredentials(false);
         configuration.setMaxAge(3600L);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

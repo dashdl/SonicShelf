@@ -242,6 +242,17 @@
            or m.title like concat('%', #{keyword}, '%')
            or am.title like concat('%', #{keyword}, '%')
     </select>
+    <select id="selectByPlayCount" resultType="com.zhongxin.sonicshelf.dto.response.MusicInfoResponse">
+        SELECT m.id,
+        m.title,
+        m.cover_image,
+        a.name as artist_name,
+        a.id as artist_id
+        FROM musics m
+        LEFT JOIN artists a ON m.artist_id = a.id
+        order by a.play_count
+        limit #{limit}
+    </select>
 
 
     <!--    #         SELECT m.id,-->

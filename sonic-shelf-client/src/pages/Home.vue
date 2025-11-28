@@ -10,9 +10,11 @@ import {useUserStore} from "@/store/userStore.js";
 const recommendCount = ref(5) // 默认值
 
 const recommendPlaylists = ref([])
+const guestPlaylists=ref([])
 const likeRecommend = ref([])
 
 const musicList = ref([])
+const guestMusicList = ref([])
 
 const emit = defineEmits(["collect"])
 
@@ -38,7 +40,9 @@ const updateRecommendCount = () => {
     recommendCount.value = newRecommendCount
     likeRecommend.value = newLikeRecommend
     getRecommends(newRecommendCount)
+    getGuestRecommends(newRecommendCount)
     getRecommendsMusic(newMusicCount)
+    getGuestRecommendsMusic(newMusicCount)
   }
 }
 
@@ -73,6 +77,29 @@ const getRecommendsMusic = async (musicNumb) => {
   }
 }
 
+const getGuestRecommends = (playlistNumb,) => {
+  request.get('playlists/recommend-guest', {
+    params: {
+      limit: playlistNumb,
+    }
+  }).then(res => {
+    if (res.code === '200') {
+      guestPlaylists.value = res.data
+    }
+  })
+}
+
+const getGuestRecommendsMusic = async (musicNumb) => {
+  const res = await request.get('musics/guest', {
+    params: {
+      limit: musicNumb
+    }
+  })
+  if (res.code === '200') {
+    guestMusicList.value = res.data;
+  }
+}
+
 const collect = (id) => {
   emit("collect", id);
 }
@@ -103,6 +130,20 @@ onUnmounted(() => {
     <div v-if="useUserStore().isLoggedIn" class="like-recommend" :style="{ 'grid-template-columns': gridLikeColumns }">
       <MusicCard
           v-for="item in musicList"
+          @collect="collect"
+          :item="item"
+      />
+    </div>
+    <div class="separator-container">精选歌单</div>
+    <div class="playlist-recommend" :style="{ gridTemplateColumns }">
+      <PlaylistCard v-for="item in guestPlaylists"
+                    :item="item"
+      />
+    </div>
+    <div class="separator-container">精选推荐</div>
+    <div class="like-recommend" :style="{ 'grid-template-columns': gridLikeColumns }">
+      <MusicCard
+          v-for="item in guestMusicList"
           @collect="collect"
           :item="item"
       />
