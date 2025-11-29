@@ -1,6 +1,8 @@
 <script setup>
 import {ref, onMounted} from 'vue'
 import router from "@/router/index.js";
+import request from "@/utils/request.js";
+import {usePlayerStore} from "@/store/player.js";
 
 const props = defineProps({
   item: {
@@ -12,6 +14,19 @@ const backgroundImg = ref(null)
 const titleBackground = ref(null)
 const infoElement = ref(null)
 const extractedColor = ref('')
+
+const replace = async () => {
+  await request.get('playlists/' + props.item.id + '/musics').then(res => {
+    const playerStore = usePlayerStore();
+    playerStore.updatePlaylist(res.data)
+    localStorage.setItem("playlist", JSON.stringify(res.data))
+    playerStore.playSong(0)
+    playerStore.playlistId = props.item.id;
+    playerStore.isPlaylist = true;
+    localStorage.setItem("playlistId", props.item.id)
+    localStorage.setItem("isPlaylist", JSON.stringify(playerStore.isPlaylist))
+  })
+}
 
 function getDominantColor(image) {
   const canvas = document.createElement('canvas')
@@ -121,7 +136,7 @@ const baseUrl = 'http://localhost:8080';
         <span style="width: calc(100% - 30px);">3 {{ item.songs[2] }}</span>
       </div>
     </div>
-    <img id="playButton" src="/icons/player/play.svg" alt="">
+    <img @click.stop="replace" id="playButton" src="/icons/player/play.svg" alt="">
     <div class="title-background" ref="titleBackground"/>
     <img id="background" ref="backgroundImg"
          :src="item.coverImage ? baseUrl+item.coverImage : '/images/default/cover.png'"

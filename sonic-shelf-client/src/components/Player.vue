@@ -581,6 +581,7 @@ const baseUrl = 'http://localhost:8080';
 }
 
 .progress-content {
+  cursor: pointer;
   margin: 0 8px;
   height: 5px;
   width: 340px;

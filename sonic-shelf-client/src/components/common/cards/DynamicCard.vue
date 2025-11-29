@@ -101,7 +101,7 @@ const baseUrl = 'http://localhost:8080';
            style="margin-right: 10px;border-radius: 23px;height: 45px;width: 45px;"
            alt="">
       <div class="dynamic-user">
-        <span style="color: dodgerblue">{{ item.userName }}</span>
+        <span @click.stop="router.push(`/profile/${item.userId}`)" style="cursor: pointer;color: dodgerblue;">{{ item.userName }}</span>
         <span style="font-size: 11px;color: #a9adb7">
           {{ formatTime(item.createdAt) }}
         </span>

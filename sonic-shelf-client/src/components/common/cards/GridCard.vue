@@ -48,7 +48,7 @@ const baseUrl = 'http://localhost:8080';
          alt="">
     <div class="background"></div>
     <div class="play-button">
-      <img src="/icons/player/play.svg" style="width: 40px" alt="">
+      <img @click.stop="replace(item.id)" src="/icons/player/play.svg" style="width: 40px" alt="">
     </div>
     <div class="info">
       <span style="color: #333333;font-size: 14px;margin-bottom: -2px">{{ item.title }}</span>

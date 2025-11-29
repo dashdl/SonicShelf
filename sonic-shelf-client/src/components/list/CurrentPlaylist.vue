@@ -51,7 +51,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div class="music-info">
           <div class="info-left">
-            <span style="font-size: 20px">{{ item.title }}</span>
+            <span style="font-size: 20px;color: #333333">{{ item.title }}</span>
             <span>{{ item.artistName }}</span>
           </div>
           <div class="info-right">
