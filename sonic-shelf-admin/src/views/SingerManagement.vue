@@ -183,7 +183,7 @@
             </el-upload>
             <el-image
                 v-if="singerForm.coverImage"
-                :src="`http://localhost:8080${singerForm.coverImage}`"
+                :src="singerForm.coverImage.startsWith('data:') ? singerForm.coverImage : `http://localhost:8080${singerForm.coverImage}`"
                 :fit="'cover'"
                 style="width: 100px; height: 100px; margin-top: 10px"
             />
@@ -201,7 +201,7 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted, computed} from 'vue'
+import {ref, reactive, onMounted, computed, watch} from 'vue'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import request from "@/utils/request.js";
 
@@ -401,8 +401,9 @@ const handleSubmit = async () => {
 
       ElMessage.success(singerForm.id ? '编辑成功' : '添加成功')
       dialogVisible.value = false
-      // 清空待上传文件
+      // 清空待上传文件和上传组件文件列表
       pendingAvatarFile.value = null
+      avatarUploadRef.value?.clearFiles()
       getSingerList()
     }
   } catch (error) {
@@ -426,6 +427,8 @@ const resetForm = () => {
   if (singerFormRef.value) {
     singerFormRef.value.resetFields()
   }
+  // 清空上传组件的文件列表
+  avatarUploadRef.value?.clearFiles()
 }
 
 const beforeAvatarUpload = (file) => {
@@ -449,9 +452,18 @@ const handleAvatarUpload = (response) => {
   }
 }
 
-// 头像文件变化处理 - 保存待上传文件但不立即上传
+// 头像文件变化处理 - 保存待上传文件并生成预览
 const handleAvatarChange = (uploadFile) => {
-  pendingAvatarFile.value = uploadFile.raw
+  const file = uploadFile.raw
+  pendingAvatarFile.value = file
+  
+  // 生成预览图
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    // 使用base64作为预览图
+    singerForm.coverImage = e.target.result
+  }
+  reader.readAsDataURL(file)
 }
 
 // 头像文件移除处理

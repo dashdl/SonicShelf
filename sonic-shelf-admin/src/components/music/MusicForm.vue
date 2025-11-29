@@ -40,8 +40,8 @@
       <el-form-item label="分类" prop="categoryIds">
         <CategorySelector
           v-model:selectedTagIds="selectedFormTagIds"
+          v-model:selectedTags="selectedFormTags"
           placeholder="选择分类标签"
-          @update:selectedTags="handleFormSelectedTagsChange"
         />
       </el-form-item>
       <el-form-item label="音乐文件" prop="fileUrl">
@@ -211,8 +211,8 @@ const musicRules = {
   ],
   categoryIds: [
     {
-      type: 'array', validator: (_, value, callback) => {
-        if (!value || value.length === 0) {
+      validator: (_, value, callback) => {
+        if (!selectedFormTagIds.value || selectedFormTagIds.value.length === 0) {
           callback(new Error('请至少选择一个分类'))
         } else {
           callback()
@@ -246,12 +246,7 @@ const getFileNameFromUrl = (url) => {
   return parts[parts.length - 1] || '未知文件'
 }
 
-// 处理表单分类标签变化
-const handleFormSelectedTagsChange = (selectedTags) => {
-  selectedFormTags.value = selectedTags
-  // 更新表单数据
-  musicForm.categoryIds = [...selectedFormTagIds.value]
-}
+
 
 // 提交表单
 const handleSubmit = async () => {
@@ -261,6 +256,12 @@ const handleSubmit = async () => {
 
     let res
     let newMusicId = null
+
+    // 准备请求数据，使用selectedFormTagIds
+    const requestData = {
+      ...musicForm,
+      categoryIds: selectedFormTagIds.value
+    }
 
     if (musicForm.id) {
       // 编辑模式
@@ -277,7 +278,7 @@ const handleSubmit = async () => {
 
         if (uploadRes.code === '200') {
           // 上传成功后更新音乐表单中的文件路径
-          musicForm.fileUrl = uploadRes.data
+          requestData.fileUrl = uploadRes.data
           ElMessage.success('音乐文件上传成功')
         } else {
           ElMessage.error('音乐文件上传失败')
@@ -298,7 +299,7 @@ const handleSubmit = async () => {
 
         if (uploadRes.code === '200') {
           // 上传成功后更新音乐表单中的封面路径
-          musicForm.coverImage = uploadRes.data
+          requestData.coverImage = uploadRes.data
           ElMessage.success('封面图片上传成功')
         } else {
           ElMessage.error('封面图片上传失败')
@@ -306,12 +307,12 @@ const handleSubmit = async () => {
         }
       }
 
-      const {fileUrl, coverImage, ...editData} = musicForm
-      res = await request.put(`musics/update`, editData)
+      const {fileUrl, coverImage} = requestData
+      res = await request.put(`musics/update`, requestData)
     } else {
       // 添加模式 - 先创建音乐
-      const {fileUrl, coverImage, ...addData} = musicForm
-      res = await request.post('musics/add', addData)
+      const {fileUrl, coverImage} = requestData
+      res = await request.post('musics/add', requestData)
 
       if (res.code === '200' && res.data && res.data.id) {
         newMusicId = res.data.id
@@ -390,6 +391,12 @@ const handleCancel = () => {
 
 // 重置表单
 const resetForm = () => {
+  // 先调用组件的resetFields()重置表单状态
+  if (musicFormRef.value) {
+    musicFormRef.value.resetFields()
+  }
+  
+  // 手动重置表单数据
   Object.assign(musicForm, {
     id: '',
     title: '',
@@ -401,15 +408,18 @@ const resetForm = () => {
     categoryIds: [],
     lyrics: ''
   })
+  
   // 清空待上传文件
   pendingMusicFile.value = null
   pendingCoverFile.value = null
+  
+  // 清空文件上传组件的文件列表
+  fileUploadRef.value?.clearFiles()
+  coverUploadRef.value?.clearFiles()
+  
   // 重置分类选择
   selectedFormTagIds.value = []
   selectedFormTags.value = []
-  if (musicFormRef.value) {
-    musicFormRef.value.resetFields()
-  }
 }
 
 // 文件上传前处理

@@ -23,6 +23,7 @@
                a.music_count
         FROM artists as a
         WHERE a.name like concat('%', #{keyword}, '%')
+           OR a.translated_name like concat('%', #{keyword}, '%')
            OR EXISTS (SELECT 1
                       FROM musics as m
                       WHERE m.artist_id = a.id

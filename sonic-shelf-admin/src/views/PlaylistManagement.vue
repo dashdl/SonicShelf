@@ -230,7 +230,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Plus, Edit, Delete, Refresh, Close, ArrowDown, ArrowUp, InfoFilled } from '@element-plus/icons-vue'
 import request from "@/utils/request.js";
@@ -476,8 +476,9 @@ const handleSubmit = async () => {
     if (res.code === '200') {
       ElMessage.success(playlistForm.id ? '编辑成功' : '添加成功')
       dialogVisible.value = false
-      // 清空待上传文件
+      // 清空待上传文件和上传组件文件列表
       pendingCoverFile.value = null
+      coverUploadRef.value?.clearFiles()
       getPlaylistList()
     }
   } catch (error) {
@@ -514,8 +515,9 @@ const resetForm = () => {
   // 重置分类选择状态
   selectedFormTags.value = []
   selectedFormTagIds.value = []
-  // 清空待上传文件
+  // 清空待上传文件和上传组件文件列表
   pendingCoverFile.value = null
+  coverUploadRef.value?.clearFiles()
 }
 
 
@@ -546,15 +548,33 @@ const beforeCoverUpload = (file) => {
   return isJPG || isPNG && isLt5M
 }
 
-// 封面文件变化处理 - 保存待上传文件但不立即上传
+// 封面文件变化处理 - 保存待上传文件并生成预览
 const handleCoverChange = (uploadFile) => {
-  pendingCoverFile.value = uploadFile.raw
+  const file = uploadFile.raw
+  pendingCoverFile.value = file
+  
+  // 生成预览图
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    // 使用base64作为预览图
+    playlistForm.coverImage = e.target.result
+  }
+  reader.readAsDataURL(file)
 }
 
 // 封面文件移除处理
 const handleCoverRemove = () => {
   pendingCoverFile.value = null
+  playlistForm.coverImage = ''
 }
+
+// 监听对话框显示状态变化
+watch(dialogVisible, (newVisible) => {
+  if (!newVisible) {
+    // 对话框关闭时重置表单
+    resetForm()
+  }
+})
 
 onMounted(() => {
   getPlaylistList()

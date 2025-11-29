@@ -45,7 +45,7 @@
                 @click="handleTagSelect(item.id)"
                 v-for="item in currentTags"
                 :key="item.id"
-                :class="['tag-item', { 'tag-selected': selectedTagIds.map(id => String(id)).includes(String(item.id)) }]"
+                :class="['tag-item', { 'tag-selected': selectedTagIdStrings.includes(String(item.id)) }]"
             >
               {{ item.name }}
             </div>
@@ -107,6 +107,11 @@ const loading = ref(false)
 const categoryMap = ref(new Map()) // 存储所有分类数据，key为分类ID，value为分类对象
 const rootCategories = ref([])     // 根级分类列表
 
+// 计算属性：选中的标签ID字符串数组，用于模板判断
+const selectedTagIdStrings = computed(() => {
+  return props.selectedTagIds.map(id => String(id))
+})
+
 // 计算属性：选中的标签对象数组
 const selectedTags = computed(() => {
   // 从映射表中获取所有标签
@@ -118,8 +123,8 @@ const selectedTags = computed(() => {
         parentId: category.parentId
       }))
 
-  // 确保类型一致性：将标签ID转换为字符串进行比较
-  return allTags.filter(tag => props.selectedTagIds.map(id => String(id)).includes(String(tag.id)))
+  // 过滤出选中的标签
+  return allTags.filter(tag => selectedTagIdStrings.value.includes(String(tag.id)))
 })
 
 // 加载根级分类数据
@@ -272,9 +277,10 @@ const handleTagSelect = (tagId) => {
 
   // 确保类型一致性：将标签ID转换为字符串进行比较
   const stringTagId = String(tagId)
-  const newSelectedTagIds = [...props.selectedTagIds].map(id => String(id))
+  // 先将props.selectedTagIds转换为字符串数组，避免类型不一致问题
+  const currentSelectedIds = props.selectedTagIds.map(id => String(id))
+  const newSelectedTagIds = [...currentSelectedIds]
   const index = newSelectedTagIds.indexOf(stringTagId)
-  const tag = currentTags.value.find(item => String(item.id) === stringTagId)
 
   if (index > -1) {
     // 取消选择
@@ -288,7 +294,16 @@ const handleTagSelect = (tagId) => {
   emit('update:selectedTagIds', newSelectedTagIds)
 
   // 计算选中的标签对象并触发事件
-  const selectedTagObjects = selectedTags.value.filter(tag => newSelectedTagIds.includes(String(tag.id)))
+  // 直接从categoryMap中获取所有选中的标签对象，确保数据最新
+  const allTags = Array.from(categoryMap.value.values())
+      .filter(category => category.parentId !== null && category.parentId !== 0)
+      .map(category => ({
+        id: category.id,
+        name: category.name,
+        parentId: category.parentId
+      }))
+  
+  const selectedTagObjects = allTags.filter(tag => newSelectedTagIds.includes(String(tag.id)))
   emit('update:selectedTags', selectedTagObjects)
 }
 

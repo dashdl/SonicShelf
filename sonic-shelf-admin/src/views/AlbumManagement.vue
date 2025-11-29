@@ -187,7 +187,7 @@
             </el-upload>
             <el-image
                 v-if="albumForm.coverImage"
-                :src="`http://localhost:8080${albumForm.coverImage}`"
+                :src="albumForm.coverImage.startsWith('data:') ? albumForm.coverImage : `http://localhost:8080${albumForm.coverImage}`"
                 :fit="'cover'"
                 style="width: 100px; height: 100px; margin-top: 10px"
             />
@@ -205,7 +205,7 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted, computed} from 'vue'
+import {ref, reactive, onMounted, computed, watch} from 'vue'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {Search, Plus, Edit, Delete, Refresh, Upload} from '@element-plus/icons-vue'
 import request from "@/utils/request.js";
@@ -485,12 +485,22 @@ const beforeCoverUpload = (file) => {
   return true
 }
 
-// 处理封面文件变化
+// 处理封面文件变化 - 保存待上传文件并生成预览
 const handleCoverChange = (file, fileList) => {
   if (fileList.length > 0) {
-    pendingCoverFile.value = fileList[0].raw
+    const rawFile = fileList[0].raw
+    pendingCoverFile.value = rawFile
+    
+    // 生成预览图
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      // 使用base64作为预览图
+      albumForm.coverImage = e.target.result
+    }
+    reader.readAsDataURL(rawFile)
   } else {
     pendingCoverFile.value = null
+    albumForm.coverImage = ''
   }
 }
 
