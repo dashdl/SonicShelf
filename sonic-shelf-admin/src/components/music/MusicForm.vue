@@ -607,7 +607,20 @@ watch(() => props.formData, (newFormData) => {
 
 // 监听对话框显示状态变化
 watch(dialogVisible, (newVisible) => {
-  if (!newVisible) {
+  if (newVisible) {
+    // 对话框打开时，确保内部musicForm与props.formData同步
+    Object.assign(musicForm, props.formData)
+    
+    // 初始化分类选择
+    if (props.formData.categories) {
+      const categoryIds = props.formData.categories.map(cat => cat.id)
+      selectedFormTagIds.value = [...categoryIds]
+    } else if (props.formData.categoryIds) {
+      selectedFormTagIds.value = [...props.formData.categoryIds]
+    } else {
+      selectedFormTagIds.value = []
+    }
+  } else {
     // 对话框关闭时重置表单
     resetForm()
   }
