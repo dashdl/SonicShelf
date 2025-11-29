@@ -16,7 +16,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits()
+const emit = defineEmits(['collect'])
 const userSelect = reactive({
   page: 1,
 })
@@ -27,6 +27,10 @@ const userSelected = (page) => {
 
 const loadMore = async () => {
 
+}
+
+const collect =(id)=>{
+  emit('collect',id)
 }
 
 const musics = ref([])
@@ -102,11 +106,13 @@ watch(() => props.keyword, async (newKeyword, oldKeyword) => {
         v-if="userSelect.page === 1"
         @user-select="userSelected"
         :keyword="keyword"
+        @collect="collect"
     />
     <InfiniteTable
         v-if="userSelect.page === 2"
         :load-more="loadMore"
-        :items="musics"/>
+        :items="musics"
+        @collect="collect"/>
     <PlaylistTable
         v-if="userSelect.page === 3"
         :keyword="keyword"/>

@@ -11,7 +11,11 @@ const props = defineProps({
     required: true
   },
 })
-const emit = defineEmits(["userSelect"])
+const emit = defineEmits(["userSelect",'collect'])
+
+const collect = (id)=>{
+  emit('collect',id)
+}
 
 const musics = ref([])
 const playlists = ref([])
@@ -64,6 +68,7 @@ onMounted(async () => {
       <MusicCard
           v-for="item in musics"
           :item="item"
+          @collect="collect"
       />
     </div>
     <div v-if="playlists.length>0" @click="userSelect(3)" class="separator-bar">

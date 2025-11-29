@@ -4,6 +4,7 @@ import {useRoute} from "vue-router";
 import {onMounted, reactive, ref, watch} from "vue";
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
+import router from "@/router/index.js";
 
 const route = useRoute();
 
@@ -14,6 +15,8 @@ const music = reactive({
   title: '',
   albumTitle: '',
   artistName: '',
+  artistId:null,
+  albumId:null,
 })
 
 watch(() => route.params.musicId, (newId, oldId) => {
@@ -26,6 +29,8 @@ watch(() => route.params.musicId, (newId, oldId) => {
 const loadMusic = async (id) => {
   const res = await request.get('musics/' + id)
   if (res.code === '200') {
+    music.albumId=res.data.artistId;
+    music.artistId=res.data.artistId;
     music.coverImage = res.data.coverImage;
     music.title = res.data.title;
     music.albumTitle = res.data.albumTitle;
@@ -53,8 +58,8 @@ const baseUrl = 'http://localhost:8080';
         <span>{{ music.title }}</span>
       </div>
       <div class="music-info">
-        <span style="margin-right: 20px">专辑：{{ music.albumTitle }}</span>
-        <span>歌手：{{ music.artistName }}</span>
+        <span @click="router.push(`/album/${music.albumId}`)" style="margin-right: 20px;cursor: pointer;">专辑：{{ music.albumTitle }}</span>
+        <span @click="router.push(`/artist/${music.artistId}`);" style="cursor: pointer;">歌手：{{ music.artistName }}</span>
       </div>
     </div>
   </div>

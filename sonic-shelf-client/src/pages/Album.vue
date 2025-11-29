@@ -9,6 +9,8 @@ import InfiniteTable from "@/components/list/InfiniteTable.vue";
 import Comment from "@/components/list/Comment.vue";
 import router from "@/router/index.js";
 
+const emit = defineEmits(['collect'])
+
 const route = useRoute()
 
 const album = reactive({
@@ -31,6 +33,10 @@ const userSelect = reactive({
 const musics = ref([])
 
 const commentCount = ref(0)
+
+const collect = (id) => {
+  emit('collect', id)
+}
 
 const replace = async () => {
   const playerStore = usePlayerStore();
@@ -174,7 +180,8 @@ const baseUrl = 'http://localhost:8080';
     <InfiniteTable
         v-if="userSelect.page===1"
         load-more=""
-        :items="musics"/>
+        :items="musics"
+        @collect="collect"/>
     <Comment
         v-if="userSelect.page===2"
         :target-id="route.params.id"

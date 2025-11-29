@@ -595,13 +595,18 @@ watch(() => props.formData, (newFormData) => {
   Object.assign(musicForm, newFormData)
   
   // 初始化分类选择
-  if (newFormData.categories) {
+  // 如果是添加音乐（id为空），重置标签选择
+  if (!newFormData.id) {
+    selectedFormTagIds.value = []
+    selectedFormTags.value = []
+  } else if (newFormData.categories) {
     const categoryIds = newFormData.categories.map(cat => cat.id)
     selectedFormTagIds.value = [...categoryIds]
   } else if (newFormData.categoryIds) {
     selectedFormTagIds.value = [...newFormData.categoryIds]
   } else {
     selectedFormTagIds.value = []
+    selectedFormTags.value = []
   }
 }, {deep: true, immediate: true})
 
@@ -612,13 +617,21 @@ watch(dialogVisible, (newVisible) => {
     Object.assign(musicForm, props.formData)
     
     // 初始化分类选择
-    if (props.formData.categories) {
+    // 如果是添加音乐（id为空），重置标签选择
+    if (!props.formData.id) {
+      selectedFormTagIds.value = []
+      selectedFormTags.value = []
+    } else if (props.formData.categories) {
+      // 如果是编辑音乐，从categories字段中提取标签ID
       const categoryIds = props.formData.categories.map(cat => cat.id)
       selectedFormTagIds.value = [...categoryIds]
     } else if (props.formData.categoryIds) {
+      // 或者从categoryIds字段中提取标签ID
       selectedFormTagIds.value = [...props.formData.categoryIds]
     } else {
+      // 默认重置标签选择
       selectedFormTagIds.value = []
+      selectedFormTags.value = []
     }
   } else {
     // 对话框关闭时重置表单
