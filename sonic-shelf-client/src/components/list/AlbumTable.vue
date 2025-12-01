@@ -13,17 +13,17 @@ const props = defineProps({
   }
 })
 
-const items =ref([])
+const items = ref([])
 
 const replace = async (id) => {
-  await request.get('playlists/' + id + '/musics').then(res => {
+  await request.get('album/' + id + '/musics').then(res => {
     const playerStore = usePlayerStore();
     playerStore.updatePlaylist(res.data)
     localStorage.setItem("playlist", JSON.stringify(res.data))
     playerStore.playSong(0)
-    playerStore.playlistId = id;
-    playerStore.isPlaylist = true;
-    localStorage.setItem("playlistId", id)
+    playerStore.playlistId = '';
+    playerStore.isPlaylist = false;
+    localStorage.setItem("playlistId", '')
     localStorage.setItem("isPlaylist", JSON.stringify(playerStore.isPlaylist))
   })
 }
@@ -58,18 +58,18 @@ const baseUrl = 'http://localhost:8080';
         </div>
       </div>
     </div>
-    <div @click="router.push(`/playlist/`+item.id);" v-for="(item,index) in items" class="table-row">
+    <div @click="router.push(`/album/`+item.id);" v-for="(item,index) in items" class="table-row">
       <div class="left-cell">
         <div class="rank-cell">
           <span id="rank" style="font-size: 12px">{{ index + 1 }}</span>
           <div class="play-button">
-            <img @click="replace(item.id)" src="/icons/player/play.svg" style="width: 20px;filter: brightness(0.4);"
+            <img @click.stop="replace(item.id)" src="/icons/player/play.svg" style="width: 20px;filter: brightness(0.4);"
                  alt="">
           </div>
         </div>
         <div class="title-cell">
           <div class="cover">
-            <img :src="baseUrl+item.coverImage||'/images/default/cover.png'"
+            <img :src="item.coverImage ? baseUrl+item.coverImage : '/images/default/cover.png'"
                  style="width: 50px;height: 50px;border-radius: 8px;margin-right: 12px;object-fit: cover;" alt="">
           </div>
           <div class="title">
@@ -160,7 +160,7 @@ span {
     align-items: center;
   }
 
-  .cover{
+  .cover {
     margin-right: 10px;
   }
 

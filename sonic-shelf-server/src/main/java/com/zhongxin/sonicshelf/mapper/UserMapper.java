@@ -6,6 +6,7 @@ import com.zhongxin.sonicshelf.dto.response.UserManageResponse;
 import com.zhongxin.sonicshelf.entity.User;
 import org.apache.ibatis.annotations.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -60,4 +61,7 @@ public interface UserMapper {
 
     @Update("update users set follower_count = #{count} where id = #{id}")
     void updateFollowerCount(Integer count, Long id);
+
+    @Update("update users set last_login_at = #{now} where username = #{username}")
+    void updateLoginTime(LocalDateTime now, String username);
 }

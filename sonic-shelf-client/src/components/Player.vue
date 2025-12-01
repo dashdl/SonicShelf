@@ -237,7 +237,7 @@ const resetRotation = () => {
   if (coverContent) {
     // 临时保存当前播放状态
     const wasPlaying = playerStore.isPlaying;
-    
+
     // 移除动画类
     coverContent.style.animation = 'none';
     // 强制重排
@@ -246,6 +246,21 @@ const resetRotation = () => {
     coverContent.style.animation = 'rotate 40s linear infinite';
     // 设置播放状态
     coverContent.style.animationPlayState = wasPlaying ? 'running' : 'paused';
+  }
+}
+
+const getPlayModeIcon = ()=>{
+  switch (playerStore.playMode) {
+    case 'sequence':
+      return '/icons/player/order.svg';
+    case 'loop':
+      return '/icons/player/repeatOne.svg';
+    case 'random':
+      return '/icons/player/shuffle.svg';
+    case 'listLoop':
+      return '/icons/player/repeatAll.svg';
+    default:
+      return '/icons/player/order.svg';
   }
 }
 
@@ -365,7 +380,13 @@ const baseUrl = 'http://localhost:8080';
           <img src="/icons/player/next.svg" style="height: 30px;" alt="">
         </div>
         <div class="menu-button">
-          <img src="/icons/player/order.svg" style="height: 18px" alt="">
+          <!--          <img src="/icons/player/order.svg" style="height: 18px" alt="">-->
+          <img
+              @click="playerStore.togglePlayMod()"
+              :src="getPlayModeIcon()"
+              style="width: 20px"
+              alt=""
+          >
         </div>
       </div>
       <div class="progress-container">
@@ -465,7 +486,6 @@ const baseUrl = 'http://localhost:8080';
 .info-container {
   height: 100%;
   margin-left: 10px;
-  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: end;
@@ -497,7 +517,7 @@ const baseUrl = 'http://localhost:8080';
 }
 
 .animation-scroll {
-  animation: scroll 10s linear infinite;
+  animation: scroll 20s linear infinite;
 }
 
 .title-content {
@@ -639,6 +659,7 @@ const baseUrl = 'http://localhost:8080';
   background-color: #e9eaec;
   border-radius: 3px;
   position: relative;
+  cursor: pointer;
 }
 
 .volume-progress {

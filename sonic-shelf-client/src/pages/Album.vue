@@ -1,7 +1,7 @@
 <script setup>
 
 import {useRoute} from "vue-router";
-import {onMounted, reactive, ref} from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import {usePlayerStore} from "@/store/player.js";
@@ -108,6 +108,12 @@ const initial = async () => {
   }
 
 }
+
+watch(() => route.params.id, (newId, oldId) => {
+  if (newId !== oldId) {
+    initial();
+  }
+});
 
 onMounted(() => {
   initial()

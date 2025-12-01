@@ -8,7 +8,7 @@ const player = usePlayerStore();
 
 const lyricMain = ref(null)
 
-const emit = defineEmits(['close', 'favorite', 'show', 'mouseenter', 'mouseleave','collect'])
+const emit = defineEmits(['close', 'favorite', 'show', 'mouseenter', 'mouseleave', 'collect'])
 
 const closeLyric = () => {
   emit('close')
@@ -51,6 +51,22 @@ const jumpToMusic = () => {
 //     }
 //   }
 // })
+
+
+const getPlayModeIcon = ()=>{
+  switch (player.playMode) {
+    case 'sequence':
+      return '/icons/player/order.svg';
+    case 'loop':
+      return '/icons/player/repeatOne.svg';
+    case 'random':
+      return '/icons/player/shuffle.svg';
+    case 'listLoop':
+      return '/icons/player/repeatAll.svg';
+    default:
+      return '/icons/player/order.svg';
+  }
+}
 
 watch(() => player.currentLyricIndex, (newIndex, oldIndex) => {
   if (newIndex >= 0 && newIndex < player.parsedLyrics.length && lyricMain.value) {
@@ -139,7 +155,12 @@ watch(() => player.currentLyricIndex, (newIndex, oldIndex) => {
           <img src="/icons/ui/next.svg" style="height: 30px;" alt="">
         </div>
         <div class="menu-button">
-          <img src="/icons/player/order.svg" style="height: 18px" alt="">
+          <img
+              @click="player.togglePlayMod()"
+              :src="getPlayModeIcon()"
+              style="width: 20px"
+              alt=""
+          >
         </div>
       </div>
       <div class="selection-container">
@@ -268,7 +289,7 @@ span {
   margin-right: 25px;
 }
 
-.button:hover{
+.button:hover {
   cursor: pointer;
 }
 
