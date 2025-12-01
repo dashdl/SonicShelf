@@ -24,6 +24,8 @@ export const usePlayerStore = defineStore('player', {
             recordId: 0,
             isPlaylist: false,
             playlistId: '',
+            playMode:'sequence',
+            randomHistory:[]
         }
     },
 
@@ -69,6 +71,7 @@ export const usePlayerStore = defineStore('player', {
 
             this.isPlaylist = localStorage.getItem("isPlaylist")
             this.playlistId = localStorage.getItem("playlistId")
+            this.playMode = localStorage.getItem('playMode') ? localStorage.getItem('playMode') : 'sequence';
             return this.audio;
         },
 
@@ -85,7 +88,16 @@ export const usePlayerStore = defineStore('player', {
             });
 
             this.audio.addEventListener('ended', () => {
-                this.next();
+                if (this.playMode === 'loop') {
+                    // 单曲循环，重新播放当前歌曲
+                    this.audio.currentTime = 0;
+                    this.audio.play().catch(error => {
+                        console.warn('播放需要用户交互:', error);
+                    });
+                } else {
+                    // 其他模式，调用 next() 方法
+                    this.next();
+                }
             });
 
             this.audio.addEventListener('volumechange', () => {
@@ -175,6 +187,13 @@ export const usePlayerStore = defineStore('player', {
             }
         },
 
+        togglePlayMod(){
+            const modes = ['sequence', 'loop', 'random', 'listLoop'];
+            const currentIndex = modes.indexOf(this.playMode);
+            this.playMode = modes[(currentIndex + 1) % modes.length];
+            localStorage.setItem('playMode', this.playMode);
+        },
+
         togglePlay() {
             if (this.audio) {
                 if (this.isPlaying) {
@@ -194,18 +213,85 @@ export const usePlayerStore = defineStore('player', {
         },
 
         next() {
-            if (this.currentPlaylist.length > 0) {
-                const nextIndex = (this.currentIndex + 1) % this.currentPlaylist.length;
-                this.playSong(nextIndex);
+
+            if (this.currentPlaylist.length === 0) return;
+
+            let nextIndex;
+
+            switch (this.playMode) {
+                case 'sequence':
+                    nextIndex = this.currentIndex + 1;
+                    if (nextIndex >= this.currentPlaylist.length) {
+                        // 顺序播放模式下，播放完最后一首后停止
+                        this.isPlaying = false;
+                        this.audio.pause();
+                        return;
+                    }
+                    break;
+
+                case 'loop':
+                    nextIndex = (this.currentIndex + 1) % this.currentPlaylist.length;
+                    break;
+
+                case 'random':
+                    // 随机播放，生成不重复的随机索引
+                    do {
+                        nextIndex = Math.floor(Math.random() * this.currentPlaylist.length);
+                    } while (nextIndex === this.currentIndex && this.currentPlaylist.length > 1);
+
+                    // 记录随机播放历史
+                    this.randomHistory.push(this.currentIndex);
+                    if (this.randomHistory.length > this.currentPlaylist.length) {
+                        this.randomHistory.shift();
+                    }
+                    break;
+
+                case 'listLoop':
+                    // 列表循环，播放完最后一首后回到第一首
+                    nextIndex = (this.currentIndex + 1) % this.currentPlaylist.length;
+                    break;
             }
+
+            // if (this.currentPlaylist.length > 0) {
+            //     const nextIndex = (this.currentIndex + 1) % this.currentPlaylist.length;
+            //     this.playSong(nextIndex);
+            // }
+            this.playSong(nextIndex);
             this.resetPlayTimer()
         },
 
         prev() {
-            if (this.currentPlaylist.length > 0) {
-                const prevIndex = this.currentIndex > 0 ? this.currentIndex - 1 : this.currentPlaylist.length - 1;
-                this.playSong(prevIndex);
+
+            if (this.currentPlaylist.length === 0) return;
+
+            let prevIndex;
+
+            switch (this.playMode) {
+                case 'sequence':
+                case 'listLoop':
+                    // 顺序播放和列表循环模式下，直接跳到上一首
+                    prevIndex = this.currentIndex > 0 ? this.currentIndex - 1 : this.currentPlaylist.length - 1;
+                    break;
+
+                case 'loop':
+                    prevIndex = this.currentIndex > 0 ? this.currentIndex - 1 : this.currentPlaylist.length - 1;
+                    break;
+
+                case 'random':
+                    // 随机播放模式下，从历史记录中获取上一首
+                    if (this.randomHistory.length > 0) {
+                        prevIndex = this.randomHistory.pop();
+                    } else {
+                        prevIndex = this.currentIndex;
+                    }
+                    break;
             }
+
+            // if (this.currentPlaylist.length > 0) {
+            //     const prevIndex = this.currentIndex > 0 ? this.currentIndex - 1 : this.currentPlaylist.length - 1;
+            //     this.playSong(prevIndex);
+            // }
+            this.playSong(prevIndex);
             this.resetPlayTimer()
         },
 

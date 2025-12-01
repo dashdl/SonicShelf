@@ -13,6 +13,19 @@ const getPlaylist = async () => {
   }
 }
 
+const timeState =()=> {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) {
+    return 'morning';
+  } else if (hour >= 12 && hour < 14) {
+    return 'noon';
+  } else if (hour >= 14 && hour < 18) {
+    return 'afternoon';
+  } else {
+    return 'evening';
+  }
+}
+
 onMounted(() => {
   getPlaylist()
   console.log("114514")
@@ -24,7 +37,10 @@ const baseUrl = 'http://localhost:8080';
 <template>
   <div class="might-container">
     <div class="hello">
-      <span style="font-size: 22px;font-weight: bold">下午好,</span>
+      <span v-if="timeState() === 'morning'" style="font-size: 22px;font-weight: bold">早上好,</span>
+      <span v-else-if="timeState() === 'noon'" style="font-size: 22px;font-weight: bold">中午好,</span>
+      <span v-else-if="timeState() === 'afternoon'" style="font-size: 22px;font-weight: bold">下午好,</span>
+      <span v-else style="font-size: 22px;font-weight: bold">晚上好,</span>
       <span>猜你最近喜欢听</span>
     </div>
     <div class="playlists">

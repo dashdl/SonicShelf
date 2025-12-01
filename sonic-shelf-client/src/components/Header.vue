@@ -157,7 +157,7 @@ onUnmounted(() => {
   border-radius: $radius;
   border: 1px solid #e4e8ec;
   align-items: center;
-
+  background: linear-gradient(to right, #eaf0fa, #f7eef6);
 }
 
 .search input {

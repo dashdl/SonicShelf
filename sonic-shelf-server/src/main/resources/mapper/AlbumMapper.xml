@@ -10,8 +10,8 @@
                am.music_count,
                am.release_date,
                am.description,
-               a.id as artist_id,
-               a.name as artist_name,
+               a.id          as artist_id,
+               a.name        as artist_name,
                a.cover_image as artist_cover
         from albums as am
                  join artists as a on am.artist_id = a.id
@@ -19,16 +19,16 @@
     </select>
     <select id="selectAlbumByIds" resultType="com.zhongxin.sonicshelf.dto.response.AlbumInfoResponse">
         select am.id,
-               am.title,
-               am.cover_image,
-               am.music_count,
-               am.release_date,
-               am.description,
-               a.id as artist_id,
-               a.name as artist_name,
-               a.cover_image as artist_cover
+        am.title,
+        am.cover_image,
+        am.music_count,
+        am.release_date,
+        am.description,
+        a.id as artist_id,
+        a.name as artist_name,
+        a.cover_image as artist_cover
         from albums as am
-                 join artists as a on am.artist_id = a.id
+        join artists as a on am.artist_id = a.id
         where am.id in
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
@@ -55,21 +55,21 @@
                 and am.title like concat('%', #{keyword}, '%')
             </if>
         </where>
-#         String keyword, Long artistId
+        # String keyword, Long artistId
     </select>
     <select id="selectAlbumManageResponseById" resultType="com.zhongxin.sonicshelf.dto.response.AlbumManageResponse">
         select am.id,
-        am.title,
-        am.artist_id,
-        a.name as artist_name,
-        am.release_date,
-        am.description,
-        am.cover_image,
-        am.music_count,
-        am.created_at,
-        am.updated_at
+               am.title,
+               am.artist_id,
+               a.name as artist_name,
+               am.release_date,
+               am.description,
+               am.cover_image,
+               am.music_count,
+               am.created_at,
+               am.updated_at
         from albums as am
-        join artists as a on am.artist_id = a.id
+                 join artists as a on am.artist_id = a.id
         where am.id = #{id}
     </select>
     <select id="selectAlbumsByKeyword" resultType="com.zhongxin.sonicshelf.dto.response.AlbumInfoResponse">
@@ -84,5 +84,9 @@
                  join artists as a on am.artist_id = a.id
         where am.title like concat('%', #{keyword}, '%')
            or a.name like concat('%', #{keyword}, '%')
+           OR EXISTS (SELECT 1
+                      FROM musics as m
+                      WHERE m.album_id = am.id
+                        AND m.title LIKE CONCAT('%', #{keyword}, '%'))
     </select>
 </mapper>

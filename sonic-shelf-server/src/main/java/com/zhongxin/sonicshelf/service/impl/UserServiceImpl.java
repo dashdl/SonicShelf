@@ -24,6 +24,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -65,8 +67,12 @@ public class UserServiceImpl implements UserService {
             throw new CustomException("1002", "账号或密码错误");
         }
 
+        if (tempUser.getStatus()==0) throw new CustomException("1003", "该账号已被禁用，请等待解禁");
+
         LoginResponse loginResponse = new LoginResponse(tempUser);
         loginResponse.setAccess_token(jwtUtil.generateToken(tempUser));
+
+        userMapper.updateLoginTime(LocalDateTime.now(),user.getUsername());
 
         return loginResponse;
     }
@@ -82,6 +88,7 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> responseMap = new LinkedHashMap<>();
         responseMap.put("access_token", jwtUtil.generateToken(userMapper.findByUsername(jwtUtil.getUsernameFromToken(token))));
         responseMap.put("expires_in", 3600);
+        userMapper.updateLoginTime(LocalDateTime.now(),CurrentUserUtil.getCurrentUser().getUsername());
         return responseMap;
     }
 
