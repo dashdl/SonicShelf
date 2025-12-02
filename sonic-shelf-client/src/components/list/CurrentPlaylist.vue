@@ -3,6 +3,7 @@
 import {usePlayerStore} from "@/store/player.js";
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const playerStore = usePlayerStore()
 
@@ -23,7 +24,7 @@ const formatTime = (seconds) => {
   return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -45,7 +46,7 @@ const baseUrl = 'http://localhost:8080';
     <div class="form-info">
       <div v-for="(item,index) in playerStore.currentPlaylist" class="list-item">
         <div @click="playerStore.playSong(index)" class="item-cover">
-          <img :src="baseUrl + item.coverImage||'/images/default/cover.png'"
+          <img :src="getFullUrl(item.coverImage)||'/images/default/cover.png'"
                style="height: 50px;width: 50px;border-radius: 5px" alt="">
           <img id="play" src="/icons/player/play.svg" style="height: 30px;" alt="">
         </div>

@@ -9,6 +9,7 @@ import {usePlayerStore} from "@/store/player.js";
 import router from "@/router/index.js";
 import Collectors from "@/components/list/Collectors.vue";
 import {useUserStore} from "@/store/userStore.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -139,12 +140,12 @@ onMounted(async () => {
 
 const coverImage = computed(() => {
   if (musicInfo.value.length > 0 && musicInfo.value[0].coverImage) {
-    return baseUrl + musicInfo.value[0].coverImage
+    return getFullUrl(musicInfo.value[0].coverImage)
   }
   return '/images/default/cover.png'
 })
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -161,7 +162,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div class="profile">
           <img id="profile" @click="router.push('/profile/'+userStore.getUserId)"
-               :src="userStore.getAvatar !== '/icons/user.svg' ? baseUrl+userStore.getAvatar : '/icons/user.svg'"
+               :src="userStore.getAvatar !== '/icons/user.svg' ? getFullUrl(userStore.getAvatar) : '/icons/user.svg'"
                style="width: 25px;height: 25px;border-radius: 23px;margin-right: 8px;"
                alt="">
           <span id="profile" @click="router.push('/profile/'+userStore.getUserId)"

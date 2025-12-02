@@ -2,6 +2,7 @@
 import {onMounted, ref} from "vue";
 import request from "@/utils/request.js";
 import router from "@/router/index.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const pageSize = ref(4);
 const items = ref([]);
@@ -30,7 +31,7 @@ onMounted(() => {
   getPlaylist()
 })
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -44,7 +45,7 @@ const baseUrl = 'http://localhost:8080';
     </div>
     <div class="playlists">
       <div @click="router.push(`/playlist/${item.id}`)" v-for="item in items" class="item-card">
-        <img :src="item.coverImage ? baseUrl + item.coverImage : '/images/default/cover.png'" alt="">
+        <img :src="item.coverImage ? getFullUrl(item.coverImage) : '/images/default/cover.png'" alt="">
       </div>
     </div>
   </div>

@@ -39,9 +39,9 @@ import UserPanel from "@/components/form/UserPanel.vue";
 import {onMounted, onUnmounted} from 'vue';
 import {useUserStore} from "@/store/userStore.js";
 import router from "@/router/index.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const userStore = useUserStore();
-const baseUrl = 'http://localhost:8080';
 
 let keyword = ref('')
 
@@ -49,7 +49,7 @@ const avatarUrl = computed(() => {
   if (userStore.getAvatar && userStore.getAvatar.startsWith('/icons/')) {
     return userStore.getAvatar;
   }
-  return baseUrl + userStore.getAvatar;
+  return getFullUrl(userStore.getAvatar);
 });
 
 const search = () => {

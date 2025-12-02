@@ -6,6 +6,7 @@ import {ElMessage} from "element-plus";
 import Lyric from "@/components/common/Lyric.vue";
 import router from "@/router/index.js";
 import CurrentPlaylist from "@/components/list/CurrentPlaylist.vue";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const playerStore = usePlayerStore();
 
@@ -319,7 +320,7 @@ const jumpToMusic = () => {
   })
 }
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -328,7 +329,7 @@ const baseUrl = 'http://localhost:8080';
       <div @click="showLyric" class="cover-content"
            :style="{ animationPlayState: playerStore.isPlaying ? 'running' : 'paused' }">
         <img
-            :src=" playerStore.currentPlaylist && playerStore.currentIndex >= 0 && playerStore.currentIndex < playerStore.currentPlaylist.length ? baseUrl + playerStore.currentPlaylist[playerStore.currentIndex].coverImage : '/images/default/cover.png'"
+            :src=" playerStore.currentPlaylist && playerStore.currentIndex >= 0 && playerStore.currentIndex < playerStore.currentPlaylist.length ? getFullUrl(playerStore.currentPlaylist[playerStore.currentIndex].coverImage) : '/images/default/cover.png'"
             style="height: 45px;border-radius: 23px" alt="">
       </div>
       <div class="info-container">

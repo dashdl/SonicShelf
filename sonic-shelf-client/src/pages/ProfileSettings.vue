@@ -3,6 +3,7 @@ import {onMounted, reactive, watch, ref, onUnmounted} from 'vue';
 import request from '@/utils/request.js';
 import {ElMessage} from 'element-plus';
 import {useUserStore} from "@/store/userStore.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const userStore = useUserStore();
 
@@ -312,10 +313,9 @@ onMounted(async () => {
     formData.avatar = userData.avatar || '';
 
     const avatarPath = formData.avatar;
-    const baseUrl = 'http://localhost:8080';
     const imgElement = document.getElementById('userAvatar');
     if (imgElement) {
-      imgElement.src = avatarPath ? baseUrl + avatarPath : '/images/default/avatar.jpg';
+      imgElement.src = avatarPath ? getFullUrl(avatarPath) : '/images/default/avatar.jpg';
     }
 });
 
@@ -450,7 +450,7 @@ onUnmounted(() => {
     <div class="avatar">
       <img
           id="userAvatar"
-          :src="avatarPreview || (formData.avatar ? 'http://localhost:8080' + formData.avatar : '/images/default/avatar.jpg')"
+          :src="avatarPreview || (formData.avatar ? getFullUrl(formData.avatar) : '/images/default/avatar.jpg')"
           style="width: 140px;height: 140px;cursor: pointer;"
           alt="点击上传头像"
           @click="triggerFileUpload"

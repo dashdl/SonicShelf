@@ -2,6 +2,7 @@
 import {onMounted, reactive} from "vue";
 import request from "@/utils/request.js";
 import router from "@/router/index.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const props = defineProps({
   targetType: {
@@ -44,13 +45,13 @@ onMounted(async () => {
   await loadCollectors();
 });
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
   <div class="collectors-container">
     <div @click="jump(item.id)" v-for="item in collectors.value" class="collector-card">
-      <img :src="baseUrl + item.avatar || '/images/default/avatar.jpg'"
+      <img :src="getFullUrl(item.avatar) || '/images/default/avatar.jpg'"
            style="margin-bottom: 18px;width: 77%;border-radius: 50%"
            alt="">
       <div class="nickname" style="display: flex">

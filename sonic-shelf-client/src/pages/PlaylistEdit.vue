@@ -3,6 +3,7 @@ import {onMounted, reactive, watch, ref, onUnmounted} from 'vue';
 import request from '@/utils/request.js';
 import {ElMessage} from 'element-plus';
 import {useRoute} from "vue-router";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const route = useRoute();
 
@@ -133,10 +134,9 @@ onMounted(async () => {
   }
 
   const coverPath = formData.coverImage;
-  const baseUrl = 'http://localhost:8080';
   const imgElement = document.getElementById('playlistCover');
   if (imgElement) {
-    imgElement.src = coverPath ? baseUrl + coverPath : '/images/default/avatar.jpg';
+    imgElement.src = coverPath ? getFullUrl(coverPath) : '/images/default/avatar.jpg';
   }
 
   request.get('categories').then((res) => {
@@ -265,7 +265,7 @@ onUnmounted(() => {
     <div class="avatar">
       <img
           id="playlistCover"
-          :src="avatarPreview || (formData.coverImage ? 'http://localhost:8080' + formData.coverImage : '/images/default/cover.jpg')"
+          :src="avatarPreview || (formData.coverImage ? getFullUrl(formData.coverImage) : '/images/default/cover.jpg')"
           alt="点击上传封面"
           @click="triggerFileUpload"
       >

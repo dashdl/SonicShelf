@@ -23,7 +23,7 @@ const createPlaylist = async () => {
   }
 }
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>

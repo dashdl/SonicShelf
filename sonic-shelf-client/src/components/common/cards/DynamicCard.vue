@@ -7,6 +7,7 @@ import {usePlayerStore} from "@/store/player.js";
 import router from "@/router/index.js";
 import {ref} from "vue";
 import {useUserStore} from "@/store/userStore.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const props = defineProps({
   item: Object,
@@ -86,7 +87,7 @@ const formatTime = (time) => {
   return time.substring(5, 10)
 }
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -97,7 +98,7 @@ const baseUrl = 'http://localhost:8080';
       删除
     </div>
     <div class="dynamic-header">
-      <img :src="item.avatar ? baseUrl + item.avatar : '/icons/user.svg'"
+      <img :src="item.avatar ? getFullUrl(item.avatar) : '/icons/user.svg'"
            style="margin-right: 10px;border-radius: 23px;height: 45px;width: 45px;"
            alt="">
       <div class="dynamic-user">
@@ -110,7 +111,7 @@ const baseUrl = 'http://localhost:8080';
     <span class="content">{{ item.content }}</span>
     <div class="dynamic-content">
       <div v-if="item.images.length>0" class="dynamic-img">
-        <img v-for="image in item.images" :src="image ? baseUrl + image : '/images/default/test.jpg'"
+        <img v-for="image in item.images" :src="image ? getFullUrl(image) : '/images/default/test.jpg'"
              style="height: 280px;width: 280px;object-fit: cover;border-radius: 5px;border: 2px solid #e4e8ec" alt="">
       </div>
     </div>
@@ -118,7 +119,7 @@ const baseUrl = 'http://localhost:8080';
       <div @click="handleClick" class="music-card">
         <div class="info">
           <div @click.stop="replace" class="cover">
-            <img id="cover" :src="item.coverImage ? baseUrl + item.coverImage : '/images/default/cover.png'"
+            <img id="cover" :src="item.coverImage ? getFullUrl(item.coverImage) : '/images/default/cover.png'"
                  alt="">
             <img id="playButton" src="/icons/player/play.svg" alt="">
           </div>

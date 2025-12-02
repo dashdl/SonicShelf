@@ -3,6 +3,7 @@
 import {onMounted, reactive, ref} from "vue";
 import request from "@/utils/request.js";
 import {usePlayerStore} from "@/store/player.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const emit = defineEmits(["back", "selected"])
 
@@ -55,7 +56,7 @@ const loadHistory = async () => {
 onMounted(() => {
   loadHistory()
 })
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -73,7 +74,7 @@ const baseUrl = 'http://localhost:8080';
            class="music-card">
         <div class="info">
           <div @click="" class="cover">
-            <img id="cover" :src="item.coverImage ? baseUrl + item.coverImage : '/images/default/cover.png'" alt="">
+            <img id="cover" :src="item.coverImage ? getFullUrl(item.coverImage) : '/images/default/cover.png'" alt="">
             <img @click="usePlayerStore().checkMusicId(item.id)" id="playButton" src="/icons/player/play.svg" alt="">
           </div>
           <div class="text">
@@ -102,7 +103,7 @@ const baseUrl = 'http://localhost:8080';
            class="music-card">
         <div class="info">
           <div @click="" class="cover">
-            <img id="cover" :src="item.coverImage ? baseUrl + item.coverImage : '/images/default/cover.png'" alt="">
+            <img id="cover" :src="item.coverImage ? getFullUrl(item.coverImage) : '/images/default/cover.png'" alt="">
             <img @click="usePlayerStore().checkMusicId(item.id)" id="playButton" src="/icons/player/play.svg" alt="">
           </div>
           <div class="text">
@@ -118,7 +119,7 @@ const baseUrl = 'http://localhost:8080';
            class="music-card">
         <div class="info">
           <div @click="" class="cover">
-            <img id="cover" :src="item.coverImage ? baseUrl + item.coverImage : '/images/default/cover.png'" alt="">
+            <img id="cover" :src="item.coverImage ? getFullUrl(item.coverImage) : '/images/default/cover.png'" alt="">
             <img id="playButton" src="/icons/player/play.svg" alt="">
           </div>
           <div class="text">

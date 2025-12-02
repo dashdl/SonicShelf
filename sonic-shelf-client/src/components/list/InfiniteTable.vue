@@ -5,6 +5,7 @@ import {ElMessage} from "element-plus";
 import {usePlayerStore} from "@/store/player.js";
 import router from "@/router/index.js";
 import InteractCard from "@/components/common/cards/InteractCard.vue";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const playerStore = usePlayerStore();
 
@@ -214,7 +215,7 @@ onUnmounted(() => {
   cleanupScrollListener();
 });
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -251,7 +252,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div class="title-cell">
           <div class="cover">
-            <img :src="baseUrl+item.coverImage||'/images/default/cover.png'"
+            <img :src="getFullUrl(item.coverImage)||'/images/default/cover.png'"
                  style="width: 50px;height: 50px;border-radius: 8px;margin-right: 12px;object-fit: cover;" alt="">
           </div>
           <div class="title">

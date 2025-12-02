@@ -3,6 +3,7 @@
 import router from "@/router/index.js";
 import request from "@/utils/request.js";
 import {usePlayerStore} from "@/store/player.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const props = defineProps({
   item: {
@@ -48,13 +49,13 @@ const replace = (id) => {
   }
 }
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
   <div @click.stop="jump" class="grid-item">
     <div v-if="type==='album'" class="record"></div>
-    <img :src="item.coverImage ? baseUrl + item.coverImage : '/images/default/cover.png'"
+    <img :src="item.coverImage ? getFullUrl(item.coverImage) : '/images/default/cover.png'"
          style="height: 100%;object-fit: cover;"
          alt="">
     <div class="background"></div>

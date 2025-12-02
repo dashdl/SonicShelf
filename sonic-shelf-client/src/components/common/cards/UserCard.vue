@@ -1,6 +1,7 @@
 <script setup>
 
 import router from "@/router/index.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const props = defineProps({
   item: {
@@ -22,12 +23,12 @@ const jump=()=>{
   }
 }
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
   <div @click="jump" class="user-card">
-    <img :src="props.type==='user' ? props.item.avatar ? baseUrl + props.item.avatar : '/icons/user.svg' : baseUrl + props.item.coverImage ? baseUrl + props.item.coverImage : '/icons/user.svg'"
+    <img :src="props.type==='user' ? props.item.avatar ? getFullUrl(props.item.avatar) : '/icons/user.svg' : getFullUrl(props.item.coverImage) ? getFullUrl(props.item.coverImage) : '/icons/user.svg'"
          style="margin-bottom: 18px;width: 77%;border-radius: 50%;object-fit: cover;aspect-ratio: 1 / 1;"
          alt="">
     <div class="nickname" style="display: flex">

@@ -8,6 +8,7 @@ import {usePlayerStore} from "@/store/player.js";
 import InfiniteTable from "@/components/list/InfiniteTable.vue";
 import Comment from "@/components/list/Comment.vue";
 import router from "@/router/index.js";
+import {getFullUrl} from '@/utils/urlConfig';
 
 const emit = defineEmits(['collect'])
 
@@ -119,14 +120,13 @@ onMounted(() => {
   initial()
 })
 
-const baseUrl = 'http://localhost:8080';
 </script>
 
 <template>
   <div class="album-container">
     <div class="profile-container">
       <div class="cover" style="position: relative;">
-        <img :src="album.coverImage ? baseUrl + album.coverImage :'/images/default/cover.png'"
+        <img :src="album.coverImage ? getFullUrl(album.coverImage) :'/images/default/cover.png'"
              style="position:relative;width: 220px;height: 220px;border-radius: 10px;margin-right: 40px;z-index: 2;"
              alt="">
         <div class="record"></div>
@@ -138,7 +138,7 @@ const baseUrl = 'http://localhost:8080';
         <div class="profile">
           <img @click="router.push('/artist/'+album.artistId)"
                id="artist"
-               :src="album.artistCover ? baseUrl + album.artistCover : '/images/default/avatar.jpg'"
+               :src="album.artistCover ? getFullUrl(album.artistCover) : '/images/default/avatar.jpg'"
                style="width: 25px;height: 25px;border-radius: 23px;margin-right: 8px;object-fit: cover"
                alt="">
           <span @click="router.push('/artist/'+album.artistId)"

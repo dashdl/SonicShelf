@@ -10,6 +10,7 @@ import {usePlayerStore} from "@/store/player.js";
 import router from "@/router/index.js";
 import Collectors from "@/components/list/Collectors.vue";
 import {useUserStore} from "@/store/userStore.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const userStore = useUserStore();
 
@@ -198,7 +199,7 @@ const goToEditPlaylist = () => {
   router.push(`/Playlist-edit/${currentId}`);
 }
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -209,7 +210,7 @@ const baseUrl = 'http://localhost:8080';
           <img src="/icons/content/headphone.svg" style="width: 15px" alt="">
           <span style="font-size: 12px;color: #ffffff;font-weight: bold;">{{ Info.playCount }}</span>
         </div>
-        <img :src="Info.coverImage!==null && Info.coverImage!=='' ? baseUrl + Info.coverImage : '/images/default/cover.png'"
+        <img :src="Info.coverImage!==null && Info.coverImage!=='' ? getFullUrl(Info.coverImage) : '/images/default/cover.png'"
              style="width: 195px;height: 195px;border-radius: 10px;margin-right: 40px"
              alt="">
       </div>
@@ -226,7 +227,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div class="profile">
           <img id="profile" @click="router.push('/profile/'+Info.userId)"
-               :src="baseUrl+Info.userAvatar||'/images/default/avatar.jpg'"
+               :src="getFullUrl(Info.userAvatar)||'/images/default/avatar.jpg'"
                style="width: 25px;height: 25px;border-radius: 23px;margin-right: 8px;"
                alt="">
           <span id="profile" @click="router.push('/profile/'+Info.userId)"

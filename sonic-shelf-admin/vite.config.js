@@ -26,7 +26,6 @@ export default defineConfig({
         importStyle: 'scss',
         directives: true,
         version: '^2.1.0',
-        // 添加图标自动导入
         importIcons: true
       })],
     }),

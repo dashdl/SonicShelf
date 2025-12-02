@@ -5,6 +5,7 @@ import router from "@/router/index.js";
 import {useRoute} from "vue-router";
 import {useUserStore} from "@/store/userStore.js";
 import CreatePlaylist from "@/components/form/CreatePlaylist.vue";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const props = defineProps({
   userPlaylist: {
@@ -84,7 +85,7 @@ const userItems = [
     key: 'my-collect'
   },
 ]
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -127,7 +128,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div v-if="playlistShow.creat" v-for="item in userPlaylist" @click="goToPlaylist(item.id)"
              class="playlist-item">
-          <img :src="item.coverImage !== null ? baseUrl + item.coverImage : '/images/default/cover.png'"
+          <img :src="item.coverImage !== null ? getFullUrl(item.coverImage) : '/images/default/cover.png'"
                style="margin-right: 8px;width: 35px;height: 35px;border-radius: 5px"
                alt="">
           <span>{{ item.title }}</span>
@@ -146,7 +147,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div v-if="playlistShow.favorite" v-for="item in favoritePlaylist" @click="goToPlaylist(item.id)"
              class="playlist-item">
-          <img :src="item.coverImage !== null ? baseUrl + item.coverImage : '/images/default/cover.png'"
+          <img :src="item.coverImage !== null ? getFullUrl(item.coverImage) : '/images/default/cover.png'"
                style="margin-right: 8px;width: 35px;height: 35px;border-radius: 5px"
                alt="">
           <span>{{ item.title }}</span>

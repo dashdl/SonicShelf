@@ -8,6 +8,7 @@ import {ElMessage} from "element-plus";
 import GridList from "@/components/list/GridList.vue";
 import {usePlayerStore} from "@/store/player.js";
 import router from "@/router/index.js";
+import {getFullUrl} from '@/utils/urlConfig';
 
 const route = useRoute();
 
@@ -159,18 +160,14 @@ const jump = () => {
   } else {
     ElMessage.warning("该歌手还未注册平台账户")
   }
-
-
 }
 
-
-const baseUrl = 'http://localhost:8080';
 </script>
 
 <template>
   <div class="artist-container">
     <div class="profile-container">
-      <img :src="artist.coverImage ? baseUrl + artist.coverImage : '/images/default/avatar.jpg'"
+      <img :src="artist.coverImage ? getFullUrl(artist.coverImage) : '/images/default/avatar.jpg'"
            style="width: 200px;height: 200px;border-radius: 100px;margin-right: 40px;object-fit: cover;aspect-ratio: 1 / 1;"
            alt="">
       <div class="profile-content">

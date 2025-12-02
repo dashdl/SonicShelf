@@ -3,6 +3,7 @@ import {ref, onMounted} from 'vue'
 import router from "@/router/index.js";
 import request from "@/utils/request.js";
 import {usePlayerStore} from "@/store/player.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const props = defineProps({
   item: {
@@ -119,7 +120,7 @@ onMounted(() => {
   }
 })
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -139,7 +140,7 @@ const baseUrl = 'http://localhost:8080';
     <img @click.stop="replace" id="playButton" src="/icons/player/play.svg" alt="">
     <div class="title-background" ref="titleBackground"/>
     <img id="background" ref="backgroundImg"
-         :src="item.coverImage ? baseUrl+item.coverImage : '/images/default/cover.png'"
+         :src="item.coverImage ? getFullUrl(item.coverImage) : '/images/default/cover.png'"
          style="height: 100%;object-fit: cover"
          crossorigin="anonymous"
          alt="">

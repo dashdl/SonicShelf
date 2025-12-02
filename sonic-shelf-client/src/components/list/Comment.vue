@@ -4,6 +4,7 @@ import {onMounted, reactive, ref, watch} from "vue";
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import {useUserStore} from "@/store/userStore.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const user = useUserStore();
 
@@ -141,7 +142,7 @@ watch(() => [props.targetId, props.targetType], ([newId, newType], [oldId, oldTy
   }
 }, {immediate: false, deep: false});
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -163,7 +164,7 @@ const baseUrl = 'http://localhost:8080';
     <div class="comment-list">
       <div class="title">精彩评论</div>
       <div class="comment-item" v-for="item in comments" :key="item.id">
-        <img :src="baseUrl + item.avatar ||'/images/default/avatar.jpg'"
+        <img :src="getFullUrl(item.avatar) ||'/images/default/avatar.jpg'"
              style="margin-right: 15px;border-radius: 23px;height: 45px;width: 45px;object-fit: cover"
              alt="">
         <div class="comment-text">

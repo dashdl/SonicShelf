@@ -1,6 +1,7 @@
 // stores/playerStore.js
 import {defineStore} from 'pinia'
 import request from "@/utils/request.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 export const usePlayerStore = defineStore('player', {
     state: () => {
@@ -53,7 +54,7 @@ export const usePlayerStore = defineStore('player', {
                     now = JSON.parse(nowPlayingData);
                 }
                 if (this.currentPlaylist.length > 0 && now >= 0 && now < this.currentPlaylist.length) {
-                    this.audio.src = 'http://localhost:8080' + this.currentPlaylist[now].fileUrl;
+                    this.audio.src = getFullUrl(this.currentPlaylist[now].fileUrl);
                     this.currentIndex = now;
                     this.currentTitle = this.currentPlaylist[now].title || '未知歌曲';
                     this.currentName = this.currentPlaylist[now].artistName || '未知艺术家';
@@ -167,7 +168,7 @@ export const usePlayerStore = defineStore('player', {
                     this.currentTitle = song.title || '未知歌曲';
                     this.currentName = song.artistName || '未知艺术家';
 
-                    this.audio.src = 'http://localhost:8080' + (song.fileUrl || '');
+                    this.audio.src = getFullUrl(song.fileUrl || '');
 
                     await this.fetchLyric(song.id);
 

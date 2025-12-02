@@ -5,6 +5,7 @@ import {onMounted, reactive, ref, watch} from "vue";
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
 import router from "@/router/index.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const route = useRoute();
 
@@ -44,13 +45,13 @@ onMounted(() => {
   loadMusic(id.value)
 })
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
   <div class="music-container">
     <div class="cover">
-      <img :src="music.coverImage ? baseUrl + music.coverImage : '/images/default/music.jpg'"
+      <img :src="music.coverImage ? getFullUrl(music.coverImage) : '/images/default/music.jpg'"
            style="height: 65px;width: 65px;object-fit: cover" alt="">
     </div>
     <div class="info-container">

@@ -6,6 +6,7 @@ import {usePlayerStore} from "@/store/player.js";
 import InteractCard from "@/components/common/cards/InteractCard.vue";
 import {ref, watch} from "vue";
 import router from "@/router/index.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const player = usePlayerStore();
 
@@ -64,14 +65,14 @@ const collect = (id) => {
   emit("collect", id);
 }
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
   <div class="music-card" @mouseleave="hideInteractCard">
     <div class="info">
       <div @click="player.checkMusicId(props.item.id)" class="cover">
-        <img id="cover" :src="props.item.coverImage ? baseUrl + props.item.coverImage : '/images/default/cover.png'"
+        <img id="cover" :src="props.item.coverImage ? getFullUrl(props.item.coverImage) : '/images/default/cover.png'"
              alt="">
         <img id="playButton" src="/icons/player/play.svg" alt="">
       </div>

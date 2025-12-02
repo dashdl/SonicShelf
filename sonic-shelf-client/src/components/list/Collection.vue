@@ -1,4 +1,6 @@
 <script setup>
+import { getFullUrl } from '@/utils/urlConfig';
+
 const props = defineProps({
   userPlaylist: {
     type: Array
@@ -10,8 +12,6 @@ const emit = defineEmits(['selectedPlaylist', 'closeCollection'])
 const handleClick = (id) => {
   emit('selectedPlaylist', id)
 }
-
-const baseUrl = 'http://localhost:8080';
 </script>
 
 <template>
@@ -34,7 +34,7 @@ const baseUrl = 'http://localhost:8080';
       </div>
       <div v-for="item in props.userPlaylist" @click="handleClick(item.id)" class="playlist-item">
         <div class="cover">
-          <img :src="item.coverImage ? baseUrl + item.coverImage : '/images/default/cover.png'"
+          <img :src="item.coverImage ? getFullUrl(item.coverImage) : '/images/default/cover.png'"
                style="height: 50px;width: 50px;object-fit: cover" alt="">
         </div>
         <div class="text">

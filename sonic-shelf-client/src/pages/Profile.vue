@@ -8,6 +8,7 @@ import request from "@/utils/request.js";
 import {useRoute} from 'vue-router';
 import {useUserStore} from "@/store/userStore.js";
 import Dynamic from "@/pages/Dynamic.vue";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const route = useRoute();
 const userStore = useUserStore()
@@ -268,13 +269,13 @@ const follow = async () => {
   }
 }
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
   <div class="main-container">
     <div class="profile-container">
-      <img :src="userInfo.avatar ? baseUrl + userInfo.avatar : '/icons/user.svg'"
+      <img :src="userInfo.avatar ? getFullUrl(userInfo.avatar) : '/icons/user.svg'"
            style="width: 200px;height: 200px;border-radius: 100px;margin-right: 40px;object-fit: cover;aspect-ratio: 1 / 1;"
            alt="">
       <div class="profile-content">

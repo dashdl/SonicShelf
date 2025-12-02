@@ -5,6 +5,7 @@ import request from "@/utils/request.js";
 import {usePlayerStore} from "@/store/player.js";
 import PlaylistTable from "@/components/list/PlaylistTable.vue";
 import {onMounted, ref} from "vue";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const props = defineProps({
   keyword: {
@@ -35,7 +36,7 @@ onMounted(async () => {
   }
 })
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -71,7 +72,7 @@ const baseUrl = 'http://localhost:8080';
         <div class="title-cell">
           <div class="record"></div>
           <div class="cover" style="z-index: 1">
-            <img :src="item.coverImage ? baseUrl+item.coverImage : '/images/default/cover.png'"
+            <img :src="item.coverImage ? getFullUrl(item.coverImage) : '/images/default/cover.png'"
                  style="width: 50px;height: 50px;border-radius: 8px;margin-right: 12px;object-fit: cover;" alt="">
           </div>
           <div class="title">

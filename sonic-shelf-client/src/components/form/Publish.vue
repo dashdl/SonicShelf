@@ -4,6 +4,7 @@ import AddMusic from "@/components/form/AddMusic.vue";
 import {ref} from "vue";
 import request from "@/utils/request.js";
 import {ElMessage} from "element-plus";
+import { getFullUrl } from '@/utils/urlConfig';
 
 const showAddForm = ref(false);
 const coverImage = ref('');
@@ -145,7 +146,7 @@ const publish = async () => {
   emit('close');
 }
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -159,7 +160,7 @@ const baseUrl = 'http://localhost:8080';
       <div @click="showAddForm=true" class="add-content">
         <div class="add-button">
           <img v-if="coverImage===''" src="/icons/ui/addMusic.svg" height="20px" alt="">
-          <img v-else :src="baseUrl + coverImage" style="height: 38px;width: 38px;object-fit: cover;border-radius: 5px"
+          <img v-else :src="getFullUrl(coverImage)" style="height: 38px;width: 38px;object-fit: cover;border-radius: 5px"
                alt="">
         </div>
         <span v-if="type==='' && id===0">给笔记配上音乐</span>

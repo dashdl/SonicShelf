@@ -1,6 +1,7 @@
 <script setup>
 
 import router from "@/router/index.js";
+import { getFullUrl } from '@/utils/urlConfig';
 
 defineProps({
   info: [{
@@ -18,7 +19,7 @@ const goToPlaylist = (playlistId) => {
   router.push(`/playlist/${playlistId}`);
 };
 
-const baseUrl = 'http://localhost:8080';
+
 </script>
 
 <template>
@@ -52,7 +53,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div class="title-cell">
           <div class="cover">
-            <img :src="item.coverImage ? baseUrl+item.coverImage : '/images/default/cover.png'"
+            <img :src="item.coverImage ? getFullUrl(item.coverImage) : '/images/default/cover.png'"
                  style="width: 50px;height: 50px;border-radius: 8px;margin-right: 10px;object-fit: cover;" alt="">
           </div>
           <div class="title">
