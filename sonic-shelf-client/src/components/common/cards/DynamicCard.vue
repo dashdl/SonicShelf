@@ -60,7 +60,7 @@ const handleLike = (id, like) => {
 }
 const handleClick = () => {
   if (props.item.type === "music") {
-    usePlayerStore().checkMusicId(props.item.targetId)
+    router.push(`/music/${props.item.targetId}`)
   } else if (props.item.type === "playlist") {
     router.push(`/playlist/${props.item.targetId}`)
   }

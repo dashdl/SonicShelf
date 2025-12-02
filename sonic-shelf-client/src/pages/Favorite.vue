@@ -160,11 +160,11 @@ const baseUrl = 'http://localhost:8080';
           <span style="margin-top: -5px; margin-right: 8px;font-size: 24px;font-weight: bold;">我喜欢的音乐</span>
         </div>
         <div class="profile">
-          <img id="profile" @click="router.push('/profile/'+Info.userId)"
+          <img id="profile" @click="router.push('/profile/'+userStore.getUserId)"
                :src="userStore.getAvatar !== '/icons/user.svg' ? baseUrl+userStore.getAvatar : '/icons/user.svg'"
                style="width: 25px;height: 25px;border-radius: 23px;margin-right: 8px;"
                alt="">
-          <span id="profile" @click="router.push('/profile/'+Info.userId)"
+          <span id="profile" @click="router.push('/profile/'+userStore.getUserId)"
                 style="font-size: 13px;color: #7b818f;margin-right: 12px">
             {{ userStore.getNickname }}
           </span>
