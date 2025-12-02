@@ -29,12 +29,23 @@ const jump = () => {
 
 const replace = (id) => {
   const type = props.type === "album" ? "album" : "playlists";
+  const playerStore = usePlayerStore();
   request.get(type + '/' + id + '/musics').then(res => {
-    const playerStore = usePlayerStore();
     playerStore.updatePlaylist(res.data)
     localStorage.setItem("playlist", JSON.stringify(res.data))
     playerStore.playSong(0)
   })
+  if (type === 'playlists') {
+    playerStore.playlistId = id;
+    playerStore.isPlaylist = true;
+    localStorage.setItem("playlistId", id)
+    localStorage.setItem("isPlaylist", JSON.stringify(playerStore.isPlaylist))
+  }else {
+    playerStore.playlistId = '';
+    playerStore.isPlaylist = false;
+    localStorage.setItem("playlistId", '')
+    localStorage.setItem("isPlaylist", JSON.stringify(playerStore.isPlaylist))
+  }
 }
 
 const baseUrl = 'http://localhost:8080';
@@ -51,7 +62,7 @@ const baseUrl = 'http://localhost:8080';
       <img @click.stop="replace(item.id)" src="/icons/player/play.svg" style="width: 40px" alt="">
     </div>
     <div class="info">
-      <span style="color: #333333;font-size: 14px;margin-bottom: -2px">{{ item.title }}</span>
+      <span id="title">{{ item.title }}</span>
       <div class="details" style="height: 18px">
         <span v-if="type !== 'collectAlbum' && !showArtist" style="color: #888888;font-size: 12px">
           {{ item.musicCount }}首</span>
@@ -74,6 +85,7 @@ const baseUrl = 'http://localhost:8080';
 
 <style scoped>
 .grid-item {
+  user-select: none;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -134,11 +146,23 @@ const baseUrl = 'http://localhost:8080';
 }
 
 .info {
+  width: calc(100% - 20px);
   display: flex;
   flex-direction: column;
   position: absolute;
   bottom: 3px;
   left: 10px;
+}
+
+#title {
+  width: 100%;
+  color: #333333;
+  font-size: 14px;
+  margin-bottom: -2px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .headphone {

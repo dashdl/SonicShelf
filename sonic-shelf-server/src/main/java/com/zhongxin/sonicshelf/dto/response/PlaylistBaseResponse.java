@@ -10,4 +10,5 @@ public class PlaylistBaseResponse {
     private String creatorName;
     private String coverImage;
     private Integer musicCount;
+    private Integer playCount;
 }

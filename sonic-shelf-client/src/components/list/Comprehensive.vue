@@ -1,7 +1,7 @@
 <script setup>
 import MusicCard from "@/components/common/cards/MusicCard.vue";
 import request from "@/utils/request.js";
-import {onMounted, ref, watch} from "vue";
+import {onMounted, onUnmounted, ref, watch} from "vue";
 import GridCard from "@/components/common/cards/GridCard.vue";
 import UserCard from "@/components/common/cards/UserCard.vue";
 
@@ -11,10 +11,10 @@ const props = defineProps({
     required: true
   },
 })
-const emit = defineEmits(["userSelect",'collect'])
+const emit = defineEmits(["userSelect", 'collect'])
 
-const collect = (id)=>{
-  emit('collect',id)
+const collect = (id) => {
+  emit('collect', id)
 }
 
 const musics = ref([])
@@ -22,31 +22,48 @@ const playlists = ref([])
 const albums = ref([])
 const artists = ref([])
 const users = ref([])
+const pageSize = ref(0)
 
 const search = async () => {
   let res = await request.get('search/musics', {params: {pageNum: 1, pageSize: 6, keyword: props.keyword}})
   if (res.code === '200') {
     musics.value = res.data.list
   }
-  res = await request.get('search/playlists', {params: {pageNum: 1, pageSize: 6, keyword: props.keyword}})
+  res = await request.get('search/playlists', {params: {pageNum: 1, pageSize: pageSize.value, keyword: props.keyword}})
   if (res.code === '200') {
     playlists.value = res.data.list
   }
-  res = await request.get('search/albums', {params: {pageNum: 1, pageSize: 6, keyword: props.keyword}})
+  res = await request.get('search/albums', {params: {pageNum: 1, pageSize: pageSize.value, keyword: props.keyword}})
   if (res.code === '200') {
     albums.value = res.data.list
   }
-  res = await request.get('search/artists', {params: {pageNum: 1, pageSize: 6, keyword: props.keyword}})
+  res = await request.get('search/artists', {params: {pageNum: 1, pageSize: pageSize.value, keyword: props.keyword}})
   if (res.code === '200') {
     artists.value = res.data.list
   }
-  res = await request.get('search/users', {params: {pageNum: 1, pageSize: 6, keyword: props.keyword}})
+  res = await request.get('search/users', {params: {pageNum: 1, pageSize: pageSize.value, keyword: props.keyword}})
   if (res.code === '200') {
     users.value = res.data.list
   }
 }
 
+const updatePageSize = () => {
+  const width = window.innerWidth
+  let newPageSize;
+  if (width < 1200) {
+    pageSize.value = 4
+  } else if (width < 1440) {
+    pageSize.value = 5
+  } else {
+    pageSize.value = 6
+  }
+  if (newPageSize !== pageSize.value) {
+    search()
+  }
+}
+
 watch(() => props.keyword, async (newKeyword, oldKeyword) => {
+  updatePageSize()
   await search()
 })
 
@@ -54,7 +71,12 @@ const userSelect = (page) => {
   emit("userSelect", page)
 }
 onMounted(async () => {
+  updatePageSize()
   await search()
+  window.addEventListener('resize', updatePageSize)
+})
+onUnmounted(() => {
+  window.removeEventListener('resize', updatePageSize)
 })
 </script>
 
@@ -122,9 +144,10 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.search-comprehensive{
+.search-comprehensive {
   margin-bottom: 10px;
 }
+
 .separator-bar {
   margin: 15px 0;
   display: flex;

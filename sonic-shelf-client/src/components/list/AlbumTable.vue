@@ -63,12 +63,14 @@ const baseUrl = 'http://localhost:8080';
         <div class="rank-cell">
           <span id="rank" style="font-size: 12px">{{ index + 1 }}</span>
           <div class="play-button">
-            <img @click.stop="replace(item.id)" src="/icons/player/play.svg" style="width: 20px;filter: brightness(0.4);"
+            <img @click.stop="replace(item.id)" src="/icons/player/play.svg"
+                 style="width: 20px;filter: brightness(0.4);"
                  alt="">
           </div>
         </div>
         <div class="title-cell">
-          <div class="cover">
+          <div class="record"></div>
+          <div class="cover" style="z-index: 1">
             <img :src="item.coverImage ? baseUrl+item.coverImage : '/images/default/cover.png'"
                  style="width: 50px;height: 50px;border-radius: 8px;margin-right: 12px;object-fit: cover;" alt="">
           </div>
@@ -155,20 +157,27 @@ span {
 
   .title-cell {
     position: relative;
+    width: calc(100% - 50px);
     display: flex;
     flex-grow: 1;
     align-items: center;
-  }
 
-  .cover {
-    margin-right: 10px;
+    .record {
+      position: absolute;
+      top: 3px;
+      left: 0;
+      width: 50px;
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      background-color: #0d0d0d;
+    }
   }
 
   .title {
     padding-right: 20px;
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: calc(100% - 62px);
 
     span {
       font-size: 16px;

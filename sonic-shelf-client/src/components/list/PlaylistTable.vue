@@ -12,7 +12,7 @@ const props = defineProps({
   }
 })
 
-const items =ref([])
+const items = ref([])
 
 const replace = async (id) => {
   await request.get('playlists/' + id + '/musics').then(res => {
@@ -71,7 +71,7 @@ const baseUrl = 'http://localhost:8080';
         </div>
         <div class="title-cell">
           <div class="cover">
-            <img :src="baseUrl+item.coverImage||'/images/default/cover.png'"
+            <img :src="item.coverImage ? baseUrl+item.coverImage : '/images/default/cover.png'"
                  style="width: 50px;height: 50px;border-radius: 8px;margin-right: 12px;object-fit: cover;" alt="">
           </div>
           <div class="title">
@@ -84,7 +84,9 @@ const baseUrl = 'http://localhost:8080';
           <span>{{ item.musicCount }}首</span>
         </div>
         <div class="creator-cell">
-          <span @click.stop="router.push('/profile/'+item.userId)" style="cursor: pointer">{{ item.nickname }}</span>
+          <span @click.stop="router.push('/profile/'+item.creatorId)" style="cursor: pointer">{{
+              item.creatorName
+            }}</span>
         </div>
         <div class="playCount-cell">
           <span>{{ item.playCount }}</span>
@@ -160,20 +162,17 @@ span {
 
   .title-cell {
     position: relative;
+    width: calc(100% - 50px);
     display: flex;
     flex-grow: 1;
     align-items: center;
-  }
-
-  .cover{
-    margin-right: 10px;
   }
 
   .title {
     padding-right: 20px;
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: calc(100% - 62px);
 
     span {
       font-size: 16px;
@@ -185,7 +184,6 @@ span {
       line-height: 1.4;
       max-height: 2.8em; /* 1.4 * 2 */
     }
-
   }
 }
 

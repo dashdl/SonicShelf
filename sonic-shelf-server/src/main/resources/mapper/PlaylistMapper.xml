@@ -141,11 +141,18 @@
                p.cover_image,
                u.nickname as creator_name,
                u.id       as creatorId,
-               p.music_count
+               p.music_count,
+               p.play_count
         FROM playlists p
                  LEFT JOIN users u ON p.user_id = u.id
-        WHERE u.nickname like concat('%', #{keyword}, '%')
-           or p.title like concat('%', #{keyword}, '%')
+        WHERE (u.nickname like concat('%', #{keyword}, '%')
+            or p.title like concat('%', #{keyword}, '%')
+            or EXISTS (SELECT 1
+                       FROM playlist_musics pm
+                                LEFT JOIN musics m ON pm.music_id = m.id
+                       WHERE pm.playlist_id = p.id
+                         AND m.title LIKE CONCAT('%', #{keyword}, '%')))
+          and p.is_public != 0
     </select>
     <select id="selectAsCard" resultType="com.zhongxin.sonicshelf.dto.response.PlaylistBaseResponse">
         select id,
