@@ -13,7 +13,7 @@ const getPlaylist = async () => {
   }
 }
 
-const timeState =()=> {
+const timeState = () => {
   const hour = new Date().getHours();
   if (hour >= 5 && hour < 12) {
     return 'morning';
@@ -28,7 +28,6 @@ const timeState =()=> {
 
 onMounted(() => {
   getPlaylist()
-  console.log("114514")
 })
 
 const baseUrl = 'http://localhost:8080';
@@ -76,5 +75,17 @@ const baseUrl = 'http://localhost:8080';
   display: grid;
   column-gap: 12px;
   grid-template-columns: repeat(4, minmax(80px, 1fr));
+}
+
+@media (min-width: 1200px) {
+  .might-container {
+    padding: 20px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .might-container {
+    padding: 25px;
+  }
 }
 </style>
