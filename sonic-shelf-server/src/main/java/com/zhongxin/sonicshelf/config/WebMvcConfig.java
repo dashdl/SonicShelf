@@ -19,13 +19,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .maxAge(3600);  // 预检请求的有效期，单位秒
 
         registry.addMapping("/uploads/**")
-                .allowedOrigins("http://localhost:5173")  // 明确指定前端地址
+                .allowedOrigins("http://localhost:5173", "http://192.168.111.131:5173")  // 明确指定前端地址
                 .allowedMethods("GET", "OPTIONS")  // 静态资源主要是 GET 请求
                 .allowedHeaders("*")
                 .allowCredentials(false)
                 .maxAge(3600);
         registry.addMapping("/uploads/**")
-                .allowedOrigins("http://localhost:5174")  // 明确指定前端地址
+                .allowedOrigins("http://localhost:5174", "http://192.168.111.131:5174")  // 明确指定前端地址
                 .allowedMethods("GET", "OPTIONS")  // 静态资源主要是 GET 请求
                 .allowedHeaders("*")
                 .allowCredentials(false)

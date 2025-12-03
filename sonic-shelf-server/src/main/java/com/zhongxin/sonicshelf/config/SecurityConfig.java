@@ -37,7 +37,7 @@ public class SecurityConfig {
                         // 公开接口（登录、注册等）
                         .requestMatchers("/api/v1/auth/**", "/public/**", "/uploads/**", "/songs/**", "/cover/**", "/music/**",
                                 "/api/v1/search/**", "/api/v1/playlists/recommend-card", "/api/v1/playlists/recommend-guest",
-                        "/api/v1/musics/guest").permitAll()
+                                "/api/v1/musics/guest").permitAll()
                         // 静态资源
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
                         // Swagger文档
@@ -76,7 +76,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:5174"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173",
+                "http://localhost:5174",
+                "http://192.168.111.131",
+                "http://192.168.111.131:5173",
+                "http://192.168.111.131:5174"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
