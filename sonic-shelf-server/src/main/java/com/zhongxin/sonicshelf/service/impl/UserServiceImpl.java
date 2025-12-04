@@ -8,6 +8,7 @@ import com.zhongxin.sonicshelf.entity.User;
 import com.zhongxin.sonicshelf.exception.AuthException;
 import com.zhongxin.sonicshelf.exception.CustomException;
 import com.zhongxin.sonicshelf.mapper.ArtistMapper;
+import com.zhongxin.sonicshelf.mapper.DynamicMapper;
 import com.zhongxin.sonicshelf.mapper.FollowMapper;
 import com.zhongxin.sonicshelf.mapper.UserMapper;
 import com.zhongxin.sonicshelf.service.ArtistService;
@@ -39,6 +40,8 @@ public class UserServiceImpl implements UserService {
     JwtUtil jwtUtil;
     @Autowired
     private FollowMapper followMapper;
+    @Autowired
+    private DynamicMapper dynamicMapper;
 
     @Override
     public RegisterResponse register(RegisterRequest registerRequest) {
@@ -97,7 +100,7 @@ public class UserServiceImpl implements UserService {
         UserProfileResponse userProfileResponse;
 
         userProfileResponse = new UserProfileResponse(userMapper.findByUsername(jwtUtil.getUsernameFromToken(token)));
-
+        userProfileResponse.setDynamicCount(dynamicMapper.countDynamicCountByUserId(CurrentUserUtil.getCurrentUserId()));
         return userProfileResponse;
     }
 

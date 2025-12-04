@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongxin.sonicshelf.mapper.FollowMapper">
+    <resultMap id="FollowingResponseMap" type="com.zhongxin.sonicshelf.dto.response.FollowingResponse">
+        <result property="description" column="description"/>
+        <result property="coverImage" column="cover_image"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+    </resultMap>
+
+    <select id="selectFollowingByUserId" resultMap="FollowingResponseMap">
+        select u.id,
+               u.bio      as description,
+               u.avatar   as cover_image,
+               u.nickname as name,
+               'user'     as type
+        from follows as f
+                 left join users as u on f.following_id = u.id
+        where f.follower_id = #{currentUserId}
+    </select>
+    <select id="selectFollowingWithoutArtistByUserId" resultMap="FollowingResponseMap">
+        select u.id,
+        u.bio as description,
+        u.avatar as cover_image,
+        u.nickname as name,
+        'user' as type
+        from follows as f
+        left join users as u on f.following_id = u.id
+        where f.follower_id = #{currentUserId} and
+        f.following_id not in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectFollowerByUserId" resultType="com.zhongxin.sonicshelf.dto.response.FollowingResponse">
+        select u.id,
+               u.bio      as description,
+               u.avatar   as cover_image,
+               u.nickname as name,
+               'user'     as type
+        from follows as f
+                 left join users as u on f.follower_id = u.id
+        where f.following_id = #{currentUserId}
+    </select>
+</mapper>

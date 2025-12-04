@@ -1,9 +1,11 @@
 package com.zhongxin.sonicshelf.mapper;
 
 import com.zhongxin.sonicshelf.dto.response.FavoriteResponse;
+import com.zhongxin.sonicshelf.dto.response.FollowingResponse;
 import com.zhongxin.sonicshelf.entity.Favorite;
 import org.apache.ibatis.annotations.*;
 
+import java.util.Collection;
 import java.util.List;
 
 @Mapper
@@ -37,6 +39,10 @@ public interface FavoriteMapper {
 
     @Select("select count(*) from favorites where target_type = #{targetType} and target_id = #{targetId}")
     Integer countFavoriteCount(String targetType, Long targetId);
+
+    List<FollowingResponse> selectFollowingArtists(Long currentUserId);
+
+    List<FollowingResponse> selectFollowingArtistsWithoutUser(Long currentUserId);
 
 
 //    List<Long> selectByIds(@Param("ids") List<Long> ids);

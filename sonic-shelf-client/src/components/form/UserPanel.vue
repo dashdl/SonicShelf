@@ -16,7 +16,7 @@ const login = () => {
   emit('closePanel')
 }
 
-const logout=()=>{
+const logout = () => {
   userStore.logout()
   emit('closePanel')
 }
@@ -26,16 +26,16 @@ const logout=()=>{
 <template>
   <div class="panel-container">
     <div class="panel-top">
-      <div class="numb-container">
+      <div @click="router.push(`/profile/${userStore.getUserId}/2`)" class="numb-container">
         <span class="numb">
-          6
+          {{ userStore.getDynamicCount }}
         </span>
         <span class="title">
           动态
         </span>
       </div>
       <hr style="height: 30px;width:1px;border:none;background-color: #e4e8ec;"/>
-      <div class="numb-container">
+      <div @click="router.push(`/following`)" class="numb-container">
         <span class="numb">
           {{ userStore.getFollowing_count }}
         </span>
@@ -44,7 +44,7 @@ const logout=()=>{
         </span>
       </div>
       <hr style="height: 30px;width:1px;border:none;background-color: #e4e8ec;"/>
-      <div class="numb-container">
+      <div @click="router.push(`/follower`)" class="numb-container">
         <span class="numb">
           {{ userStore.getFollowers_count }}
         </span>
@@ -55,13 +55,7 @@ const logout=()=>{
     </div>
     <div class="panel-item">
       <div class="panel-card" @click="handleClick('/profile-settings')">
-        <img src="/icons/sidebar/home.png" style="width: 25px;margin-right: 10px" alt="">
-        <span style="margin-top: 3px;">
-          个人信息设置
-        </span>
-      </div>
-      <div class="panel-card">
-        <img src="/icons/sidebar/home.png" style="width: 25px;margin-right: 10px" alt="">
+        <img src="/icons/actions/edit.svg" style="width: 20px;margin-right: 10px;margin-left: 10px" alt="">
         <span style="margin-top: 3px;">
           个人信息设置
         </span>
@@ -73,7 +67,7 @@ const logout=()=>{
         </span>
       </div>
       <div v-if="userStore.isLoggedIn" @click="logout" class="panel-card">
-        <img src="/icons/sidebar/home.png" style="width: 25px;margin-right: 10px" alt="">
+        <img src="/icons/actions/logout.svg" style="width: 20px;margin-right: 10px;margin-left: 10px" alt="">
         <span style="margin-top: 3px;">
           退出登录
         </span>
@@ -111,6 +105,7 @@ const logout=()=>{
   flex-direction: column;
   justify-items: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .numb {
@@ -139,5 +134,6 @@ const logout=()=>{
 .panel-card:hover {
   border-radius: 10px;
   background-color: #dee2e6;
+  cursor: pointer;
 }
 </style>

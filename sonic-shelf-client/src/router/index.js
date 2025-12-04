@@ -29,6 +29,8 @@ import Collect from "@/pages/Collect.vue";
 import DynamicCard from "@/components/common/cards/DynamicCard.vue";
 import Publish from "@/components/form/Publish.vue";
 import Search from "@/pages/Search.vue";
+import Follow from "@/pages/Follow.vue";
+import FollowGrid from "@/components/list/FollowGrid.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,8 +38,8 @@ const router = createRouter({
         {
             path: '/', component: Layout,
             children: [
-                {path: '', component: Home},
-                {path: '/profile/:userId', component: Profile, name: 'Profile'},
+                {path: '', component: Follow},
+                {path: '/profile/:userId/:page?', component: Profile, name: 'Profile'},
                 {path: '/profile-settings', component: ProfileSettings},
                 {path: '/home', component: Home},
                 {path: '/my-favorite', component: Favorite},
@@ -82,6 +84,14 @@ const router = createRouter({
                     path: '/search/:keyword',
                     component: () => import("@/pages/Search.vue"),
                     props: true,
+                },
+                {
+                    path: '/following',
+                    component: () => import("@/pages/Follow.vue"),
+                },
+                {
+                    path: '/follower',
+                    component: () => import("@/pages/Follower.vue"),
                 },
             ]
         },

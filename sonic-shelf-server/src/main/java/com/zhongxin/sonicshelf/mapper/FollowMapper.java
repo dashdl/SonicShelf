@@ -1,6 +1,10 @@
 package com.zhongxin.sonicshelf.mapper;
 
+import com.zhongxin.sonicshelf.dto.response.FollowingResponse;
 import org.apache.ibatis.annotations.*;
+
+import java.util.Collection;
+import java.util.List;
 
 @Mapper
 public interface FollowMapper {
@@ -22,4 +26,10 @@ public interface FollowMapper {
 
     @Select("select count(*) from follows where following_id = #{id}")
     Integer countFollowerCount(Long id);
+
+    List<FollowingResponse> selectFollowingByUserId(Long currentUserId);
+
+    Collection<? extends FollowingResponse> selectFollowingWithoutArtistByUserId(@Param("currentUserId") Long currentUserId,@Param("ids") List<Long> ids);
+
+    List<FollowingResponse> selectFollowerByUserId(Long id);
 }

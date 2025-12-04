@@ -4,4 +4,27 @@
 <mapper namespace="com.zhongxin.sonicshelf.mapper.FavoriteMapper">
 
 
+    <select id="selectFollowingArtists" resultType="com.zhongxin.sonicshelf.dto.response.FollowingResponse">
+        select a.id,
+               a.description,
+               a.cover_image,
+               a.name,
+               a.user_id,
+               'artist' as type
+        from favorites as f
+                 join artists as a on f.target_id = a.id and f.target_type = 'artist'
+        where f.user_id = #{currentUserId}
+    </select>
+    <select id="selectFollowingArtistsWithoutUser"
+            resultType="com.zhongxin.sonicshelf.dto.response.FollowingResponse">
+        select a.id,
+               a.description,
+               a.cover_image,
+               a.name,
+               'artist' as type
+        from favorites as f
+                 join artists as a on f.target_id = a.id and f.target_type = 'artist'
+        where f.user_id = #{currentUserId}
+          and a.user_id is null
+    </select>
 </mapper>

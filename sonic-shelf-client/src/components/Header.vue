@@ -15,7 +15,8 @@
            alt="">
       <span @click="jumpToProfile" style="cursor: pointer">{{ userStore.getNickname }}</span>
       <img src="" alt="">
-      <img @click="data.userPanelVisible=!data.userPanelVisible" src="/icons/status/down.svg"
+      <img @click="userStore.isLoggedIn ? data.userPanelVisible=!data.userPanelVisible : formSwitch()"
+           src="/icons/status/down.svg"
            style="width: 13px;cursor: pointer" alt="">
     </div>
     <div v-if="data.formVisible" class="login-modal">
@@ -39,7 +40,7 @@ import UserPanel from "@/components/form/UserPanel.vue";
 import {onMounted, onUnmounted} from 'vue';
 import {useUserStore} from "@/store/userStore.js";
 import router from "@/router/index.js";
-import { getFullUrl } from '@/utils/urlConfig';
+import {getFullUrl} from '@/utils/urlConfig';
 
 const userStore = useUserStore();
 

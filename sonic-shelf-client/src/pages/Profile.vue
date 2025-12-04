@@ -8,7 +8,7 @@ import request from "@/utils/request.js";
 import {useRoute} from 'vue-router';
 import {useUserStore} from "@/store/userStore.js";
 import Dynamic from "@/pages/Dynamic.vue";
-import { getFullUrl } from '@/utils/urlConfig';
+import {getFullUrl} from '@/utils/urlConfig';
 
 const route = useRoute();
 const userStore = useUserStore()
@@ -230,7 +230,8 @@ const favoritesTable = () => {
 
 onMounted(async () => {
   resetPageState();
-  userId.value = route.params.userId
+  userId.value = route.params.userId;
+  userSelect.page = route.params.page ? 2 : 1;
   await loadUserInfo(userId.value);
   await loadPlaylist();
   await loadFavorites();
@@ -268,8 +269,6 @@ const follow = async () => {
     }
   }
 }
-
-
 </script>
 
 <template>

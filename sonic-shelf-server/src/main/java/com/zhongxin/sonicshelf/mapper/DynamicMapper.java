@@ -37,4 +37,7 @@ public interface DynamicMapper {
 
     @Select("select user_id from dynamics where id = #{id}")
     Long getUserIdById(Long id);
+
+    @Select("select count(*) from dynamics where user_id = #{currentUserId}")
+    int countDynamicCountByUserId(Long currentUserId);
 }
