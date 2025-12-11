@@ -449,6 +449,7 @@ const jumpToMusic = () => {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  background: #ffffff;
 }
 
 .cover-container {

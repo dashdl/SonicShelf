@@ -38,7 +38,7 @@ const router = createRouter({
         {
             path: '/', component: Layout,
             children: [
-                {path: '', component: Follow},
+                {path: '', component: Home},
                 {path: '/profile/:userId/:page?', component: Profile, name: 'Profile'},
                 {path: '/profile-settings', component: ProfileSettings},
                 {path: '/home', component: Home},

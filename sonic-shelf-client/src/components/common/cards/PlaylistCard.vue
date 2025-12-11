@@ -3,7 +3,7 @@ import {ref, onMounted} from 'vue'
 import router from "@/router/index.js";
 import request from "@/utils/request.js";
 import {usePlayerStore} from "@/store/player.js";
-import { getFullUrl } from '@/utils/urlConfig';
+import {getFullUrl} from '@/utils/urlConfig';
 
 const props = defineProps({
   item: {
@@ -124,7 +124,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="playlistCard" @click="router.push(`playlist/${item.id}`)" @mouseenter="() => handleMouseEvent(true)" @mouseleave="() => handleMouseEvent(false)">
+  <div class="playlistCard" @click="router.push(`playlist/${item.id}`)" @mouseenter="() => handleMouseEvent(true)"
+       @mouseleave="() => handleMouseEvent(false)">
     <div class="playCount">
       <img style="height: 15px" src="/icons/content/headphone.svg" alt="">
       {{ item.playCount }}
